@@ -154,16 +154,22 @@ async function fetchHyperliquid(body) {
 }
 
 async function fetchLiveData() {
-  const [state, mids] = await Promise.all([
+  const [perpState, spotState, mids] = await Promise.all([
     fetchHyperliquid({type:"clearinghouseState",user:ACCOUNT}),
+    fetchHyperliquid({type:"spotClearinghouseState",user:ACCOUNT}),
     fetchHyperliquid({type:"allMids"})
   ]);
-  const ms = state.marginSummary || {};
-  const accountValue = parseFloat(ms.accountValue||0);
-  const totalMargin = parseFloat(ms.totalMarginUsed||0);
+
+  // Unified Account: balance is in spotClearinghouseState
+  const perpValue = parseFloat(perpState?.marginSummary?.accountValue||0);
+  const spotUSDC = (spotState?.balances||[]).find(b=>b.coin==="USDC");
+  const spotValue = parseFloat(spotUSDC?.total||0);
+  const accountValue = perpValue + spotValue;
+  const totalMargin = parseFloat(perpState?.marginSummary?.totalMarginUsed||0);
   const totalPnl = accountValue - INITIAL_CAPITAL;
 
-  const positions = (state.assetPositions||[])
+  // Perp positions
+  const positions = (perpState?.assetPositions||[])
     .filter(p => parseFloat(p.position?.szi||0) !== 0)
     .map(p => {
       const pos = p.position;
