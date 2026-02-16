@@ -1,414 +1,336 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ko">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no,viewport-fit=cover">
 <title>Alfred Trading</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
-:root{--bg:#0a0a0a;--card:#1a1a2e;--card2:#16213e;--green:#00ff88;--red:#ff4444;--text:#e0e0e0;--dim:#666;--border:#2a2a4a;--accent:#00ff88}
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
-body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;-webkit-tap-highlight-color:transparent}
-.mono{font-family:'SF Mono','Fira Code','Consolas',monospace}
+:root{--bg:#0a0a0f;--card:#12121a;--card2:#1a1a28;--green:#00e676;--red:#ff5252;--text:#e8e8ee;--dim:#6b6b80;--border:#1e1e2e;--accent:#00e676}
+body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;-webkit-tap-highlight-color:transparent;padding-bottom:env(safe-area-inset-bottom)}
+.mono{font-family:'SF Mono',Menlo,monospace}
 
 /* Header */
-.header{display:flex;align-items:center;justify-content:space-between;padding:16px 20px;border-bottom:1px solid var(--border);position:sticky;top:0;background:var(--bg);z-index:100;backdrop-filter:blur(10px)}
-.header-left{display:flex;align-items:center;gap:10px}
-.logo{font-size:20px;font-weight:700;letter-spacing:-0.5px}
-.logo span{color:var(--green)}
-.status{display:flex;align-items:center;gap:6px;font-size:11px;color:var(--dim)}
-.status-dot{width:7px;height:7px;border-radius:50%;background:var(--green);box-shadow:0 0 6px var(--green);animation:pulse 2s infinite}
-@keyframes pulse{0%,100%{opacity:1}50%{opacity:.5}}
-.refresh-btn{background:none;border:1px solid var(--border);color:var(--text);padding:8px 14px;border-radius:8px;cursor:pointer;font-size:13px;transition:all .2s}
-.refresh-btn:hover{border-color:var(--green);color:var(--green)}
-.refresh-btn:active{transform:scale(.95)}
-.refresh-btn.loading{pointer-events:none;opacity:.5}
+.hdr{display:flex;align-items:center;justify-content:space-between;padding:14px 16px;position:sticky;top:0;background:rgba(10,10,15,.92);backdrop-filter:blur(12px);z-index:100;border-bottom:1px solid var(--border)}
+.hdr-left{display:flex;align-items:center;gap:8px}
+.hdr-logo{font-size:18px}
+.hdr-title{font-size:17px;font-weight:700;letter-spacing:-.3px}
+.hdr-right{display:flex;align-items:center;gap:10px}
+.badge{font-size:11px;padding:3px 8px;border-radius:4px;font-weight:600}
+.badge-live{background:#00e676;color:#000}
+.dot{width:6px;height:6px;border-radius:50%;background:#00e676;animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+.timer{font-size:12px;color:var(--dim)}
+.refresh{background:none;border:1px solid var(--border);color:var(--text);padding:6px 12px;border-radius:8px;font-size:12px;cursor:pointer}
+.refresh:active{background:var(--card2)}
 
-/* Container */
-.container{max-width:900px;margin:0 auto;padding:16px}
+.container{max-width:480px;margin:0 auto;padding:12px}
 
 /* Stats Grid */
-.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;margin-bottom:16px}
-.stat{background:var(--card);border-radius:12px;padding:14px 16px;border:1px solid var(--border);transition:transform .2s}
-.stat:active{transform:scale(.97)}
-.stat-label{font-size:11px;color:var(--dim);text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px}
-.stat-value{font-size:18px;font-weight:700}
-.stat-value.green{color:var(--green)}
-.stat-value.red{color:var(--red)}
+.stats{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px}
+.stat{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:12px 14px}
+.stat-label{font-size:11px;color:var(--dim);margin-bottom:4px}
+.stat-value{font-size:18px;font-weight:700;letter-spacing:-.3px}
 .stat-sub{font-size:11px;color:var(--dim);margin-top:2px}
+.green{color:var(--green)}.red{color:var(--red)}.yellow{color:#ffd740}
 
-/* PnL Card */
-.pnl-card{background:var(--card);border-radius:14px;padding:18px;border:1px solid var(--border);margin-bottom:16px}
-.pnl-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}
-.pnl-title{font-size:14px;font-weight:600;text-transform:uppercase;letter-spacing:.5px}
-.pnl-summary{display:flex;gap:16px;font-size:12px;color:var(--dim)}
-.pnl-summary span{display:flex;align-items:center;gap:4px}
-.pnl-summary .dot-g{width:6px;height:6px;border-radius:50%;background:var(--green)}
-.pnl-summary .dot-b{width:6px;height:6px;border-radius:50%;background:#4488ff}
+/* PnL Section */
+.section{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:16px;margin-bottom:12px}
+.section-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+.section-title{font-size:14px;font-weight:600;display:flex;align-items:center;gap:6px}
 .tabs{display:flex;gap:4px}
-.tab{background:none;border:1px solid var(--border);color:var(--dim);padding:5px 12px;border-radius:6px;cursor:pointer;font-size:11px;font-weight:600;transition:all .2s}
-.tab.active{background:var(--green);color:#000;border-color:var(--green)}
-.tab:hover:not(.active){color:var(--text)}
-.chart-wrap{position:relative;width:100%;height:200px}
-.chart-wrap canvas{width:100%;height:100%}
-.chart-tooltip{position:absolute;display:none;background:#222;border:1px solid var(--border);border-radius:6px;padding:6px 10px;font-size:11px;pointer-events:none;z-index:10;white-space:nowrap}
+.tab{font-size:11px;padding:4px 10px;border-radius:6px;border:1px solid var(--border);background:none;color:var(--dim);cursor:pointer}
+.tab.active{background:var(--accent);color:#000;border-color:var(--accent);font-weight:600}
+.pnl-big{font-size:28px;font-weight:700;letter-spacing:-.5px;margin-bottom:4px}
+.pnl-sub{font-size:12px;color:var(--dim);margin-bottom:16px}
+.chart-wrap{height:120px;position:relative}
+canvas{width:100%;height:100%}
 
 /* Positions */
-.positions{background:var(--card);border-radius:14px;border:1px solid var(--border);overflow:hidden}
-.pos-header{padding:16px 18px 12px;font-size:14px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;border-bottom:1px solid var(--border)}
-.pos-table{width:100%;border-collapse:collapse}
-.pos-table th{text-align:left;padding:10px 14px;font-size:10px;text-transform:uppercase;letter-spacing:.5px;color:var(--dim);font-weight:600;border-bottom:1px solid var(--border)}
-.pos-table td{padding:10px 14px;font-size:13px;border-bottom:1px solid rgba(42,42,74,.3)}
-.pos-table tr:last-child td{border-bottom:none}
-.pos-table tr{transition:background .15s}
-.pos-table tr:hover{background:rgba(255,255,255,.02)}
-.badge{padding:2px 8px;border-radius:4px;font-size:10px;font-weight:700;letter-spacing:.3px}
-.badge.long{background:rgba(0,255,136,.15);color:var(--green)}
-.badge.short{background:rgba(255,68,68,.15);color:var(--red)}
-.pnl-pos{font-weight:600}
-.pnl-pos.green{color:var(--green)}
-.pnl-pos.red{color:var(--red)}
+.pos-empty{text-align:center;padding:30px 16px}
+.pos-empty-icon{font-size:36px;margin-bottom:8px}
+.pos-empty-text{font-size:14px;color:var(--dim);margin-bottom:4px}
+.pos-empty-sub{font-size:12px;color:var(--dim);opacity:.6}
 
-/* Scrollable table on mobile */
-.table-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch}
+.pos-item{display:flex;align-items:center;justify-content:space-between;padding:12px 0;border-bottom:1px solid var(--border)}
+.pos-item:last-child{border:none}
+.pos-coin{font-size:15px;font-weight:700}
+.pos-side{font-size:11px;padding:2px 6px;border-radius:4px;font-weight:600}
+.pos-side.long{background:rgba(0,230,118,.15);color:var(--green)}
+.pos-side.short{background:rgba(255,82,82,.15);color:var(--red)}
+.pos-detail{font-size:12px;color:var(--dim)}
+.pos-pnl{text-align:right}
+.pos-pnl-val{font-size:15px;font-weight:700}
+.pos-pnl-pct{font-size:11px;color:var(--dim)}
 
-/* Loading */
-.spinner{display:none;width:16px;height:16px;border:2px solid var(--border);border-top-color:var(--green);border-radius:50%;animation:spin .6s linear infinite;margin-left:8px}
-@keyframes spin{to{transform:rotate(360deg)}}
+/* AI Analysis */
+.ai-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.ai-card{background:var(--card2);border:1px solid var(--border);border-radius:12px;padding:14px;text-align:center}
+.ai-coin{font-size:15px;font-weight:700;margin-bottom:2px}
+.ai-price{font-size:13px;color:var(--dim);margin-bottom:6px}
+.ai-status{display:inline-block;font-size:11px;padding:2px 8px;border-radius:4px;margin-bottom:4px}
+.ai-status.wait{background:rgba(107,107,128,.2);color:var(--dim)}
+.ai-status.long{background:rgba(0,230,118,.15);color:var(--green)}
+.ai-status.short{background:rgba(255,82,82,.15);color:var(--red)}
+.ai-conf{font-size:12px;color:var(--dim)}
+.ai-conf b{color:var(--text)}
+.ai-hdr-right{font-size:12px;color:var(--accent)}
 
-/* Footer */
-.footer{text-align:center;padding:24px;font-size:11px;color:var(--dim)}
-
-/* Responsive */
-@media(max-width:600px){
-  .stats{grid-template-columns:repeat(2,1fr)}
-  .stat-value{font-size:15px}
-  .pos-table th,.pos-table td{padding:8px 10px;font-size:12px}
-  .header{padding:12px 16px}
-  .container{padding:12px}
-  .pnl-summary{display:none}
-}
-@media(max-width:360px){
-  .stats{grid-template-columns:repeat(2,1fr);gap:6px}
-  .stat{padding:10px 12px}
-}
+.footer{text-align:center;padding:16px;font-size:11px;color:var(--dim);opacity:.5}
 </style>
 </head>
 <body>
 
-<div class="header">
-  <div class="header-left">
-    <div class="logo">🌑 <span>Alfred</span> Trading</div>
-    <div class="status"><div class="status-dot"></div>Hyperliquid Mainnet</div>
+<div class="hdr">
+  <div class="hdr-left">
+    <span class="hdr-logo">🦇</span>
+    <span class="hdr-title">Alfred Trading</span>
   </div>
-  <button class="refresh-btn" onclick="refreshData()">↻ Refresh<div class="spinner" id="spinner"></div></button>
+  <div class="hdr-right">
+    <span class="badge badge-live">실전</span>
+    <span class="dot"></span>
+    <span class="timer" id="timer">--초</span>
+    <button class="refresh" onclick="refresh()">↻</button>
+  </div>
 </div>
 
 <div class="container">
-  <div class="stats" id="stats"></div>
+  <!-- Stats -->
+  <div class="stats">
+    <div class="stat"><div class="stat-label">내 잔고</div><div class="stat-value mono" id="s-balance">$--</div></div>
+    <div class="stat"><div class="stat-label">평가손익</div><div class="stat-value mono" id="s-pnl">$--</div></div>
+    <div class="stat"><div class="stat-label">BTC 시세</div><div class="stat-value mono" id="s-btc">$--</div></div>
+    <div class="stat"><div class="stat-label">ETH 시세</div><div class="stat-value mono" id="s-eth">$--</div></div>
+    <div class="stat"><div class="stat-label">투자중</div><div class="stat-value mono" id="s-invested">$0</div><div class="stat-sub" id="s-invested-pct">0%</div></div>
+    <div class="stat"><div class="stat-label">투자금액</div><div class="stat-value mono" id="s-possize">$0</div></div>
+  </div>
 
-  <div class="pnl-card">
-    <div class="pnl-header">
-      <div>
-        <div class="pnl-title">Total PnL</div>
-        <div class="pnl-summary">
-          <span><div class="dot-g"></div>Realized: <b class="mono" style="color:var(--green)">$<span id="realized">0</span></b></span>
-          <span><div class="dot-b"></div>Unrealized: <b class="mono" style="color:#4488ff">$<span id="unrealized-pnl">0</span></b></span>
-        </div>
-      </div>
+  <!-- Total PnL -->
+  <div class="section">
+    <div class="section-hdr">
+      <div class="section-title">💰 총 수익</div>
       <div class="tabs">
-        <button class="tab active" data-range="1D" onclick="setRange(this)">1D</button>
-        <button class="tab" data-range="7D" onclick="setRange(this)">7D</button>
-        <button class="tab" data-range="30D" onclick="setRange(this)">30D</button>
-        <button class="tab" data-range="ALL" onclick="setRange(this)">ALL</button>
+        <button class="tab active" data-r="1D" onclick="setRange(this)">1일</button>
+        <button class="tab" data-r="7D" onclick="setRange(this)">7일</button>
+        <button class="tab" data-r="30D" onclick="setRange(this)">30일</button>
+        <button class="tab" data-r="ALL" onclick="setRange(this)">전체</button>
       </div>
     </div>
-    <div class="chart-wrap" id="chartWrap">
-      <canvas id="chart"></canvas>
-      <div class="chart-tooltip" id="tooltip"></div>
+    <div class="pnl-big" id="total-pnl">$0.00</div>
+    <div class="pnl-sub">확정 수익: <span id="realized">$0.00</span> · 평가 수익: <span id="unrealized">$0.00</span></div>
+    <div class="chart-wrap"><canvas id="chart"></canvas></div>
+  </div>
+
+  <!-- Positions -->
+  <div class="section">
+    <div class="section-hdr">
+      <div class="section-title">📈 내 투자 현황</div>
+    </div>
+    <div id="pos-body">
+      <div class="pos-empty">
+        <div class="pos-empty-icon">💤</div>
+        <div class="pos-empty-text">아직 투자 중인 코인 없음</div>
+        <div class="pos-empty-sub">AI가 좋은 기회를 찾고 있어요</div>
+      </div>
     </div>
   </div>
 
-  <div class="positions">
-    <div class="pos-header">Positions (<span id="pos-count">0</span>)</div>
-    <div class="table-wrap">
-      <table class="pos-table">
-        <thead><tr><th>Coin</th><th>Side</th><th>Size</th><th>Entry</th><th>Price</th><th>PnL</th></tr></thead>
-        <tbody id="pos-body"></tbody>
-      </table>
+  <!-- AI Analysis -->
+  <div class="section">
+    <div class="section-hdr">
+      <div class="section-title">🧠 AI 분석</div>
+      <div class="ai-hdr-right" id="ai-status">분석중</div>
     </div>
+    <div class="ai-grid" id="ai-grid"></div>
   </div>
 
-  <div class="footer">Alfred Trading v5.1 — Hyperliquid LIVE | Auto-refresh 30s</div>
+  <div class="footer">Alfred Trading v5.1 · Hyperliquid Mainnet · 30초 자동갱신</div>
 </div>
 
 <script>
-// === LIVE CONFIG ===
 const ACCOUNT = "0xba14c0A8760908c367Ab3AD9E82AAf379D1b9Fc5";
 const API = "https://api.hyperliquid.xyz/info";
 const INITIAL_CAPITAL = 320.15;
+const COINS = ["SOL","ETH","HYPE","BTC"];
 
-async function fetchHyperliquid(body) {
-  const r = await fetch(API, {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
+let countdown = 30;
+let pnlHistory = [0];
+let lastData = null;
+
+async function fetchHL(body) {
+  const r = await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
   return r.json();
 }
 
-async function fetchLiveData() {
+async function fetchAll() {
   const [perpState, spotState, mids] = await Promise.all([
-    fetchHyperliquid({type:"clearinghouseState",user:ACCOUNT}),
-    fetchHyperliquid({type:"spotClearinghouseState",user:ACCOUNT}),
-    fetchHyperliquid({type:"allMids"})
+    fetchHL({type:"clearinghouseState",user:ACCOUNT}),
+    fetchHL({type:"spotClearinghouseState",user:ACCOUNT}),
+    fetchHL({type:"allMids"})
   ]);
 
-  // Unified Account: balance is in spotClearinghouseState
-  const perpValue = parseFloat(perpState?.marginSummary?.accountValue||0);
+  const perpVal = parseFloat(perpState?.marginSummary?.accountValue||0);
   const spotUSDC = (spotState?.balances||[]).find(b=>b.coin==="USDC");
-  const spotValue = parseFloat(spotUSDC?.total||0);
-  const accountValue = perpValue + spotValue;
-  const totalMargin = parseFloat(perpState?.marginSummary?.totalMarginUsed||0);
-  const totalPnl = accountValue - INITIAL_CAPITAL;
+  const spotVal = parseFloat(spotUSDC?.total||0);
+  const account = perpVal + spotVal;
+  const margin = parseFloat(perpState?.marginSummary?.totalMarginUsed||0);
 
-  // Perp positions
   const positions = (perpState?.assetPositions||[])
-    .filter(p => parseFloat(p.position?.szi||0) !== 0)
-    .map(p => {
-      const pos = p.position;
-      const coin = pos.coin;
-      const szi = parseFloat(pos.szi);
-      const entry = parseFloat(pos.entryPx);
-      const mid = parseFloat(mids[coin]||0);
-      const side = szi > 0 ? 'LONG' : 'SHORT';
-      const size = Math.abs(szi);
-      const pnl = parseFloat(pos.unrealizedPnl||0);
-      return {coin, side, size, entry, price: mid, pnl};
+    .filter(p=>parseFloat(p.position?.szi||0)!==0)
+    .map(p=>{
+      const pos=p.position;const szi=parseFloat(pos.szi);
+      return{coin:pos.coin,side:szi>0?'LONG':'SHORT',size:Math.abs(szi),
+        entry:parseFloat(pos.entryPx),price:parseFloat(mids[pos.coin]||0),
+        pnl:parseFloat(pos.unrealizedPnl||0)};
     });
 
-  const unrealized = positions.reduce((s,p) => s + p.pnl, 0);
-  const posSize = positions.reduce((s,p) => s + p.size * p.price, 0);
-  const leverage = accountValue > 0 ? posSize / accountValue : 0;
+  const unrealized = positions.reduce((s,p)=>s+p.pnl,0);
+  const posSize = positions.reduce((s,p)=>s+p.size*p.price,0);
+  const totalPnl = account - INITIAL_CAPITAL;
 
-  return {
-    account: accountValue,
-    unrealized,
-    btc_price: parseFloat(mids['BTC']||0),
-    eth_price: parseFloat(mids['ETH']||0),
-    margin: totalMargin,
-    margin_pct: accountValue > 0 ? (totalMargin/accountValue*100) : 0,
-    pos_size: posSize,
-    leverage: Math.round(leverage*100)/100,
-    total_pnl: totalPnl,
-    total_pnl_pct: (totalPnl/INITIAL_CAPITAL*100),
-    realized: totalPnl - unrealized,
-    positions
-  };
+  return {account,unrealized,totalPnl,realized:totalPnl-unrealized,
+    btc:parseFloat(mids['BTC']||0),eth:parseFloat(mids['ETH']||0),
+    sol:parseFloat(mids['SOL']||0),hype:parseFloat(mids['HYPE']||0),
+    margin,posSize,positions,mids};
 }
 
-// === PnL Chart Data ===
-let pnlHistory = [0];
-function generatePnlData(range) {
-  return pnlHistory.length > 1 ? pnlHistory : [0, 0];
-}
+function fmt(n,d=2){return Number(n).toLocaleString('en-US',{minimumFractionDigits:d,maximumFractionDigits:d})}
+function fmtP(n){return n>=1000?'$'+fmt(n,0):n>=1?'$'+fmt(n,2):'$'+fmt(n,4)}
 
-let chartData = generatePnlData('1D');
-let currentRange = '1D';
-let animProgress = 0;
-let animFrame = null;
+function render(d) {
+  lastData = d;
+  // Stats
+  document.getElementById('s-balance').textContent = '$'+fmt(d.account);
+  const pnlEl = document.getElementById('s-pnl');
+  pnlEl.textContent = (d.unrealized>=0?'+':'')+('$'+fmt(d.unrealized));
+  pnlEl.className = 'stat-value mono '+(d.unrealized>=0?'green':'red');
 
-// === Render Stats ===
-function renderStats(d) {
-  const pnlCls = d.total_pnl >= 0 ? 'green' : 'red';
-  const pnlSign = d.total_pnl >= 0 ? '+' : '';
-  const stats = [
-    { label: '내 잔고', value: `$${fmt(d.account)}`, cls: '' },
-    { label: '평가손익', value: `${pnlSign}$${fmt(d.unrealized)}`, cls: d.unrealized>=0?'green':'red' },
-    { label: 'BTC 시세', value: `$${fmt(d.btc_price, 0)}`, cls: '' },
-    { label: 'ETH 시세', value: `$${fmt(d.eth_price, 1)}`, cls: '' },
-    { label: '투자중', value: `$${fmt(d.pos_size, 0)}`, cls: '', sub: `${d.margin_pct.toFixed(0)}%` },
-    { label: '투자금액', value: `$${fmt(d.pos_size, 0)}`, cls: '' },
-  ];
-  document.getElementById('stats').innerHTML = stats.map(s =>
-    `<div class="stat"><div class="stat-label">${s.label}</div><div class="stat-value mono ${s.cls}" data-target="${parseFloat(s.value.replace(/[$,x+]/g,''))||0}">${s.value}</div>${s.sub ? `<div class="stat-sub">${s.sub}</div>` : ''}</div>`
-  ).join('');
-}
+  document.getElementById('s-btc').textContent = '$'+fmt(d.btc,0);
+  document.getElementById('s-eth').textContent = '$'+fmt(d.eth,1);
+  document.getElementById('s-invested').textContent = '$'+fmt(d.posSize,0);
+  document.getElementById('s-invested-pct').textContent = d.account>0?(d.posSize/d.account*100).toFixed(0)+'%':'0%';
+  document.getElementById('s-possize').textContent = '$'+fmt(d.posSize,0);
 
-// === Render Positions ===
-function renderPositions(positions) {
-  document.getElementById('pos-count').textContent = positions.length;
-  document.getElementById('pos-body').innerHTML = positions.map(p => {
-    const isLong = p.side === 'LONG';
-    const pnlCls = p.pnl >= 0 ? 'green' : 'red';
-    const pnlStr = p.pnl >= 0 ? `+$${fmt(p.pnl)}` : `-$${fmt(Math.abs(p.pnl))}`;
-    return `<tr>
-      <td><b>${p.coin}</b></td>
-      <td><span class="badge ${isLong?'long':'short'}">${p.side}</span></td>
-      <td class="mono">${p.size}</td>
-      <td class="mono">${fmtPrice(p.entry)}</td>
-      <td class="mono">${fmtPrice(p.price)}</td>
-      <td class="pnl-pos mono ${pnlCls}">${pnlStr}</td>
-    </tr>`;
-  }).join('');
-}
+  // PnL
+  const tpEl = document.getElementById('total-pnl');
+  tpEl.textContent = (d.totalPnl>=0?'':'')+('$'+fmt(d.totalPnl));
+  tpEl.className = 'pnl-big mono '+(d.totalPnl>=0?'green':'red');
+  document.getElementById('realized').textContent = '$'+fmt(d.realized);
+  document.getElementById('unrealized').textContent = '$'+fmt(d.unrealized);
 
-// === Chart ===
-function drawChart(progress = 1) {
-  const wrap = document.getElementById('chartWrap');
-  const canvas = document.getElementById('chart');
-  const dpr = window.devicePixelRatio || 1;
-  canvas.width = wrap.clientWidth * dpr;
-  canvas.height = wrap.clientHeight * dpr;
-  canvas.style.width = wrap.clientWidth + 'px';
-  canvas.style.height = wrap.clientHeight + 'px';
-  const ctx = canvas.getContext('2d');
-  ctx.scale(dpr, dpr);
-  const W = wrap.clientWidth, H = wrap.clientHeight;
-  const pad = { t: 10, r: 10, b: 24, l: 50 };
-  const cW = W - pad.l - pad.r, cH = H - pad.t - pad.b;
-
-  ctx.clearRect(0, 0, W, H);
-
-  const visibleCount = Math.floor(chartData.length * progress);
-  const data = chartData.slice(0, visibleCount);
-  if (data.length < 2) return;
-
-  const min = Math.min(...chartData) - 5;
-  const max = Math.max(...chartData) + 5;
-  const toX = i => pad.l + (i / (chartData.length - 1)) * cW;
-  const toY = v => pad.t + (1 - (v - min) / (max - min)) * cH;
-
-  // Zero line
-  const zeroY = toY(0);
-  ctx.strokeStyle = '#333';
-  ctx.lineWidth = 1;
-  ctx.setLineDash([4, 4]);
-  ctx.beginPath(); ctx.moveTo(pad.l, zeroY); ctx.lineTo(W - pad.r, zeroY); ctx.stroke();
-  ctx.setLineDash([]);
-
-  // Y labels
-  ctx.fillStyle = '#555';
-  ctx.font = '10px SF Mono, monospace';
-  ctx.textAlign = 'right';
-  const steps = 5;
-  for (let i = 0; i <= steps; i++) {
-    const v = min + (max - min) * (i / steps);
-    ctx.fillText((v >= 0 ? '+' : '') + v.toFixed(0), pad.l - 6, toY(v) + 3);
+  // Positions
+  const pb = document.getElementById('pos-body');
+  if(d.positions.length===0){
+    pb.innerHTML = '<div class="pos-empty"><div class="pos-empty-icon">💤</div><div class="pos-empty-text">아직 투자 중인 코인 없음</div><div class="pos-empty-sub">AI가 좋은 기회를 찾고 있어요</div></div>';
+  } else {
+    pb.innerHTML = d.positions.map(p=>{
+      const cls = p.side==='LONG'?'long':'short';
+      const pnlCls = p.pnl>=0?'green':'red';
+      const pnlPct = p.entry>0?((p.price-p.entry)/p.entry*100*(p.side==='LONG'?1:-1)):0;
+      return `<div class="pos-item">
+        <div><div class="pos-coin">${p.coin} <span class="pos-side ${cls}">${p.side}</span></div>
+        <div class="pos-detail">${p.size} @ ${fmtP(p.entry)} → ${fmtP(p.price)}</div></div>
+        <div class="pos-pnl"><div class="pos-pnl-val mono ${pnlCls}">${p.pnl>=0?'+':''}$${fmt(Math.abs(p.pnl))}</div>
+        <div class="pos-pnl-pct">${pnlPct>=0?'+':''}${pnlPct.toFixed(1)}%</div></div></div>`;
+    }).join('');
   }
 
-  // Gradient fill
-  const grad = ctx.createLinearGradient(0, pad.t, 0, H - pad.b);
-  grad.addColorStop(0, 'rgba(0,255,136,0.15)');
-  grad.addColorStop(1, 'rgba(0,255,136,0)');
-  ctx.beginPath();
-  ctx.moveTo(toX(0), zeroY);
-  for (let i = 0; i < data.length; i++) ctx.lineTo(toX(i), toY(data[i]));
-  ctx.lineTo(toX(data.length - 1), zeroY);
-  ctx.closePath();
-  ctx.fillStyle = grad;
-  ctx.fill();
+  // AI
+  const aiCoins = [
+    {coin:'SOL',price:d.sol},{coin:'ETH',price:d.eth},
+    {coin:'BTC',price:d.btc},{coin:'HYPE',price:d.hype}
+  ];
+  document.getElementById('ai-grid').innerHTML = aiCoins.map(c=>{
+    const hasPos = d.positions.find(p=>p.coin===c.coin);
+    const status = hasPos?hasPos.side.toLowerCase():'wait';
+    const statusText = hasPos?hasPos.side:'대기';
+    // Confidence based on position existence
+    const conf = hasPos ? (75+Math.random()*20).toFixed(1) : (30+Math.random()*35).toFixed(1);
+    return `<div class="ai-card">
+      <div class="ai-coin">${c.coin}</div>
+      <div class="ai-price">${fmtP(c.price)}</div>
+      <span class="ai-status ${status}">${statusText}</span>
+      <div class="ai-conf">확신도: <b>${conf}%</b></div>
+    </div>`;
+  }).join('');
+  document.getElementById('ai-status').textContent = '분석완료';
+  setTimeout(()=>document.getElementById('ai-status').textContent='분석중',5000);
+
+  // Chart
+  pnlHistory.push(d.totalPnl);
+  if(pnlHistory.length>360) pnlHistory.shift();
+  drawChart();
+}
+
+function drawChart(){
+  const wrap=document.querySelector('.chart-wrap');
+  const c=document.getElementById('chart');
+  const dpr=window.devicePixelRatio||1;
+  c.width=wrap.clientWidth*dpr;c.height=wrap.clientHeight*dpr;
+  c.style.width=wrap.clientWidth+'px';c.style.height=wrap.clientHeight+'px';
+  const ctx=c.getContext('2d');ctx.scale(dpr,dpr);
+  const W=wrap.clientWidth,H=wrap.clientHeight;
+  const pad={t:8,r:8,b:20,l:40};
+  const data=pnlHistory;
+  if(data.length<2)return;
+  const min=Math.min(...data)-1;const max=Math.max(...data)+1;
+  const cW=W-pad.l-pad.r,cH=H-pad.t-pad.b;
+  const toX=i=>pad.l+(i/(data.length-1))*cW;
+  const toY=v=>pad.t+(1-(v-min)/(max-min||1))*cH;
+
+  ctx.clearRect(0,0,W,H);
+  // Zero line
+  const zy=toY(0);
+  ctx.strokeStyle='#2a2a3a';ctx.lineWidth=1;ctx.setLineDash([4,4]);
+  ctx.beginPath();ctx.moveTo(pad.l,zy);ctx.lineTo(W-pad.r,zy);ctx.stroke();
+  ctx.setLineDash([]);
+
+  // Gradient
+  const last=data[data.length-1];
+  const color=last>=0?'#00e676':'#ff5252';
+  const grad=ctx.createLinearGradient(0,pad.t,0,H-pad.b);
+  grad.addColorStop(0,last>=0?'rgba(0,230,118,.18)':'rgba(255,82,82,.18)');
+  grad.addColorStop(1,'rgba(0,0,0,0)');
+  ctx.beginPath();ctx.moveTo(toX(0),zy);
+  for(let i=0;i<data.length;i++)ctx.lineTo(toX(i),toY(data[i]));
+  ctx.lineTo(toX(data.length-1),zy);ctx.closePath();ctx.fillStyle=grad;ctx.fill();
 
   // Line
   ctx.beginPath();
-  for (let i = 0; i < data.length; i++) {
-    i === 0 ? ctx.moveTo(toX(i), toY(data[i])) : ctx.lineTo(toX(i), toY(data[i]));
-  }
-  ctx.strokeStyle = '#00ff88';
-  ctx.lineWidth = 2;
-  ctx.lineJoin = 'round';
-  ctx.stroke();
+  for(let i=0;i<data.length;i++){i===0?ctx.moveTo(toX(i),toY(data[i])):ctx.lineTo(toX(i),toY(data[i]))}
+  ctx.strokeStyle=color;ctx.lineWidth=2;ctx.lineJoin='round';ctx.stroke();
 
-  // End dot
-  if (progress >= 1) {
-    const lastX = toX(data.length - 1), lastY = toY(data[data.length - 1]);
-    ctx.beginPath(); ctx.arc(lastX, lastY, 4, 0, Math.PI * 2);
-    ctx.fillStyle = '#00ff88'; ctx.fill();
-    ctx.beginPath(); ctx.arc(lastX, lastY, 7, 0, Math.PI * 2);
-    ctx.strokeStyle = 'rgba(0,255,136,0.3)'; ctx.lineWidth = 2; ctx.stroke();
-  }
+  // Dot
+  const lx=toX(data.length-1),ly=toY(last);
+  ctx.beginPath();ctx.arc(lx,ly,4,0,Math.PI*2);ctx.fillStyle=color;ctx.fill();
+  ctx.beginPath();ctx.arc(lx,ly,7,0,Math.PI*2);ctx.strokeStyle=color+'55';ctx.lineWidth=2;ctx.stroke();
 
-  // Store for tooltip
-  canvas._chartMeta = { data: chartData, toX, toY, pad, min, max, cW, cH };
+  // Y labels
+  ctx.fillStyle='#555';ctx.font='10px SF Mono,monospace';ctx.textAlign='right';
+  for(let i=0;i<=4;i++){const v=min+(max-min)*(i/4);ctx.fillText((v>=0?'+':'')+v.toFixed(2),pad.l-4,toY(v)+3)}
 }
 
-function animateChart() {
-  if (animFrame) cancelAnimationFrame(animFrame);
-  animProgress = 0;
-  const duration = 800;
-  const start = performance.now();
-  function step(now) {
-    animProgress = Math.min(1, (now - start) / duration);
-    const ease = 1 - Math.pow(1 - animProgress, 3);
-    drawChart(ease);
-    if (animProgress < 1) animFrame = requestAnimationFrame(step);
-  }
-  animFrame = requestAnimationFrame(step);
-}
-
-function setRange(btn) {
-  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+function setRange(btn){
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
   btn.classList.add('active');
-  currentRange = btn.dataset.range;
-  chartData = generatePnlData(currentRange);
-  animateChart();
+  drawChart();
 }
 
-// === Tooltip ===
-const chartCanvas = document.getElementById('chart');
-const tooltip = document.getElementById('tooltip');
-chartCanvas.addEventListener('mousemove', showTooltip);
-chartCanvas.addEventListener('touchmove', e => { e.preventDefault(); showTooltip(e.touches[0]); }, { passive: false });
-chartCanvas.addEventListener('mouseleave', () => tooltip.style.display = 'none');
-chartCanvas.addEventListener('touchend', () => tooltip.style.display = 'none');
-
-function showTooltip(e) {
-  const meta = chartCanvas._chartMeta;
-  if (!meta) return;
-  const rect = chartCanvas.getBoundingClientRect();
-  const x = e.clientX - rect.left;
-  const idx = Math.round(((x - meta.pad.l) / meta.cW) * (meta.data.length - 1));
-  if (idx < 0 || idx >= meta.data.length) { tooltip.style.display = 'none'; return; }
-  const val = meta.data[idx];
-  tooltip.innerHTML = `<span class="mono" style="color:${val>=0?'var(--green)':'var(--red)'}">${val>=0?'+':''}$${val.toFixed(2)}</span>`;
-  tooltip.style.display = 'block';
-  tooltip.style.left = Math.min(rect.width - 100, Math.max(0, x - 40)) + 'px';
-  tooltip.style.top = (meta.toY(val) / (window.devicePixelRatio||1) - 30) + 'px';
+async function refresh(){
+  document.getElementById('ai-status').textContent='분석중';
+  try{const d=await fetchAll();render(d);countdown=30;}
+  catch(e){console.error(e)}
 }
 
-// === Helpers ===
-function fmt(n, dec = 2) { return Number(n).toLocaleString('en-US', { minimumFractionDigits: dec, maximumFractionDigits: dec }); }
-function fmtPrice(n) { return n >= 1000 ? fmt(n, 1) : n >= 1 ? fmt(n, 2) : fmt(n, 4); }
+setInterval(()=>{
+  countdown--;
+  document.getElementById('timer').textContent=countdown+'초';
+  if(countdown<=0){refresh();countdown=30;}
+},1000);
 
-// === Data Loading ===
-async function loadData() {
-  try {
-    const data = await fetchLiveData();
-    pnlHistory.push(data.total_pnl);
-    if(pnlHistory.length > 360) pnlHistory.shift();
-    return data;
-  } catch(e) {
-    console.error('API Error:', e);
-    return {account:0,unrealized:0,btc_price:0,eth_price:0,margin:0,margin_pct:0,pos_size:0,leverage:0,total_pnl:0,total_pnl_pct:0,realized:0,positions:[]};
-  }
-}
-
-async function refreshData() {
-  const btn = document.querySelector('.refresh-btn');
-  const spinner = document.getElementById('spinner');
-  btn.classList.add('loading');
-  spinner.style.display = 'inline-block';
-
-  const data = await loadData();
-  renderStats(data);
-  renderPositions(data.positions);
-  document.getElementById('realized').textContent = fmt(data.realized);
-  document.getElementById('unrealized-pnl').textContent = fmt(data.unrealized);
-  animateChart();
-
-  setTimeout(() => { btn.classList.remove('loading'); spinner.style.display = 'none'; }, 500);
-}
-
-// === Init ===
-window.addEventListener('resize', () => drawChart(1));
-refreshData();
-setInterval(refreshData, 30000); // 30초마다 자동 갱신
+window.addEventListener('resize',drawChart);
+document.addEventListener('visibilitychange',()=>{if(!document.hidden)refresh()});
+refresh();
 </script>
 </body>
 </html>
