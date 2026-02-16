@@ -1,0 +1,12 @@
+bot/alfred_ws_v5.py
+bot/alfred_v3.py
+bot/alfred_ws_v4.py
+bot/config.json
+bot/state_*.json
+bot/trades_*.json
+bot/logs/
+bot/*.pyc
+bot/__pycache__/
+*.env
+node_modules/
+.env
