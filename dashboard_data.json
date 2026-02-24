@@ -1,24 +1,24 @@
 {
   "account": {
-    "equity": 1.078752,
-    "margin_used": 0.544884,
-    "spot_usdc": 319.132367
+    "equity": 1.083512,
+    "margin_used": 0.545122,
+    "spot_usdc": 319.137127
   },
-  "total_balance": 320.211119,
+  "total_balance": 320.220639,
   "positions": [
     {
       "coin": "BTC",
       "size": 0.00017,
       "entry": 64180.0,
-      "pnl": -0.01292,
+      "pnl": -0.00816,
       "leverage": 20.0
     }
   ],
   "prices": {
-    "SOL": 77.6365,
-    "ETH": 1841.75,
-    "HYPE": 25.9655,
-    "BTC": 64094.5
+    "SOL": 77.6165,
+    "ETH": 1844.35,
+    "HYPE": 25.8725,
+    "BTC": 64131.5
   },
   "bot": {
     "version": "v6.0",
@@ -33,34 +33,34 @@
     "next_macro": "NFP 2026-03-06",
     "signals": {
       "SOL": {
-        "price": 77.9015,
-        "wr": -79.25791335947203,
-        "rsi": 32.252140499119875,
-        "ema200": 96.91788590105612,
-        "trend": "BEAR",
+        "price": 77.6295,
+        "wr": null,
+        "rsi": null,
+        "ema200": null,
+        "trend": "N/A",
         "signal": "WAIT",
-        "reason": "W%R=-79 | OBV\u2193 | RSI=32"
+        "reason": "SOL: \ub370\uc774\ud130 \ubd80\uc871"
       },
       "ETH": {
-        "price": 1845.55,
-        "wr": -80.83192804946593,
-        "rsi": 32.72225031747797,
-        "ema200": 2279.4355613125645,
-        "trend": "BEAR",
+        "price": 1841.55,
+        "wr": null,
+        "rsi": null,
+        "ema200": null,
+        "trend": "N/A",
         "signal": "WAIT",
-        "reason": "W%R=-81 | OBV\u2193 | RSI=33"
+        "reason": "ETH: \ub370\uc774\ud130 \ubd80\uc871"
       },
       "HYPE": {
-        "price": 26.07,
-        "wr": -89.16608916608922,
-        "rsi": 26.438192238519193,
-        "ema200": 29.29665396328929,
-        "trend": "BEAR",
+        "price": 25.9645,
+        "wr": null,
+        "rsi": null,
+        "ema200": null,
+        "trend": "N/A",
         "signal": "WAIT",
-        "reason": "W%R=-89 | OBV\u2193 | RSI=26"
+        "reason": "HYPE: \ub370\uc774\ud130 \ubd80\uc871"
       }
     }
   },
   "recent_trades": [],
-  "updated": "2026-02-24T02:45:00.698521+00:00"
+  "updated": "2026-02-24T02:50:00.612388+00:00"
 }
