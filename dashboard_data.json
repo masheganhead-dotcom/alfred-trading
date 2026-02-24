@@ -1,24 +1,24 @@
 {
   "account": {
-    "equity": 1.005082,
-    "margin_used": 0.541203,
-    "spot_usdc": 319.058697
+    "equity": 1.001172,
+    "margin_used": 0.541008,
+    "spot_usdc": 319.054787
   },
-  "total_balance": 320.063779,
+  "total_balance": 320.055959,
   "positions": [
     {
       "coin": "BTC",
       "size": 0.00017,
       "entry": 64180.0,
-      "pnl": -0.08653,
+      "pnl": -0.09044,
       "leverage": 20.0
     }
   ],
   "prices": {
-    "SOL": 76.7595,
-    "ETH": 1829.55,
-    "HYPE": 26.3505,
-    "BTC": 63669.5
+    "SOL": 76.791,
+    "ETH": 1829.15,
+    "HYPE": 26.3035,
+    "BTC": 63648.5
   },
   "bot": {
     "version": "v6.0",
@@ -33,34 +33,34 @@
     "next_macro": "NFP 2026-03-06",
     "signals": {
       "SOL": {
-        "price": 77.6295,
-        "wr": null,
-        "rsi": null,
-        "ema200": null,
-        "trend": "N/A",
+        "price": 76.8535,
+        "wr": -89.13646361289081,
+        "rsi": 29.63842989643848,
+        "ema200": 96.90760729409094,
+        "trend": "BEAR",
         "signal": "WAIT",
-        "reason": "SOL: \ub370\uc774\ud130 \ubd80\uc871"
+        "reason": "W%R=-89 | OBV\u2193 | RSI=30"
       },
       "ETH": {
-        "price": 1841.55,
-        "wr": null,
-        "rsi": null,
-        "ema200": null,
-        "trend": "N/A",
+        "price": 1831.15,
+        "wr": -89.03878583473862,
+        "rsi": 30.98245079139295,
+        "ema200": 2279.2902876807234,
+        "trend": "BEAR",
         "signal": "WAIT",
-        "reason": "ETH: \ub370\uc774\ud130 \ubd80\uc871"
+        "reason": "W%R=-89 | OBV\u2193 | RSI=31"
       },
       "HYPE": {
-        "price": 25.9645,
-        "wr": null,
-        "rsi": null,
-        "ema200": null,
-        "trend": "N/A",
+        "price": 26.3375,
+        "wr": -83.11029072450393,
+        "rsi": 27.77713819592057,
+        "ema200": 29.299221127468396,
+        "trend": "BEAR",
         "signal": "WAIT",
-        "reason": "HYPE: \ub370\uc774\ud130 \ubd80\uc871"
+        "reason": "W%R=-83 | OBV\u2193 | RSI=28"
       }
     }
   },
   "recent_trades": [],
-  "updated": "2026-02-24T03:40:00.535956+00:00"
+  "updated": "2026-02-24T03:45:01.274686+00:00"
 }
