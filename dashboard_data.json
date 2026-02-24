@@ -7,10 +7,10 @@
   "total_balance": 0.0,
   "positions": [],
   "prices": {
-    "SOL": 77.6095,
-    "ETH": 1841.65,
-    "HYPE": 26.204,
-    "BTC": 64108.5
+    "SOL": 77.6715,
+    "ETH": 1846.5,
+    "HYPE": 26.0965,
+    "BTC": 64304.5
   },
   "bot": {
     "version": "v6.0",
@@ -25,34 +25,34 @@
     "next_macro": "NFP 2026-03-06",
     "signals": {
       "SOL": {
-        "price": 78.3245,
-        "wr": -86.56667034300207,
-        "rsi": 34.61169254491453,
-        "ema200": 96.9222540602601,
-        "trend": "BEAR",
+        "price": 77.6695,
+        "wr": null,
+        "rsi": null,
+        "ema200": null,
+        "trend": "N/A",
         "signal": "WAIT",
-        "reason": "W%R=-87 | OBV\u2193 | RSI=35"
+        "reason": "SOL: \ub370\uc774\ud130 \ubd80\uc871"
       },
       "ETH": {
-        "price": 1866.35,
-        "wr": -80.37933289731852,
-        "rsi": 36.79737523852388,
-        "ema200": 2279.6435215115694,
-        "trend": "BEAR",
+        "price": 1846.35,
+        "wr": null,
+        "rsi": null,
+        "ema200": null,
+        "trend": "N/A",
         "signal": "WAIT",
-        "reason": "W%R=-80 | OBV\u2193 | RSI=37"
+        "reason": "ETH: \ub370\uc774\ud130 \ubd80\uc871"
       },
       "HYPE": {
-        "price": 26.4735,
-        "wr": -79.97227997227996,
-        "rsi": 29.48940711027828,
-        "ema200": 29.300614162294266,
-        "trend": "BEAR",
+        "price": 26.1375,
+        "wr": null,
+        "rsi": null,
+        "ema200": null,
+        "trend": "N/A",
         "signal": "WAIT",
-        "reason": "W%R=-80 | OBV\u2193 | RSI=29"
+        "reason": "HYPE: \ub370\uc774\ud130 \ubd80\uc871"
       }
     }
   },
   "recent_trades": [],
-  "updated": "2026-02-24T01:40:00.522479+00:00"
+  "updated": "2026-02-24T01:45:01.088022+00:00"
 }
