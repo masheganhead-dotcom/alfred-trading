@@ -7,10 +7,10 @@
   "total_balance": 320.15,
   "positions": [],
   "prices": {
-    "SOL": 78.1545,
-    "ETH": 1862.95,
-    "HYPE": 26.423,
-    "BTC": 64867.5
+    "SOL": 78.126,
+    "ETH": 1861.35,
+    "HYPE": 26.413,
+    "BTC": 64807.5
   },
   "bot": {
     "version": "v6.0",
@@ -23,8 +23,36 @@
     "max_weekly": 6,
     "fear_greed": 8,
     "next_macro": "NFP 2026-03-06",
-    "signals": {}
+    "signals": {
+      "SOL": {
+        "price": 78.1545,
+        "wr": -88.37542737399359,
+        "rsi": 33.74970472519756,
+        "ema200": 96.92062221946408,
+        "trend": "BEAR",
+        "signal": "WAIT",
+        "reason": "W%R=-88 | OBV\u2193 | RSI=34"
+      },
+      "ETH": {
+        "price": 1862.85,
+        "wr": -82.73381294964024,
+        "rsi": 35.91375765000001,
+        "ema200": 2279.6077006160467,
+        "trend": "BEAR",
+        "signal": "WAIT",
+        "reason": "W%R=-83 | OBV\u2193 | RSI=36"
+      },
+      "HYPE": {
+        "price": 26.4235,
+        "wr": -81.21968121968125,
+        "rsi": 28.746371368826118,
+        "ema200": 29.30007684886143,
+        "trend": "BEAR",
+        "signal": "WAIT",
+        "reason": "W%R=-81 | OBV\u2193 | RSI=29"
+      }
+    }
   },
   "recent_trades": [],
-  "updated": "2026-02-24T00:25:01.295880+00:00"
+  "updated": "2026-02-24T00:26:15.031839+00:00"
 }
