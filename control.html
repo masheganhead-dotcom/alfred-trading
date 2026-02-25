@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no,viewport-fit=cover">
+<title>Alfred Control</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#0a0a0f;--card:#12121a;--card2:#1a1a28;--green:#00e676;--red:#ff5252;--yellow:#ffd740;--blue:#448aff;--text:#e8e8ee;--dim:#6b6b80;--border:#1e1e2e}
+body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;-webkit-tap-highlight-color:transparent;padding-bottom:env(safe-area-inset-bottom)}
+.mono{font-family:'SF Mono',Menlo,monospace;font-size:13px}
+
+/* Header */
+.hdr{display:flex;align-items:center;justify-content:space-between;padding:14px 16px;position:sticky;top:0;background:rgba(10,10,15,.95);backdrop-filter:blur(12px);z-index:100;border-bottom:1px solid var(--border)}
+.hdr-left{display:flex;align-items:center;gap:8px}
+.hdr-title{font-size:17px;font-weight:700}
+.status-dot{width:8px;height:8px;border-radius:50%;display:inline-block;margin-left:6px}
+.status-dot.on{background:var(--green);box-shadow:0 0 8px var(--green)}
+.status-dot.off{background:var(--red);box-shadow:0 0 8px var(--red)}
+.hdr-link{font-size:13px;color:var(--blue);text-decoration:none;font-weight:600}
+
+.container{max-width:480px;margin:0 auto;padding:12px}
+
+/* Status Card */
+.status-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:16px;margin-bottom:12px}
+.status-row{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid var(--border)}
+.status-row:last-child{border:none}
+.status-label{font-size:13px;color:var(--dim)}
+.status-value{font-size:14px;font-weight:600}
+
+/* Control Buttons */
+.controls{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px}
+.btn{border:none;border-radius:12px;padding:16px;font-size:15px;font-weight:700;cursor:pointer;transition:all .15s;display:flex;flex-direction:column;align-items:center;gap:6px;-webkit-tap-highlight-color:transparent}
+.btn:active{transform:scale(.96);opacity:.8}
+.btn-icon{font-size:28px}
+.btn-label{font-size:13px}
+.btn-start{background:rgba(0,230,118,.15);color:var(--green);border:1px solid rgba(0,230,118,.3)}
+.btn-stop{background:rgba(255,82,82,.15);color:var(--red);border:1px solid rgba(255,82,82,.3)}
+.btn-restart{background:rgba(255,215,64,.15);color:var(--yellow);border:1px solid rgba(255,215,64,.3)}
+.btn-update{background:rgba(68,138,255,.15);color:var(--blue);border:1px solid rgba(68,138,255,.3)}
+.btn-full{grid-column:1/-1}
+.btn:disabled{opacity:.4;pointer-events:none}
+
+/* Section */
+.section{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:16px;margin-bottom:12px}
+.section-title{font-size:14px;font-weight:600;margin-bottom:12px;display:flex;align-items:center;gap:6px}
+
+/* Quick Stats */
+.qstats{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:12px}
+.qstat{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:12px;text-align:center}
+.qstat-val{font-size:18px;font-weight:700}
+.qstat-label{font-size:11px;color:var(--dim);margin-top:2px}
+
+/* Log Viewer */
+.log-wrap{background:#08080d;border:1px solid var(--border);border-radius:10px;padding:12px;max-height:300px;overflow-y:auto;-webkit-overflow-scrolling:touch}
+.log-text{font-family:'SF Mono',Menlo,monospace;font-size:11px;color:#8a8a9a;white-space:pre-wrap;word-break:break-all;line-height:1.5}
+.log-controls{display:flex;gap:8px;margin-top:8px}
+.log-btn{background:var(--card2);border:1px solid var(--border);color:var(--dim);padding:6px 12px;border-radius:8px;font-size:12px;cursor:pointer;flex:1;text-align:center}
+.log-btn:active{background:var(--border)}
+
+/* System Info */
+.sys-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.sys-item{background:var(--card2);border-radius:10px;padding:12px}
+.sys-item-label{font-size:11px;color:var(--dim);margin-bottom:4px}
+.sys-item-value{font-size:13px;font-weight:600}
+
+/* Positions (mini) */
+.mini-pos{background:var(--card2);border-radius:10px;padding:10px 12px;margin-bottom:6px;display:flex;justify-content:space-between;align-items:center}
+.mini-pos:last-child{margin-bottom:0}
+.mini-pos-coin{font-weight:700;font-size:14px}
+.mini-pos-side{font-size:11px;padding:2px 6px;border-radius:4px;font-weight:600;margin-left:6px}
+.mini-pos-side.long{background:rgba(0,230,118,.15);color:var(--green)}
+.mini-pos-side.short{background:rgba(255,82,82,.15);color:var(--red)}
+.mini-pos-pnl{font-weight:700;font-size:14px}
+
+/* Toast */
+.toast{position:fixed;bottom:env(safe-area-inset-bottom,20px);left:50%;transform:translateX(-50%) translateY(100px);background:#222;color:#fff;padding:12px 24px;border-radius:12px;font-size:14px;font-weight:600;transition:transform .3s;z-index:200;text-align:center;min-width:200px}
+.toast.show{transform:translateX(-50%) translateY(-20px)}
+.toast.ok{border:1px solid var(--green)}
+.toast.err{border:1px solid var(--red)}
+
+/* Tailscale Info */
+.ts-badge{display:inline-flex;align-items:center;gap:6px;background:rgba(68,138,255,.1);border:1px solid rgba(68,138,255,.3);border-radius:8px;padding:4px 10px;font-size:12px;color:var(--blue);font-weight:600}
+
+.footer{text-align:center;padding:20px;font-size:11px;color:var(--dim);opacity:.5}
+
+/* Pull to refresh hint */
+.pull-hint{text-align:center;padding:8px;font-size:11px;color:var(--dim);opacity:.6}
+</style>
+</head>
+<body>
+
+<div class="hdr">
+  <div class="hdr-left">
+    <span style="font-size:18px">🦇</span>
+    <span class="hdr-title">Alfred Control</span>
+    <span class="status-dot off" id="bot-dot"></span>
+  </div>
+  <a href="/dashboard" class="hdr-link">대시보드 ></a>
+</div>
+
+<div class="container">
+
+  <div class="pull-hint">아래로 당겨서 새로고침</div>
+
+  <!-- Quick Stats -->
+  <div class="qstats">
+    <div class="qstat">
+      <div class="qstat-val" id="q-balance">--</div>
+      <div class="qstat-label">잔고</div>
+    </div>
+    <div class="qstat">
+      <div class="qstat-val" id="q-pnl">--</div>
+      <div class="qstat-label">손익</div>
+    </div>
+    <div class="qstat">
+      <div class="qstat-val" id="q-positions">0</div>
+      <div class="qstat-label">포지션</div>
+    </div>
+  </div>
+
+  <!-- Bot Status -->
+  <div class="status-card">
+    <div class="status-row">
+      <span class="status-label">봇 상태</span>
+      <span class="status-value" id="st-running">확인 중...</span>
+    </div>
+    <div class="status-row">
+      <span class="status-label">전략</span>
+      <span class="status-value mono" id="st-strategy">--</span>
+    </div>
+    <div class="status-row">
+      <span class="status-label">오늘 거래</span>
+      <span class="status-value" id="st-trades">--</span>
+    </div>
+    <div class="status-row">
+      <span class="status-label">공포/탐욕</span>
+      <span class="status-value" id="st-fear">--</span>
+    </div>
+    <div class="status-row">
+      <span class="status-label">마지막 업데이트</span>
+      <span class="status-value mono" id="st-updated">--</span>
+    </div>
+  </div>
+
+  <!-- Controls -->
+  <div class="controls">
+    <button class="btn btn-start" id="btn-start" onclick="botAction('start')">
+      <span class="btn-icon">▶</span>
+      <span class="btn-label">봇 시작</span>
+    </button>
+    <button class="btn btn-stop" id="btn-stop" onclick="botAction('stop')">
+      <span class="btn-icon">■</span>
+      <span class="btn-label">봇 중지</span>
+    </button>
+    <button class="btn btn-restart" id="btn-restart" onclick="botAction('restart')">
+      <span class="btn-icon">↻</span>
+      <span class="btn-label">재시작</span>
+    </button>
+    <button class="btn btn-update" id="btn-update" onclick="updateDashboard()">
+      <span class="btn-icon">⟳</span>
+      <span class="btn-label">데이터 갱신</span>
+    </button>
+  </div>
+
+  <!-- Positions -->
+  <div class="section" id="pos-section" style="display:none">
+    <div class="section-title">📈 현재 포지션</div>
+    <div id="pos-list"></div>
+  </div>
+
+  <!-- System Info -->
+  <div class="section">
+    <div class="section-title">🖥 시스템 정보</div>
+    <div class="sys-grid">
+      <div class="sys-item">
+        <div class="sys-item-label">Tailscale IP</div>
+        <div class="sys-item-value" id="sys-tsip">--</div>
+      </div>
+      <div class="sys-item">
+        <div class="sys-item-label">호스트</div>
+        <div class="sys-item-value" id="sys-hostname">--</div>
+      </div>
+      <div class="sys-item">
+        <div class="sys-item-label">디스크</div>
+        <div class="sys-item-value" id="sys-disk">--</div>
+      </div>
+      <div class="sys-item">
+        <div class="sys-item-label">업타임</div>
+        <div class="sys-item-value" id="sys-uptime">--</div>
+      </div>
+    </div>
+    <div style="margin-top:10px">
+      <div class="sys-item-label" style="font-size:11px;color:var(--dim);margin-bottom:4px">Tailscale 연결</div>
+      <span class="ts-badge" id="ts-badge">확인 중...</span>
+    </div>
+  </div>
+
+  <!-- Logs -->
+  <div class="section">
+    <div class="section-title">📋 봇 로그</div>
+    <div class="log-wrap" id="log-wrap">
+      <div class="log-text" id="log-text">로그 로딩 중...</div>
+    </div>
+    <div class="log-controls">
+      <button class="log-btn" onclick="loadLogs(30)">최근 30줄</button>
+      <button class="log-btn" onclick="loadLogs(100)">최근 100줄</button>
+      <button class="log-btn" onclick="scrollLogBottom()">맨 아래로</button>
+    </div>
+  </div>
+
+  <div class="footer">Alfred Trading Control · Tailscale VPN · v1.0</div>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<script>
+const API_BASE = '';
+
+// ─── API 호출 ─────────────────────────────────
+async function api(path, method='GET') {
+  try {
+    const r = await fetch(API_BASE + path, {method, headers:{'Content-Type':'application/json'}});
+    return await r.json();
+  } catch(e) {
+    console.error('API Error:', e);
+    return null;
+  }
+}
+
+// ─── 토스트 알림 ──────────────────────────────
+function toast(msg, ok=true) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = 'toast show ' + (ok ? 'ok' : 'err');
+  setTimeout(() => t.className = 'toast', 2500);
+}
+
+// ─── 봇 상태 로드 ─────────────────────────────
+async function loadStatus() {
+  const [status, dashboard] = await Promise.all([
+    api('/api/status'),
+    api('/api/dashboard')
+  ]);
+
+  if (status) {
+    const dot = document.getElementById('bot-dot');
+    dot.className = 'status-dot ' + (status.running ? 'on' : 'off');
+
+    const stEl = document.getElementById('st-running');
+    stEl.textContent = status.running ? '실행 중 ✓' : '중지됨';
+    stEl.style.color = status.running ? 'var(--green)' : 'var(--red)';
+
+    const state = status.state || {};
+    document.getElementById('st-strategy').textContent = state.strategy || 'N/A';
+    document.getElementById('st-trades').textContent =
+      `${state.daily_trades || 0}/${state.max_daily || 2}회 (주간 ${state.weekly_trades || 0}/${state.max_weekly || 6})`;
+    document.getElementById('st-fear').textContent = state.fear_greed != null ? state.fear_greed : '--';
+
+    // 버튼 상태 업데이트
+    document.getElementById('btn-start').disabled = status.running;
+    document.getElementById('btn-stop').disabled = !status.running;
+  }
+
+  if (dashboard) {
+    const balance = dashboard.total_balance || 0;
+    const pnl = (dashboard.bot?.total_pnl || 0) +
+      (dashboard.positions || []).reduce((s,p) => s + (p.pnl||0), 0);
+
+    document.getElementById('q-balance').textContent = '$' + balance.toFixed(2);
+
+    const pnlEl = document.getElementById('q-pnl');
+    pnlEl.textContent = (pnl >= 0 ? '+' : '') + '$' + pnl.toFixed(2);
+    pnlEl.style.color = pnl >= 0 ? 'var(--green)' : 'var(--red)';
+
+    document.getElementById('q-positions').textContent = (dashboard.positions || []).length;
+    document.getElementById('st-updated').textContent = dashboard.updated
+      ? new Date(dashboard.updated).toLocaleString('ko-KR', {timeZone:'Asia/Seoul'})
+      : '--';
+
+    // 포지션 표시
+    const positions = dashboard.positions || [];
+    const posSection = document.getElementById('pos-section');
+    const posList = document.getElementById('pos-list');
+    if (positions.length > 0) {
+      posSection.style.display = 'block';
+      posList.innerHTML = positions.map(p => {
+        const side = p.size > 0 ? 'LONG' : 'SHORT';
+        const cls = side === 'LONG' ? 'long' : 'short';
+        const pnlCls = p.pnl >= 0 ? 'color:var(--green)' : 'color:var(--red)';
+        return `<div class="mini-pos">
+          <div>
+            <span class="mini-pos-coin">${p.coin}</span>
+            <span class="mini-pos-side ${cls}">${side} ${p.leverage}x</span>
+          </div>
+          <span class="mini-pos-pnl mono" style="${pnlCls}">${p.pnl >= 0 ? '+' : ''}$${Math.abs(p.pnl).toFixed(4)}</span>
+        </div>`;
+      }).join('');
+    } else {
+      posSection.style.display = 'none';
+    }
+  }
+}
+
+// ─── 시스템 정보 로드 ─────────────────────────
+async function loadSystem() {
+  const sys = await api('/api/system');
+  if (!sys) return;
+
+  const ts = sys.tailscale || {};
+  document.getElementById('sys-tsip').textContent = ts.ip || 'N/A';
+  document.getElementById('sys-hostname').textContent = ts.hostname || 'N/A';
+
+  const tsBadge = document.getElementById('ts-badge');
+  if (ts.online) {
+    tsBadge.textContent = '✓ 연결됨 · ' + ts.ip;
+    tsBadge.style.borderColor = 'rgba(0,230,118,.3)';
+    tsBadge.style.background = 'rgba(0,230,118,.1)';
+    tsBadge.style.color = 'var(--green)';
+  } else {
+    tsBadge.textContent = '✗ 연결 안됨';
+    tsBadge.style.borderColor = 'rgba(255,82,82,.3)';
+    tsBadge.style.background = 'rgba(255,82,82,.1)';
+    tsBadge.style.color = 'var(--red)';
+  }
+
+  const disk = sys.disk || {};
+  document.getElementById('sys-disk').textContent = disk.pct ? `${disk.used}/${disk.total} (${disk.pct})` : 'N/A';
+
+  // uptime에서 핵심 부분만 추출
+  const uptime = sys.uptime || 'N/A';
+  const upMatch = uptime.match(/up\s+(.+?),\s+\d+\s+user/);
+  document.getElementById('sys-uptime').textContent = upMatch ? upMatch[1] : uptime.substring(0, 30);
+}
+
+// ─── 로그 로드 ────────────────────────────────
+async function loadLogs(lines=50) {
+  const data = await api(`/api/logs?lines=${lines}`);
+  if (data) {
+    document.getElementById('log-text').textContent = data.logs || '로그 없음';
+    scrollLogBottom();
+  }
+}
+
+function scrollLogBottom() {
+  const wrap = document.getElementById('log-wrap');
+  wrap.scrollTop = wrap.scrollHeight;
+}
+
+// ─── 봇 제어 ──────────────────────────────────
+async function botAction(action) {
+  const btn = document.getElementById(`btn-${action}`);
+  btn.disabled = true;
+
+  const labels = {start: '시작 중...', stop: '중지 중...', restart: '재시작 중...'};
+  const origLabel = btn.querySelector('.btn-label').textContent;
+  btn.querySelector('.btn-label').textContent = labels[action] || '처리 중...';
+
+  const result = await api(`/api/bot/${action}`, 'POST');
+  if (result) {
+    toast(result.msg, result.ok);
+  } else {
+    toast('서버 연결 실패', false);
+  }
+
+  btn.querySelector('.btn-label').textContent = origLabel;
+
+  // 상태 갱신
+  setTimeout(loadStatus, 1000);
+}
+
+async function updateDashboard() {
+  const btn = document.getElementById('btn-update');
+  btn.disabled = true;
+  btn.querySelector('.btn-label').textContent = '갱신 중...';
+
+  const result = await api('/api/update', 'POST');
+  if (result) {
+    toast(result.msg, result.ok);
+  } else {
+    toast('서버 연결 실패', false);
+  }
+
+  btn.querySelector('.btn-label').textContent = '데이터 갱신';
+  btn.disabled = false;
+
+  setTimeout(loadStatus, 1000);
+}
+
+// ─── 초기 로드 ────────────────────────────────
+async function init() {
+  await Promise.all([loadStatus(), loadSystem(), loadLogs()]);
+}
+
+init();
+
+// 60초마다 자동 갱신
+setInterval(loadStatus, 60000);
+setInterval(loadLogs, 120000);
+
+// 화면 활성화시 갱신
+document.addEventListener('visibilitychange', () => {
+  if (!document.hidden) init();
+});
+</script>
+</body>
+</html>

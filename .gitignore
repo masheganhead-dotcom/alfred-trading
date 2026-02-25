@@ -10,3 +10,4 @@ bot/__pycache__/
 *.env
 node_modules/
 .env
+control_server.log
