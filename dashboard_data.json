@@ -1,24 +1,24 @@
 {
   "account": {
-    "equity": 1.730774,
-    "margin_used": 0.577711,
-    "spot_usdc": 319.784389
+    "equity": 1.719806,
+    "margin_used": 0.577167,
+    "spot_usdc": 319.773421
   },
-  "total_balance": 321.515163,
+  "total_balance": 321.493227,
   "positions": [
     {
       "coin": "BTC",
       "size": 0.00017,
       "entry": 64180.0,
-      "pnl": 0.64362,
+      "pnl": 0.63274,
       "leverage": 20.0
     }
   ],
   "prices": {
-    "SOL": 87.5605,
-    "ETH": 2032.75,
-    "HYPE": 29.488,
-    "BTC": 67974.5
+    "SOL": 87.544,
+    "ETH": 2032.85,
+    "HYPE": 29.5025,
+    "BTC": 67909.5
   },
   "bot": {
     "version": "v6.0",
@@ -29,38 +29,38 @@
     "max_daily": 2,
     "weekly_trades": 0,
     "max_weekly": 6,
-    "fear_greed": 11,
+    "fear_greed": 13,
     "next_macro": "NFP 2026-03-06",
     "signals": {
       "SOL": {
-        "price": 87.2575,
-        "wr": -28.7091852303936,
-        "rsi": 64.60288626215288,
-        "ema200": 93.55047978023052,
+        "price": 87.5415,
+        "wr": -40.205063061428156,
+        "rsi": 62.91546414495937,
+        "ema200": 88.31951034081229,
         "trend": "BEAR",
         "signal": "WAIT",
-        "reason": "W%R=-29 | OBV\u2191 | RSI=65"
+        "reason": "W%R=-40 | OBV\u2193 | RSI=63"
       },
       "ETH": {
-        "price": 2053.75,
-        "wr": -26.009227220299834,
-        "rsi": 68.23551095891628,
-        "ema200": 2201.9966256242806,
+        "price": 2032.65,
+        "wr": -41.64794007490639,
+        "rsi": 61.17432174476305,
+        "ema200": 2076.9489271790844,
         "trend": "BEAR",
         "signal": "WAIT",
-        "reason": "W%R=-26 | OBV\u2191 | RSI=68"
+        "reason": "W%R=-42 | OBV\u2193 | RSI=61"
       },
       "HYPE": {
-        "price": 28.1945,
-        "wr": -26.76672920575364,
-        "rsi": 53.31207075198568,
-        "ema200": 28.5946129601597,
-        "trend": "BEAR",
+        "price": 29.4915,
+        "wr": -5.86440677966096,
+        "rsi": 63.8136883214937,
+        "ema200": 29.372058295879732,
+        "trend": "BULL",
         "signal": "WAIT",
-        "reason": "W%R=-27 | OBV\u2191 | RSI=53"
+        "reason": "W%R=-6 | OBV\u2191 | RSI=64"
       }
     }
   },
   "recent_trades": [],
-  "updated": "2026-02-27T08:55:00.484159+00:00"
+  "updated": "2026-02-27T09:00:01.728274+00:00"
 }
