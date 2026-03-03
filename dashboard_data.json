@@ -1,16 +1,16 @@
 {
   "account": {
-    "equity": 74.978865,
+    "equity": 74.331929,
     "margin_used": 0.0,
     "spot_usdc": 280.091339
   },
-  "total_balance": 355.070204,
+  "total_balance": 354.423268,
   "positions": [],
   "prices": {
-    "SOL": 83.9175,
-    "ETH": 1954.55,
-    "HYPE": 31.624,
-    "BTC": 67135.5
+    "SOL": 84.0005,
+    "ETH": 1955.15,
+    "HYPE": 31.6885,
+    "BTC": 67193.5
   },
   "bot": {
     "version": "v6.0",
@@ -54,5 +54,5 @@
     }
   },
   "recent_trades": [],
-  "updated": "2026-03-03T13:05:00.837537+00:00"
+  "updated": "2026-03-03T13:10:00.568835+00:00"
 }
