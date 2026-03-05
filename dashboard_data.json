@@ -1,24 +1,24 @@
 {
   "account": {
-    "equity": 155.928729,
-    "margin_used": 129.77356,
-    "spot_usdc": 275.408586
+    "equity": 156.197369,
+    "margin_used": 129.84072,
+    "spot_usdc": 275.677226
   },
-  "total_balance": 431.337315,
+  "total_balance": 431.874595,
   "positions": [
     {
       "coin": "SOL",
       "size": 5.84,
       "entry": 88.8113,
-      "pnl": 0.436055,
+      "pnl": 0.704695,
       "leverage": 4.0
     }
   ],
   "prices": {
-    "SOL": 88.8925,
-    "ETH": 2078.25,
-    "HYPE": 30.5045,
-    "BTC": 71039.5
+    "SOL": 88.9175,
+    "ETH": 2078.15,
+    "HYPE": 30.4135,
+    "BTC": 71036.5
   },
   "bot": {
     "version": "v6.0",
@@ -62,5 +62,5 @@
     }
   },
   "recent_trades": [],
-  "updated": "2026-03-05T20:05:00.552038+00:00"
+  "updated": "2026-03-05T20:10:00.445826+00:00"
 }
