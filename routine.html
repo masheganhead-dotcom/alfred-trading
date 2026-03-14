@@ -1,0 +1,770 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no,viewport-fit=cover">
+<title>Alfred Quest - Daily Routine</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#0a0a0f;--card:#12121a;--card2:#1a1a28;
+  --text:#e8e8ee;--dim:#6b6b80;--border:#1e1e2e;
+  --gold:#ffd740;--purple:#b388ff;--blue:#448aff;
+  --green:#00e676;--red:#ff5252;--cyan:#18ffff;
+  --xp-from:#7c4dff;--xp-to:#448aff;
+  --quest-done:rgba(0,230,118,.08);
+}
+body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;-webkit-tap-highlight-color:transparent;padding-bottom:env(safe-area-inset-bottom)}
+.mono{font-family:'SF Mono',Menlo,monospace}
+
+/* Header */
+.hdr{display:flex;align-items:center;justify-content:space-between;padding:14px 16px;position:sticky;top:0;background:rgba(10,10,15,.95);backdrop-filter:blur(12px);z-index:100;border-bottom:1px solid var(--border)}
+.hdr-left{display:flex;align-items:center;gap:8px}
+.hdr-logo{font-size:18px}
+.hdr-title{font-size:17px;font-weight:700;letter-spacing:-.3px}
+.hdr-right{display:flex;align-items:center;gap:10px}
+.hdr-level{font-size:13px;font-weight:700;color:var(--gold);background:rgba(255,215,64,.12);padding:3px 10px;border-radius:6px}
+.hdr-link{font-size:12px;color:var(--dim);text-decoration:none;border:1px solid var(--border);padding:5px 10px;border-radius:6px}
+.hdr-link:active{background:var(--card2)}
+
+.container{max-width:480px;margin:0 auto;padding:12px}
+
+/* XP Bar */
+.xp-section{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:14px;margin-bottom:12px}
+.xp-info{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+.xp-label{font-size:12px;color:var(--dim)}
+.xp-value{font-size:13px;font-weight:700;color:var(--gold)}
+.xp-bar-bg{height:18px;background:var(--card2);border-radius:9px;overflow:hidden;position:relative;border:1px solid var(--border)}
+.xp-bar-fill{height:100%;background:linear-gradient(90deg,var(--xp-from),var(--xp-to));border-radius:9px;transition:width .6s cubic-bezier(.4,0,.2,1);position:relative;min-width:4px}
+.xp-bar-fill::after{content:'';position:absolute;top:2px;left:4px;right:4px;height:4px;background:rgba(255,255,255,.25);border-radius:2px}
+.xp-bar-text{position:absolute;right:8px;top:50%;transform:translateY(-50%);font-size:10px;font-weight:700;color:var(--text);text-shadow:0 1px 2px rgba(0,0,0,.5)}
+.streak-row{display:flex;align-items:center;gap:6px;margin-top:8px}
+.streak-badge{font-size:12px;font-weight:700;color:var(--gold);display:flex;align-items:center;gap:4px}
+.streak-best{font-size:11px;color:var(--dim)}
+.daily-progress{font-size:11px;color:var(--dim);margin-left:auto}
+
+/* Stats Radar */
+.stats-section{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:16px;margin-bottom:12px}
+.section-title{font-size:14px;font-weight:600;display:flex;align-items:center;gap:6px;margin-bottom:12px}
+.radar-wrap{display:flex;align-items:center;gap:16px}
+.radar-canvas{width:160px;height:160px;flex-shrink:0}
+.stats-list{flex:1;display:flex;flex-direction:column;gap:6px}
+.stat-row{display:flex;align-items:center;gap:8px;font-size:12px}
+.stat-icon{width:20px;text-align:center}
+.stat-name{color:var(--dim);width:40px}
+.stat-val{font-weight:700;min-width:24px;text-align:right}
+.stat-bar-bg{flex:1;height:6px;background:var(--card2);border-radius:3px;overflow:hidden}
+.stat-bar-fill{height:100%;border-radius:3px;transition:width .4s ease}
+
+/* Quest Sections */
+.quest-section{background:var(--card);border:1px solid var(--border);border-radius:14px;margin-bottom:12px;overflow:hidden}
+.quest-header{display:flex;align-items:center;justify-content:space-between;padding:14px 16px;cursor:pointer;user-select:none}
+.quest-header:active{background:var(--card2)}
+.quest-cat{font-size:14px;font-weight:600;display:flex;align-items:center;gap:6px}
+.quest-progress{font-size:12px;color:var(--dim);display:flex;align-items:center;gap:6px}
+.quest-prog-bar{width:40px;height:4px;background:var(--card2);border-radius:2px;overflow:hidden}
+.quest-prog-fill{height:100%;background:var(--green);border-radius:2px;transition:width .3s}
+.quest-chevron{font-size:10px;color:var(--dim);transition:transform .2s}
+.quest-chevron.open{transform:rotate(180deg)}
+.quest-list{padding:0 12px 12px}
+.quest-list.collapsed{display:none}
+.quest-item{display:flex;align-items:center;gap:12px;padding:10px 8px;border-radius:10px;cursor:pointer;transition:background .15s;position:relative;user-select:none}
+.quest-item:active{background:rgba(255,255,255,.03)}
+.quest-item.done{background:var(--quest-done)}
+.quest-check{width:22px;height:22px;border:2px solid var(--border);border-radius:6px;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .2s;font-size:12px}
+.quest-item.done .quest-check{background:var(--green);border-color:var(--green);color:#000}
+.quest-info{flex:1;min-width:0}
+.quest-name{font-size:13px;font-weight:600;display:flex;align-items:center;gap:6px}
+.quest-item.done .quest-name{text-decoration:line-through;opacity:.6}
+.quest-desc{font-size:11px;color:var(--dim);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.quest-xp{font-size:12px;font-weight:700;color:var(--purple);white-space:nowrap}
+.quest-item.done .quest-xp{color:var(--green)}
+.quest-stats-gain{font-size:10px;color:var(--dim);margin-top:1px}
+.quest-rest{text-align:center;padding:14px;font-size:13px;color:var(--dim)}
+.quest-rest-icon{font-size:24px;margin-bottom:4px}
+
+/* Skills */
+.skills-section{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:16px;margin-bottom:12px}
+.skills-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.skill-card{background:var(--card2);border:1px solid var(--border);border-radius:10px;padding:12px;text-align:center;position:relative;transition:all .2s}
+.skill-card.locked{opacity:.45}
+.skill-card.unlocked{border-color:var(--purple);box-shadow:0 0 12px rgba(179,136,255,.15)}
+.skill-icon{font-size:24px;margin-bottom:4px}
+.skill-name{font-size:12px;font-weight:700;margin-bottom:2px}
+.skill-desc{font-size:10px;color:var(--dim);margin-bottom:4px}
+.skill-req{font-size:10px;color:var(--gold)}
+.skill-lvl{font-size:10px;color:var(--purple);font-weight:700}
+.skill-lock{position:absolute;top:6px;right:6px;font-size:12px}
+
+/* Level Up Overlay */
+.levelup-overlay{position:fixed;top:0;left:0;right:0;bottom:0;z-index:999;display:flex;align-items:center;justify-content:center;pointer-events:none;opacity:0;transition:opacity .3s}
+.levelup-overlay.show{opacity:1;pointer-events:auto}
+.levelup-flash{position:absolute;top:0;left:0;right:0;bottom:0;background:radial-gradient(circle,rgba(255,215,64,.3),transparent 70%);animation:flashPulse 1.5s ease-out}
+@keyframes flashPulse{0%{opacity:1;transform:scale(.8)}50%{opacity:.8}100%{opacity:0;transform:scale(1.5)}}
+.levelup-content{text-align:center;animation:levelUpBounce .6s cubic-bezier(.68,-.55,.27,1.55)}
+@keyframes levelUpBounce{0%{transform:scale(0);opacity:0}100%{transform:scale(1);opacity:1}}
+.levelup-text{font-size:48px;font-weight:900;background:linear-gradient(135deg,var(--gold),#fff,var(--gold));-webkit-background-clip:text;-webkit-text-fill-color:transparent;text-shadow:none;filter:drop-shadow(0 0 20px rgba(255,215,64,.5))}
+.levelup-sub{font-size:16px;color:var(--gold);margin-top:8px;font-weight:600}
+.levelup-sp{font-size:14px;color:var(--purple);margin-top:4px}
+
+/* XP Popup */
+.xp-popup{position:fixed;z-index:200;font-size:16px;font-weight:900;color:var(--gold);pointer-events:none;animation:xpFloat 1.2s ease-out forwards;text-shadow:0 0 8px rgba(255,215,64,.5)}
+@keyframes xpFloat{0%{opacity:1;transform:translateY(0) scale(1)}60%{opacity:1;transform:translateY(-40px) scale(1.1)}100%{opacity:0;transform:translateY(-60px) scale(.8)}}
+
+/* Stat Popup */
+.stat-popup{position:fixed;z-index:200;font-size:13px;font-weight:700;pointer-events:none;animation:statFloat 1s ease-out forwards}
+@keyframes statFloat{0%{opacity:1;transform:translateY(0)}100%{opacity:0;transform:translateY(-30px)}}
+
+.footer{text-align:center;padding:16px;font-size:11px;color:var(--dim);opacity:.5}
+
+/* Date display */
+.date-display{text-align:center;padding:8px;margin-bottom:12px}
+.date-text{font-size:13px;color:var(--dim)}
+.date-day{font-size:11px;color:var(--gold);margin-top:2px}
+</style>
+</head>
+<body>
+
+<div class="hdr">
+  <div class="hdr-left">
+    <span class="hdr-logo">⚔️</span>
+    <span class="hdr-title">Alfred Quest</span>
+  </div>
+  <div class="hdr-right">
+    <span class="hdr-level" id="hdr-level">Lv.1</span>
+    <a href="index.html" class="hdr-link">📊 Trading</a>
+  </div>
+</div>
+
+<div class="container">
+  <!-- Date -->
+  <div class="date-display">
+    <div class="date-text" id="date-text"></div>
+    <div class="date-day" id="date-day"></div>
+  </div>
+
+  <!-- XP Bar -->
+  <div class="xp-section">
+    <div class="xp-info">
+      <span class="xp-label">EXP</span>
+      <span class="xp-value mono" id="xp-display">0 / 100</span>
+    </div>
+    <div class="xp-bar-bg">
+      <div class="xp-bar-fill" id="xp-bar" style="width:0%"></div>
+      <span class="xp-bar-text mono" id="xp-pct">0%</span>
+    </div>
+    <div class="streak-row">
+      <span class="streak-badge" id="streak-badge">🔥 0일 연속</span>
+      <span class="streak-best" id="streak-best">최고: 0일</span>
+      <span class="daily-progress" id="daily-progress">오늘: 0/15</span>
+    </div>
+  </div>
+
+  <!-- Stats -->
+  <div class="stats-section">
+    <div class="section-title">📊 능력치</div>
+    <div class="radar-wrap">
+      <canvas class="radar-canvas" id="radar" width="320" height="320"></canvas>
+      <div class="stats-list" id="stats-list"></div>
+    </div>
+  </div>
+
+  <!-- Quest Sections -->
+  <div id="quests-container"></div>
+
+  <!-- Skills -->
+  <div class="skills-section">
+    <div class="section-title">🔮 스킬</div>
+    <div class="skills-grid" id="skills-grid"></div>
+  </div>
+
+  <div class="footer">Alfred Quest v1.0 · RPG Daily Routine Tracker</div>
+</div>
+
+<!-- Level Up Overlay -->
+<div class="levelup-overlay" id="levelup-overlay">
+  <div class="levelup-flash"></div>
+  <div class="levelup-content">
+    <div class="levelup-text" id="levelup-text">LEVEL UP!</div>
+    <div class="levelup-sub" id="levelup-sub">Lv.2 달성!</div>
+    <div class="levelup-sp">🌟 스킬포인트 +1</div>
+  </div>
+</div>
+
+<script>
+// ===== GAME CONFIG =====
+const QUEST_CATEGORIES = {
+  morning: {name:'아침 퀘스트',icon:'☀️',subtitle:'출근 전'},
+  studio: {name:'작업실 퀘스트',icon:'🎵',subtitle:'살폿스튜디오'},
+  exercise: {name:'운동 퀘스트',icon:'🏋️',subtitle:'스포짐'},
+  evening_work: {name:'야간 작업 퀘스트',icon:'🌙',subtitle:'운동 후 작업실'},
+  home: {name:'귀환 퀘스트',icon:'🏠',subtitle:'귀가 후'}
+};
+
+const STAT_CONFIG = {
+  str:{name:'체력',icon:'💪',color:'#ff5252'},
+  int:{name:'지력',icon:'📚',color:'#448aff'},
+  cre:{name:'창의력',icon:'🎵',color:'#b388ff'},
+  grt:{name:'근성',icon:'🔥',color:'#ffd740'},
+  chr:{name:'매력',icon:'✨',color:'#18ffff'},
+  biz:{name:'사업력',icon:'💼',color:'#69f0ae'}
+};
+
+const DAYS_KO = ['일','월','화','수','목','금','토'];
+
+// ===== STATE =====
+let gameData = null;
+let todayKey = '';
+let todayCompleted = [];
+
+// ===== INIT =====
+function init() {
+  const now = new Date();
+  todayKey = now.toISOString().split('T')[0];
+
+  document.getElementById('date-text').textContent =
+    `${now.getFullYear()}년 ${now.getMonth()+1}월 ${now.getDate()}일`;
+  document.getElementById('date-day').textContent =
+    `${DAYS_KO[now.getDay()]}요일 · Day ${getDayOfYear(now)}`;
+
+  loadData();
+  checkDayReset();
+  renderAll();
+}
+
+function getDayOfYear(d) {
+  const s = new Date(d.getFullYear(),0,0);
+  return Math.floor((d-s)/86400000);
+}
+
+// ===== DATA =====
+function loadData() {
+  const saved = localStorage.getItem('alfred_quest_data');
+  if (saved) {
+    gameData = JSON.parse(saved);
+  } else {
+    // Default data
+    gameData = getDefaultData();
+  }
+  todayCompleted = (gameData.history[todayKey] && gameData.history[todayKey].completed) || [];
+}
+
+function saveData() {
+  if (!gameData.history[todayKey]) {
+    gameData.history[todayKey] = {completed:[], xp_earned:0, stats_gained:{}};
+  }
+  gameData.history[todayKey].completed = todayCompleted;
+  localStorage.setItem('alfred_quest_data', JSON.stringify(gameData));
+}
+
+function getDefaultData() {
+  return {
+    character:{name:"Alfred",level:1,xp:0,total_xp:0,skill_points:0,
+      stats:{str:1,int:1,cre:1,grt:1,chr:1,biz:1},
+      skills:[
+        {id:"deep_focus",name:"딥 포커스",desc:"집중 작업 XP +20%",icon:"🎯",level:0,max_level:5,unlocked:false,req:{int:10}},
+        {id:"inspiration",name:"영감 폭발",desc:"창작 퀘스트 XP 2배",icon:"💡",level:0,max_level:5,unlocked:false,req:{cre:15}},
+        {id:"iron_routine",name:"철벽 루틴",desc:"스트릭 보너스 +25%",icon:"🛡️",level:0,max_level:5,unlocked:false,req:{grt:20}},
+        {id:"multitask",name:"멀티태스킹",desc:"복합 퀘스트 XP +30%",icon:"🔄",level:0,max_level:5,unlocked:false,req:{int:10,biz:10}},
+        {id:"max_stamina",name:"체력 만렙",desc:"운동 퀘스트 XP 1.5배",icon:"⚡",level:0,max_level:5,unlocked:false,req:{str:25}},
+        {id:"star_power",name:"스타 파워",desc:"매력 관련 XP +30%",icon:"⭐",level:0,max_level:5,unlocked:false,req:{chr:15}},
+        {id:"ceo_mind",name:"CEO 마인드",desc:"사업 퀘스트 XP 2배",icon:"👑",level:0,max_level:5,unlocked:false,req:{biz:20}}
+      ],
+      streak:0,best_streak:0,last_completed_date:null
+    },
+    quests:{
+      morning:[
+        {id:"m1",name:"미드 공부",desc:"Ginnie&Georgia - 발음/악센트/단어/표현 정리",xp:30,stats:{int:2},icon:"🎬"},
+        {id:"m2",name:"복근 운동",desc:"아침 코어 운동",xp:20,stats:{str:2},icon:"🏋️"},
+        {id:"m3",name:"독서",desc:"정해진 페이지 분량 읽기",xp:25,stats:{int:2},icon:"📖"},
+        {id:"m4",name:"AI 작업 할당",desc:"코딩 작업 분배 & 자동화 세팅",xp:20,stats:{biz:1,int:1},icon:"🤖"}
+      ],
+      studio:[
+        {id:"s1",name:"작업 계획 수립",desc:"데드라인 확인, 최소 2곡 계획",xp:15,stats:{biz:1},icon:"📋"},
+        {id:"s2",name:"레퍼런스 수집",desc:"오늘 만들 곡의 레퍼런스",xp:20,stats:{cre:2},icon:"🔍"},
+        {id:"s3",name:"메인 스케치",desc:"테마 스케치 → 1절 완성 (디테일 집착 X)",xp:40,stats:{cre:3},icon:"🎹"},
+        {id:"s4",name:"릴스 제작",desc:"아티스트 릴스 1개 기획+제작",xp:25,stats:{chr:2},icon:"📱"},
+        {id:"s5",name:"레슨 사업 기획",desc:"레슨 확장 및 기획",xp:20,stats:{biz:2},icon:"💼"}
+      ],
+      exercise:[
+        {id:"e1",name:"웨이트 1시간",desc:"스포짐 웨이트 트레이닝",xp:35,stats:{str:3},icon:"🏋️"},
+        {id:"e2",name:"유산소 30분",desc:"러닝/사이클 등",xp:25,stats:{str:2},icon:"🏃"}
+      ],
+      evening_work:[
+        {id:"w1",name:"목표 설정",desc:"어떤 곡, 어떤 파트, 어떤 방향인지 명확히",xp:15,stats:{biz:1},icon:"🎯"},
+        {id:"w2",name:"창작 실험",desc:"새로운 느낌 탐구, 실험과 도전",xp:35,stats:{cre:3,grt:1},icon:"🧪"}
+      ],
+      home:[
+        {id:"h1",name:"샤워 & 정리",desc:"옷 갈아입고 바로 샤워",xp:10,stats:{grt:1},icon:"🚿"},
+        {id:"h2",name:"AI 공부",desc:"AI 관련 학습",xp:25,stats:{int:2},icon:"🧠"}
+      ]
+    },
+    history:{},
+    settings:{exercise_rest_days:[5,6]}
+  };
+}
+
+function checkDayReset() {
+  const last = gameData.character.last_completed_date;
+  if (last && last !== todayKey) {
+    // Check streak
+    const lastDate = new Date(last);
+    const today = new Date(todayKey);
+    const diff = Math.floor((today - lastDate) / 86400000);
+    if (diff > 1) {
+      gameData.character.streak = 0; // streak broken
+    }
+  }
+  // Ensure today's history exists
+  if (!gameData.history[todayKey]) {
+    gameData.history[todayKey] = {completed:[], xp_earned:0, stats_gained:{}};
+  }
+  todayCompleted = gameData.history[todayKey].completed || [];
+}
+
+// ===== XP & LEVELING =====
+function xpForLevel(level) {
+  return level * 100;
+}
+
+function getStreakMultiplier() {
+  const s = gameData.character.streak;
+  if (s >= 30) return 2.0;
+  if (s >= 7) return 1.5;
+  if (s >= 3) return 1.2;
+  return 1.0;
+}
+
+function addXP(baseXP, questId, e) {
+  const multiplier = getStreakMultiplier();
+  const xp = Math.round(baseXP * multiplier);
+  gameData.character.xp += xp;
+  gameData.character.total_xp += xp;
+  gameData.history[todayKey].xp_earned = (gameData.history[todayKey].xp_earned||0) + xp;
+
+  // Show XP popup
+  showXPPopup(xp, e);
+
+  // Check level up
+  let leveledUp = false;
+  while (gameData.character.xp >= xpForLevel(gameData.character.level)) {
+    gameData.character.xp -= xpForLevel(gameData.character.level);
+    gameData.character.level++;
+    gameData.character.skill_points++;
+    leveledUp = true;
+  }
+  if (leveledUp) {
+    showLevelUp();
+  }
+
+  return xp;
+}
+
+function removeXP(baseXP) {
+  const multiplier = getStreakMultiplier();
+  const xp = Math.round(baseXP * multiplier);
+  gameData.character.xp -= xp;
+  gameData.character.total_xp -= xp;
+  gameData.history[todayKey].xp_earned = (gameData.history[todayKey].xp_earned||0) - xp;
+
+  // Handle negative XP (level down prevention - just clamp to 0)
+  if (gameData.character.xp < 0) gameData.character.xp = 0;
+  if (gameData.character.total_xp < 0) gameData.character.total_xp = 0;
+}
+
+function addStats(stats, e) {
+  const rect = e ? e.currentTarget.getBoundingClientRect() : null;
+  let delay = 0;
+  for (const [key, val] of Object.entries(stats)) {
+    gameData.character.stats[key] = (gameData.character.stats[key]||0) + val;
+    // Track in history
+    if (!gameData.history[todayKey].stats_gained) gameData.history[todayKey].stats_gained = {};
+    gameData.history[todayKey].stats_gained[key] = (gameData.history[todayKey].stats_gained[key]||0) + val;
+
+    // Show stat popup
+    if (rect) {
+      setTimeout(() => {
+        showStatPopup(key, val, rect);
+      }, delay);
+      delay += 200;
+    }
+  }
+  checkSkillUnlocks();
+}
+
+function removeStats(stats) {
+  for (const [key, val] of Object.entries(stats)) {
+    gameData.character.stats[key] = Math.max(1, (gameData.character.stats[key]||1) - val);
+    if (gameData.history[todayKey].stats_gained) {
+      gameData.history[todayKey].stats_gained[key] = (gameData.history[todayKey].stats_gained[key]||0) - val;
+    }
+  }
+}
+
+// ===== QUEST TOGGLE =====
+function toggleQuest(questId, e) {
+  const quest = findQuest(questId);
+  if (!quest) return;
+
+  const idx = todayCompleted.indexOf(questId);
+  if (idx === -1) {
+    // Complete quest
+    todayCompleted.push(questId);
+    addXP(quest.xp, questId, e);
+    addStats(quest.stats, e);
+  } else {
+    // Uncomplete quest
+    todayCompleted.splice(idx, 1);
+    removeXP(quest.xp);
+    removeStats(quest.stats);
+  }
+
+  // Update streak
+  updateStreak();
+  saveData();
+  renderAll();
+}
+
+function findQuest(id) {
+  for (const cat of Object.values(gameData.quests)) {
+    const q = cat.find(q => q.id === id);
+    if (q) return q;
+  }
+  return null;
+}
+
+function updateStreak() {
+  const totalQuests = getTotalQuestCount();
+  const completedCount = todayCompleted.length;
+
+  if (completedCount >= totalQuests && totalQuests > 0) {
+    // All quests done - check if this extends streak
+    if (gameData.character.last_completed_date !== todayKey) {
+      const last = gameData.character.last_completed_date;
+      if (last) {
+        const diff = Math.floor((new Date(todayKey) - new Date(last)) / 86400000);
+        if (diff === 1) {
+          gameData.character.streak++;
+        } else if (diff > 1) {
+          gameData.character.streak = 1;
+        }
+      } else {
+        gameData.character.streak = 1;
+      }
+      gameData.character.last_completed_date = todayKey;
+      if (gameData.character.streak > gameData.character.best_streak) {
+        gameData.character.best_streak = gameData.character.streak;
+      }
+      // Add grit stat for streak
+      gameData.character.stats.grt = (gameData.character.stats.grt||1) + 1;
+    }
+  }
+}
+
+function getTotalQuestCount() {
+  const dayOfWeek = new Date(todayKey).getDay();
+  const isRestDay = gameData.settings.exercise_rest_days.includes(dayOfWeek);
+  let total = 0;
+  for (const [cat, quests] of Object.entries(gameData.quests)) {
+    if (cat === 'exercise' && isRestDay) continue;
+    total += quests.length;
+  }
+  return total;
+}
+
+// ===== SKILL SYSTEM =====
+function checkSkillUnlocks() {
+  const stats = gameData.character.stats;
+  for (const skill of gameData.character.skills) {
+    if (!skill.unlocked) {
+      const meetsReq = Object.entries(skill.req).every(([stat, val]) => (stats[stat]||0) >= val);
+      if (meetsReq) {
+        skill.unlocked = true;
+        skill.level = 1;
+      }
+    }
+  }
+}
+
+// ===== RENDER =====
+function renderAll() {
+  renderHeader();
+  renderXP();
+  renderStats();
+  renderRadar();
+  renderQuests();
+  renderSkills();
+}
+
+function renderHeader() {
+  document.getElementById('hdr-level').textContent = `Lv.${gameData.character.level}`;
+}
+
+function renderXP() {
+  const c = gameData.character;
+  const needed = xpForLevel(c.level);
+  const pct = Math.min(100, (c.xp / needed) * 100);
+
+  document.getElementById('xp-display').textContent = `${c.xp} / ${needed}`;
+  document.getElementById('xp-bar').style.width = pct + '%';
+  document.getElementById('xp-pct').textContent = Math.floor(pct) + '%';
+
+  const streakMult = getStreakMultiplier();
+  const streakText = c.streak > 0 ? `🔥 ${c.streak}일 연속` + (streakMult > 1 ? ` (x${streakMult})` : '') : '🔥 0일 연속';
+  document.getElementById('streak-badge').textContent = streakText;
+  document.getElementById('streak-best').textContent = `최고: ${c.best_streak}일`;
+
+  const total = getTotalQuestCount();
+  document.getElementById('daily-progress').textContent = `오늘: ${todayCompleted.length}/${total}`;
+}
+
+function renderStats() {
+  const list = document.getElementById('stats-list');
+  const stats = gameData.character.stats;
+  const maxStat = Math.max(...Object.values(stats), 10);
+
+  list.innerHTML = Object.entries(STAT_CONFIG).map(([key, cfg]) => {
+    const val = stats[key] || 1;
+    const pct = (val / maxStat) * 100;
+    return `<div class="stat-row">
+      <span class="stat-icon">${cfg.icon}</span>
+      <span class="stat-name">${cfg.name}</span>
+      <span class="stat-val mono" style="color:${cfg.color}">${val}</span>
+      <div class="stat-bar-bg"><div class="stat-bar-fill" style="width:${pct}%;background:${cfg.color}"></div></div>
+    </div>`;
+  }).join('');
+}
+
+function renderRadar() {
+  const canvas = document.getElementById('radar');
+  const dpr = window.devicePixelRatio || 1;
+  canvas.width = 320 * dpr;
+  canvas.height = 320 * dpr;
+  canvas.style.width = '160px';
+  canvas.style.height = '160px';
+  const ctx = canvas.getContext('2d');
+  ctx.scale(dpr, dpr);
+
+  const W = 160, H = 160;
+  const cx = W/2, cy = H/2, R = 60;
+  const stats = gameData.character.stats;
+  const keys = Object.keys(STAT_CONFIG);
+  const n = keys.length;
+  const maxStat = Math.max(...Object.values(stats), 10);
+
+  ctx.clearRect(0, 0, W, H);
+
+  // Draw grid
+  for (let ring = 1; ring <= 4; ring++) {
+    const r = R * ring / 4;
+    ctx.beginPath();
+    for (let i = 0; i <= n; i++) {
+      const angle = (Math.PI * 2 * i / n) - Math.PI/2;
+      const x = cx + r * Math.cos(angle);
+      const y = cy + r * Math.sin(angle);
+      i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+    }
+    ctx.closePath();
+    ctx.strokeStyle = 'rgba(255,255,255,.08)';
+    ctx.lineWidth = 1;
+    ctx.stroke();
+  }
+
+  // Draw axes
+  for (let i = 0; i < n; i++) {
+    const angle = (Math.PI * 2 * i / n) - Math.PI/2;
+    ctx.beginPath();
+    ctx.moveTo(cx, cy);
+    ctx.lineTo(cx + R * Math.cos(angle), cy + R * Math.sin(angle));
+    ctx.strokeStyle = 'rgba(255,255,255,.06)';
+    ctx.stroke();
+  }
+
+  // Draw data
+  ctx.beginPath();
+  for (let i = 0; i <= n; i++) {
+    const idx = i % n;
+    const angle = (Math.PI * 2 * idx / n) - Math.PI/2;
+    const val = (stats[keys[idx]] || 1) / maxStat;
+    const r = R * Math.max(val, 0.08);
+    const x = cx + r * Math.cos(angle);
+    const y = cy + r * Math.sin(angle);
+    i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+  }
+  ctx.closePath();
+  ctx.fillStyle = 'rgba(179,136,255,.2)';
+  ctx.fill();
+  ctx.strokeStyle = '#b388ff';
+  ctx.lineWidth = 2;
+  ctx.stroke();
+
+  // Draw dots & labels
+  for (let i = 0; i < n; i++) {
+    const angle = (Math.PI * 2 * i / n) - Math.PI/2;
+    const val = (stats[keys[i]] || 1) / maxStat;
+    const r = R * Math.max(val, 0.08);
+    const x = cx + r * Math.cos(angle);
+    const y = cy + r * Math.sin(angle);
+
+    ctx.beginPath();
+    ctx.arc(x, y, 3, 0, Math.PI * 2);
+    ctx.fillStyle = STAT_CONFIG[keys[i]].color;
+    ctx.fill();
+
+    // Label
+    const lx = cx + (R + 16) * Math.cos(angle);
+    const ly = cy + (R + 16) * Math.sin(angle);
+    ctx.font = '10px -apple-system,sans-serif';
+    ctx.fillStyle = '#888';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(STAT_CONFIG[keys[i]].icon, lx, ly);
+  }
+}
+
+function renderQuests() {
+  const container = document.getElementById('quests-container');
+  const dayOfWeek = new Date(todayKey).getDay();
+  const isRestDay = gameData.settings.exercise_rest_days.includes(dayOfWeek);
+
+  container.innerHTML = Object.entries(QUEST_CATEGORIES).map(([catKey, catCfg]) => {
+    const quests = gameData.quests[catKey] || [];
+    const isExerciseRest = catKey === 'exercise' && isRestDay;
+    const completed = quests.filter(q => todayCompleted.includes(q.id)).length;
+    const total = quests.length;
+    const progPct = total > 0 ? (completed / total * 100) : 0;
+    const allDone = completed === total && total > 0;
+
+    let questsHTML;
+    if (isExerciseRest) {
+      questsHTML = `<div class="quest-rest">
+        <div class="quest-rest-icon">😴</div>
+        오늘은 휴무일! 푹 쉬세요
+      </div>`;
+    } else {
+      questsHTML = quests.map(q => {
+        const done = todayCompleted.includes(q.id);
+        const statsText = Object.entries(q.stats).map(([k,v]) => `${STAT_CONFIG[k]?.icon||''}+${v}`).join(' ');
+        return `<div class="quest-item ${done?'done':''}" onclick="toggleQuest('${q.id}',event)">
+          <div class="quest-check">${done?'✓':''}</div>
+          <div class="quest-info">
+            <div class="quest-name">${q.icon} ${q.name}</div>
+            <div class="quest-desc">${q.desc}</div>
+            <div class="quest-stats-gain">${statsText}</div>
+          </div>
+          <div class="quest-xp mono">${done?'✓':''} +${q.xp}</div>
+        </div>`;
+      }).join('');
+    }
+
+    return `<div class="quest-section">
+      <div class="quest-header" onclick="toggleSection(this)">
+        <div class="quest-cat">${catCfg.icon} ${catCfg.name} <span style="font-size:11px;color:var(--dim);font-weight:400">${catCfg.subtitle}</span></div>
+        <div class="quest-progress">
+          ${isExerciseRest ? '<span style="color:var(--dim)">휴무</span>' :
+            `<span>${completed}/${total}</span>
+            <div class="quest-prog-bar"><div class="quest-prog-fill" style="width:${progPct}%;${allDone?'background:var(--gold)':''}"></div></div>`}
+          <span class="quest-chevron ${isExerciseRest?'':'open'}">▼</span>
+        </div>
+      </div>
+      <div class="quest-list ${isExerciseRest?'collapsed':''}">${questsHTML}</div>
+    </div>`;
+  }).join('');
+}
+
+function renderSkills() {
+  const grid = document.getElementById('skills-grid');
+  const skills = gameData.character.skills;
+  const stats = gameData.character.stats;
+
+  grid.innerHTML = skills.map(skill => {
+    const meetsReq = Object.entries(skill.req).every(([s, v]) => (stats[s]||0) >= v);
+    const isUnlocked = skill.unlocked || meetsReq;
+    const reqText = Object.entries(skill.req).map(([s,v]) => {
+      const met = (stats[s]||0) >= v;
+      return `<span style="color:${met?'var(--green)':'var(--red)'}"> ${STAT_CONFIG[s]?.name||s} ${stats[s]||0}/${v}</span>`;
+    }).join(' ');
+
+    return `<div class="skill-card ${isUnlocked?'unlocked':'locked'}">
+      ${!isUnlocked?'<span class="skill-lock">🔒</span>':''}
+      <div class="skill-icon">${skill.icon}</div>
+      <div class="skill-name">${skill.name}</div>
+      <div class="skill-desc">${skill.desc}</div>
+      ${isUnlocked ?
+        `<div class="skill-lvl">Lv.${skill.level}/${skill.max_level}</div>` :
+        `<div class="skill-req">${reqText}</div>`}
+    </div>`;
+  }).join('');
+}
+
+// ===== UI INTERACTIONS =====
+function toggleSection(header) {
+  const list = header.nextElementSibling;
+  const chevron = header.querySelector('.quest-chevron');
+  list.classList.toggle('collapsed');
+  chevron.classList.toggle('open');
+}
+
+// ===== EFFECTS =====
+function showXPPopup(xp, e) {
+  if (!e) return;
+  const rect = e.currentTarget ? e.currentTarget.getBoundingClientRect() : {top:200,right:100};
+  const popup = document.createElement('div');
+  popup.className = 'xp-popup';
+  popup.textContent = `+${xp} XP`;
+  popup.style.top = rect.top + 'px';
+  popup.style.left = (rect.right - 60) + 'px';
+  document.body.appendChild(popup);
+  setTimeout(() => popup.remove(), 1200);
+}
+
+function showStatPopup(statKey, val, rect) {
+  const cfg = STAT_CONFIG[statKey];
+  if (!cfg) return;
+  const popup = document.createElement('div');
+  popup.className = 'stat-popup';
+  popup.textContent = `${cfg.icon} +${val}`;
+  popup.style.color = cfg.color;
+  popup.style.top = (rect.top + 10) + 'px';
+  popup.style.left = (rect.right - 40 - Math.random()*30) + 'px';
+  document.body.appendChild(popup);
+  setTimeout(() => popup.remove(), 1000);
+}
+
+function showLevelUp() {
+  const overlay = document.getElementById('levelup-overlay');
+  document.getElementById('levelup-sub').textContent = `Lv.${gameData.character.level} 달성!`;
+  overlay.classList.add('show');
+  setTimeout(() => overlay.classList.remove('show'), 2500);
+}
+
+// ===== BONUS: All quests done today check =====
+function checkAllClear() {
+  const total = getTotalQuestCount();
+  if (todayCompleted.length >= total && total > 0) {
+    // All clear bonus
+    const bonusXP = 50;
+    gameData.character.xp += bonusXP;
+    gameData.character.total_xp += bonusXP;
+  }
+}
+
+// ===== START =====
+init();
+
+// Auto-save every 30s
+setInterval(saveData, 30000);
+
+// Check for day change
+setInterval(() => {
+  const newKey = new Date().toISOString().split('T')[0];
+  if (newKey !== todayKey) {
+    todayKey = newKey;
+    checkDayReset();
+    todayCompleted = [];
+    renderAll();
+  }
+}, 60000);
+</script>
+</body>
+</html>

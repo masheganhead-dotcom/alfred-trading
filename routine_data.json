@@ -1,0 +1,60 @@
+{
+  "character": {
+    "name": "Alfred",
+    "level": 1,
+    "xp": 0,
+    "total_xp": 0,
+    "skill_points": 0,
+    "stats": {
+      "str": 1,
+      "int": 1,
+      "cre": 1,
+      "grt": 1,
+      "chr": 1,
+      "biz": 1
+    },
+    "skills": [
+      {"id": "deep_focus", "name": "딥 포커스", "desc": "집중 작업 XP +20%", "icon": "🎯", "level": 0, "max_level": 5, "unlocked": false, "req": {"int": 10}},
+      {"id": "inspiration", "name": "영감 폭발", "desc": "창작 퀘스트 XP 2배", "icon": "💡", "level": 0, "max_level": 5, "unlocked": false, "req": {"cre": 15}},
+      {"id": "iron_routine", "name": "철벽 루틴", "desc": "스트릭 보너스 +25%", "icon": "🛡️", "level": 0, "max_level": 5, "unlocked": false, "req": {"grt": 20}},
+      {"id": "multitask", "name": "멀티태스킹", "desc": "복합 퀘스트 XP +30%", "icon": "🔄", "level": 0, "max_level": 5, "unlocked": false, "req": {"int": 10, "biz": 10}},
+      {"id": "max_stamina", "name": "체력 만렙", "desc": "운동 퀘스트 XP 1.5배", "icon": "⚡", "level": 0, "max_level": 5, "unlocked": false, "req": {"str": 25}},
+      {"id": "star_power", "name": "스타 파워", "desc": "매력 관련 XP +30%", "icon": "⭐", "level": 0, "max_level": 5, "unlocked": false, "req": {"chr": 15}},
+      {"id": "ceo_mind", "name": "CEO 마인드", "desc": "사업 퀘스트 XP 2배", "icon": "👑", "level": 0, "max_level": 5, "unlocked": false, "req": {"biz": 20}}
+    ],
+    "streak": 0,
+    "best_streak": 0,
+    "last_completed_date": null
+  },
+  "quests": {
+    "morning": [
+      {"id": "m1", "name": "미드 공부", "desc": "Ginnie&Georgia - 발음/악센트/단어/표현 정리", "xp": 30, "stats": {"int": 2}, "icon": "🎬"},
+      {"id": "m2", "name": "복근 운동", "desc": "아침 코어 운동", "xp": 20, "stats": {"str": 2}, "icon": "🏋️"},
+      {"id": "m3", "name": "독서", "desc": "정해진 페이지 분량 읽기", "xp": 25, "stats": {"int": 2}, "icon": "📖"},
+      {"id": "m4", "name": "AI 작업 할당", "desc": "코딩 작업 분배 & 자동화 세팅", "xp": 20, "stats": {"biz": 1, "int": 1}, "icon": "🤖"}
+    ],
+    "studio": [
+      {"id": "s1", "name": "작업 계획 수립", "desc": "데드라인 확인, 최소 2곡 계획", "xp": 15, "stats": {"biz": 1}, "icon": "📋"},
+      {"id": "s2", "name": "레퍼런스 수집", "desc": "오늘 만들 곡의 레퍼런스", "xp": 20, "stats": {"cre": 2}, "icon": "🔍"},
+      {"id": "s3", "name": "메인 스케치", "desc": "테마 스케치 → 1절 완성 (디테일 집착 X)", "xp": 40, "stats": {"cre": 3}, "icon": "🎹"},
+      {"id": "s4", "name": "릴스 제작", "desc": "아티스트 릴스 1개 기획+제작", "xp": 25, "stats": {"chr": 2}, "icon": "📱"},
+      {"id": "s5", "name": "레슨 사업 기획", "desc": "레슨 확장 및 기획", "xp": 20, "stats": {"biz": 2}, "icon": "💼"}
+    ],
+    "exercise": [
+      {"id": "e1", "name": "웨이트 1시간", "desc": "스포짐 웨이트 트레이닝", "xp": 35, "stats": {"str": 3}, "icon": "🏋️"},
+      {"id": "e2", "name": "유산소 30분", "desc": "러닝/사이클 등", "xp": 25, "stats": {"str": 2}, "icon": "🏃"}
+    ],
+    "evening_work": [
+      {"id": "w1", "name": "목표 설정", "desc": "어떤 곡, 어떤 파트, 어떤 방향인지 명확히", "xp": 15, "stats": {"biz": 1}, "icon": "🎯"},
+      {"id": "w2", "name": "창작 실험", "desc": "새로운 느낌 탐구, 실험과 도전", "xp": 35, "stats": {"cre": 3, "grt": 1}, "icon": "🧪"}
+    ],
+    "home": [
+      {"id": "h1", "name": "샤워 & 정리", "desc": "옷 갈아입고 바로 샤워", "xp": 10, "stats": {"grt": 1}, "icon": "🚿"},
+      {"id": "h2", "name": "AI 공부", "desc": "AI 관련 학습", "xp": 25, "stats": {"int": 2}, "icon": "🧠"}
+    ]
+  },
+  "history": {},
+  "settings": {
+    "exercise_rest_days": [5, 6]
+  }
+}
