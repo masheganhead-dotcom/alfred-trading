@@ -462,13 +462,19 @@ body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display',sans-serif;ba
       </div>
       <div class="focus-presets">
         <button class="focus-preset active" onclick="setFocusPreset(25,5,'pomodoro',this)">🍅 25/5</button>
-        <button class="focus-preset" onclick="setFocusPreset(50,10,'deep',this)">🧠 50/10</button>
+        <button class="focus-preset" onclick="setFocusPreset(52,17,'mix',this)">🎛️ 52/17</button>
         <button class="focus-preset" onclick="setFocusPreset(90,20,'flow',this)">🔥 90/20</button>
         <button class="focus-preset" onclick="setFocusPreset(0,0,'free',this)">⏱️ 자유</button>
+      </div>
+      <div style="padding:0 16px;margin-bottom:8px">
+        <input id="focus-goal" placeholder="🎯 이번 세션 목표 (예: 드럼 패턴 완성)" style="width:100%;padding:8px;background:var(--card2);border:1px solid var(--border);border-radius:8px;color:var(--text);font-size:11px">
       </div>
       <div class="focus-btns">
         <button class="focus-btn start" id="focus-start-btn" onclick="toggleFocusTimer()">▶ 시작</button>
         <button class="focus-btn stop" onclick="resetFocusTimer()">■ 리셋</button>
+      </div>
+      <div id="ear-fatigue-warning" style="display:none;text-align:center;padding:8px;margin-top:8px;background:rgba(255,82,82,.1);border:1px solid rgba(255,82,82,.3);border-radius:8px;font-size:11px;color:var(--red)">
+        👂 귀 피로 경고: 오늘 집중 시간이 4시간을 넘었습니다. 귀를 쉬게 해주세요!
       </div>
       <div class="focus-stats">
         <div class="focus-stat">
@@ -2073,7 +2079,7 @@ function updateFocusDisplay() {
     ring.setAttribute('stroke-dashoffset', 0);
   }
 
-  const modeNames = {pomodoro:'🍅 포모도로', deep:'🧠 딥 포커스', flow:'🔥 플로우', free:'⏱️ 자유 모드'};
+  const modeNames = {pomodoro:'🍅 포모도로', mix:'🎛️ 믹싱 52/17', flow:'🔥 플로우 90/20', free:'⏱️ 자유 모드'};
   if (modeLabel) modeLabel.textContent = modeNames[focusTimer.mode] || '';
 }
 
@@ -2083,12 +2089,19 @@ function logFocusSession() {
   const mins = focusTimer.mode === 'free'
     ? Math.floor(focusTimer.remaining / 60)
     : focusTimer.workMins;
+  const goalInput = document.getElementById('focus-goal');
+  const goal = goalInput ? goalInput.value.trim() : '';
   gameData.focus[todayKey].push({
     mode: focusTimer.mode,
     minutes: mins,
+    goal: goal,
     time: new Date().toLocaleTimeString('ko-KR', {hour:'2-digit', minute:'2-digit'}),
     timestamp: Date.now()
   });
+  if (goalInput) goalInput.value = '';
+
+  // Check ear fatigue (4+ hours = warning)
+  checkEarFatigue();
 
   // Bonus XP for focus sessions
   const xpBonus = Math.min(Math.round(mins * 0.5), 25);
@@ -2099,6 +2112,22 @@ function logFocusSession() {
 
   saveData();
   renderFocusStats();
+}
+
+function checkEarFatigue() {
+  const sessions = (gameData.focus && gameData.focus[todayKey]) || [];
+  const totalMins = sessions.reduce((sum, s) => sum + s.minutes, 0);
+  const warningEl = document.getElementById('ear-fatigue-warning');
+  if (!warningEl) return;
+  if (totalMins >= 240) {
+    warningEl.style.display = 'block';
+    warningEl.innerHTML = '⚠️ 오늘 총 ' + totalMins + '분 작업! 귀 피로 주의 — 15분 휴식을 권장합니다 🎧';
+  } else if (totalMins >= 180) {
+    warningEl.style.display = 'block';
+    warningEl.innerHTML = '🎧 ' + totalMins + '분 작업 중 — 4시간 넘기지 않도록 주의하세요';
+  } else {
+    warningEl.style.display = 'none';
+  }
 }
 
 function renderFocusStats() {
@@ -2133,17 +2162,18 @@ function renderFocusStats() {
     if (sessions.length === 0) {
       logEl.innerHTML = '<div style="text-align:center;padding:16px;font-size:12px;color:var(--dim)">오늘 포커스 세션이 없습니다. 시작해보세요!</div>';
     } else {
-      const modeIcons = {pomodoro:'🍅', deep:'🧠', flow:'🔥', free:'⏱️'};
+      const modeIcons = {pomodoro:'🍅', mix:'🎛️', flow:'🔥', free:'⏱️', deep:'🧠'};
       logEl.innerHTML = sessions.slice().reverse().map(s =>
         `<div style="display:flex;align-items:center;gap:8px;padding:8px;background:var(--card2);border-radius:8px;margin-bottom:4px;font-size:12px">
           <span>${modeIcons[s.mode] || '🎯'}</span>
           <span style="color:var(--dim);font-family:'SF Mono',monospace;font-size:10px">${s.time}</span>
-          <span style="flex:1">${s.minutes}분 집중</span>
+          <span style="flex:1">${s.minutes}분 집중${s.goal ? ' · ' + escapeHTML(s.goal) : ''}</span>
           <span style="color:var(--purple);font-size:10px">+${Math.min(Math.round(s.minutes * 0.5), 25)} XP</span>
         </div>`
       ).join('');
     }
   }
+  checkEarFatigue();
 }
 
 // ===== WEEKLY REVIEW =====
