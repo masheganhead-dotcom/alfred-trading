@@ -750,7 +750,12 @@ function getDayOfYear(d) {
 function loadData() {
   const saved = localStorage.getItem('alfred_quest_data');
   if (saved) {
-    gameData = JSON.parse(saved);
+    try {
+      gameData = JSON.parse(saved);
+    } catch (e) {
+      console.error('[Data] localStorage corrupted, resetting:', e);
+      gameData = getDefaultData();
+    }
   } else {
     gameData = getDefaultData();
   }
@@ -890,7 +895,11 @@ function removeXP(baseXP) {
   gameData.character.total_xp -= xp;
   gameData.history[todayKey].xp_earned = (gameData.history[todayKey].xp_earned||0) - xp;
 
-  // Handle negative XP (level down prevention - just clamp to 0)
+  // Handle negative XP - level down if needed
+  while (gameData.character.xp < 0 && gameData.character.level > 1) {
+    gameData.character.level--;
+    gameData.character.xp += xpForLevel(gameData.character.level);
+  }
   if (gameData.character.xp < 0) gameData.character.xp = 0;
   if (gameData.character.total_xp < 0) gameData.character.total_xp = 0;
 }
@@ -1271,27 +1280,29 @@ function showLevelUp() {
 function checkAllClear() {
   const total = getTotalQuestCount();
   const banner = document.getElementById('all-clear-banner');
+  const todayHist = gameData.history[todayKey];
+  if (!todayHist) return; // Safety guard
   if (todayCompleted.length >= total && total > 0) {
     // Show banner
     banner.classList.add('show');
     // Give bonus XP only once per day
-    if (!gameData.history[todayKey]._allClearBonus) {
+    if (!todayHist._allClearBonus) {
       const bonusXP = 50;
       gameData.character.xp += bonusXP;
       gameData.character.total_xp += bonusXP;
-      gameData.history[todayKey].xp_earned = (gameData.history[todayKey].xp_earned||0) + bonusXP;
-      gameData.history[todayKey]._allClearBonus = true;
+      todayHist.xp_earned = (todayHist.xp_earned||0) + bonusXP;
+      todayHist._allClearBonus = true;
     }
   } else {
     banner.classList.remove('show');
-    if (gameData.history[todayKey]._allClearBonus) {
+    if (todayHist._allClearBonus) {
       // Undo bonus if quests unchecked
       gameData.character.xp -= 50;
       gameData.character.total_xp -= 50;
       if (gameData.character.xp < 0) gameData.character.xp = 0;
       if (gameData.character.total_xp < 0) gameData.character.total_xp = 0;
-      gameData.history[todayKey].xp_earned = (gameData.history[todayKey].xp_earned||0) - 50;
-      delete gameData.history[todayKey]._allClearBonus;
+      todayHist.xp_earned = (todayHist.xp_earned||0) - 50;
+      delete todayHist._allClearBonus;
     }
   }
 }
@@ -1339,7 +1350,7 @@ function renderSongs() {
       <div class="song-parts">${song.parts.map((p, pi) =>
         `<span class="song-part ${p.done?'done':''} ${p.active?'active':''}" onclick="toggleSongPart(${idx},${pi})">${p.name}</span>`
       ).join('')}</div>
-      ${song.deadline ? `<div class="song-deadline">마감: ${song.deadline}</div>` : ''}
+      ${song.deadline ? `<div class="song-deadline">마감: ${escapeHTML(song.deadline)}</div>` : ''}
       ${song.notes ? `<div style="font-size:11px;color:var(--dim);margin-top:4px">${escapeHTML(song.notes)}</div>` : ''}
     </div>`;
   }).join('');

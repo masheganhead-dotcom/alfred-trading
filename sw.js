@@ -22,6 +22,11 @@ self.addEventListener('activate', e => {
 });
 
 self.addEventListener('fetch', e => {
+  const url = new URL(e.request.url);
+
+  // Only cache same-origin requests (not CORS proxy, Firebase, etc.)
+  if (url.origin !== self.location.origin) return;
+
   // Network first, fallback to cache (for offline support)
   e.respondWith(
     fetch(e.request)
