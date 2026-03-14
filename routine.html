@@ -702,11 +702,12 @@ function initFirebase() {
 
 // ===== GAME CONFIG =====
 const QUEST_CATEGORIES = {
-  morning: {name:'아침 퀘스트',icon:'☀️',subtitle:'출근 전'},
+  morning: {name:'아침 퀘스트',icon:'☀️',subtitle:'기상~출근'},
   studio: {name:'작업실 퀘스트',icon:'🎵',subtitle:'살폿스튜디오'},
+  recovery: {name:'회복 퀘스트',icon:'🧘',subtitle:'오후 리셋'},
   exercise: {name:'운동 퀘스트',icon:'🏋️',subtitle:'스포짐'},
   evening_work: {name:'야간 작업 퀘스트',icon:'🌙',subtitle:'운동 후 작업실'},
-  home: {name:'귀환 퀘스트',icon:'🏠',subtitle:'귀가 후'}
+  home: {name:'귀환 퀘스트',icon:'🏠',subtitle:'셧다운 루틴'}
 };
 
 const STAT_CONFIG = {
@@ -793,10 +794,11 @@ function getDefaultData() {
     },
     quests:{
       morning:[
-        {id:"m1",name:"미드 공부",desc:"Ginnie&Georgia - 발음/악센트/단어/표현 정리",xp:30,stats:{int:2},icon:"🎬",time:"07:00-08:00"},
-        {id:"m2",name:"복근 운동",desc:"아침 코어 운동 (10분)",xp:20,stats:{str:2},icon:"🏋️",time:"08:00-08:15"},
-        {id:"m3",name:"독서",desc:"정해진 페이지 분량 읽기",xp:25,stats:{int:2},icon:"📖",time:"08:15-09:00"},
-        {id:"m4",name:"AI 작업 할당",desc:"코딩 작업 분배 & 자동화 세팅",xp:20,stats:{biz:1,int:1},icon:"🤖",time:"09:00-09:30"}
+        {id:"m0",name:"햇빛 쬐기",desc:"기상 후 1시간 내 10-30분 야외 햇빛 (Huberman 프로토콜)",xp:15,stats:{str:1,grt:1},icon:"☀️",time:"07:00-07:30"},
+        {id:"m1",name:"미드 공부",desc:"Ginnie&Georgia - 발음/악센트/단어/표현 정리",xp:30,stats:{int:2},icon:"🎬",time:"07:30-08:30"},
+        {id:"m2",name:"복근 운동",desc:"아침 코어 운동 (10분)",xp:20,stats:{str:2},icon:"🏋️",time:"08:30-08:45"},
+        {id:"m3",name:"독서",desc:"정해진 페이지 분량 읽기",xp:25,stats:{int:2},icon:"📖",time:"08:45-09:30"},
+        {id:"m4",name:"AI 작업 할당",desc:"코딩 작업 분배 & 자동화 세팅",xp:20,stats:{biz:1,int:1},icon:"🤖",time:"09:30-10:00"}
       ],
       studio:[
         {id:"s1",name:"작업 계획 수립",desc:"데드라인 확인, 최소 2곡 계획",xp:15,stats:{biz:1},icon:"📋",time:"10:00-10:15"},
@@ -804,6 +806,9 @@ function getDefaultData() {
         {id:"s3",name:"메인 스케치",desc:"테마 스케치 → 1절 완성 (디테일 집착 X)",xp:40,stats:{cre:3},icon:"🎹",time:"10:45-12:30"},
         {id:"s4",name:"릴스 제작",desc:"아티스트 릴스 1개 기획+제작",xp:25,stats:{chr:2},icon:"📱",time:"14:00-15:00"},
         {id:"s5",name:"레슨 사업 기획",desc:"레슨 확장 및 기획",xp:20,stats:{biz:2},icon:"💼",time:"15:00-16:00"}
+      ],
+      recovery:[
+        {id:"r1",name:"NSDR 리셋",desc:"10-20분 비수면 깊은 휴식 (도파민 65% 회복)",xp:20,stats:{grt:1,int:1},icon:"🧘",time:"13:00-13:20"}
       ],
       exercise:[
         {id:"e1",name:"웨이트 1시간",desc:"스포짐 웨이트 트레이닝",xp:35,stats:{str:3},icon:"🏋️",time:"16:30-17:30"},
@@ -815,7 +820,8 @@ function getDefaultData() {
       ],
       home:[
         {id:"h1",name:"샤워 & 정리",desc:"옷 갈아입고 바로 샤워",xp:10,stats:{grt:1},icon:"🚿",time:"21:00-21:30"},
-        {id:"h2",name:"AI 공부",desc:"AI 관련 학습",xp:25,stats:{int:2},icon:"🧠",time:"21:30-22:30"}
+        {id:"h2",name:"AI 공부",desc:"AI 관련 학습",xp:25,stats:{int:2},icon:"🧠",time:"21:30-22:30"},
+        {id:"h3",name:"셧다운 리추얼",desc:"내일 계획 정리, 전자기기 OFF (Cal Newport)",xp:15,stats:{grt:2},icon:"🌙",time:"22:30-23:00"}
       ]
     },
     history:{},
