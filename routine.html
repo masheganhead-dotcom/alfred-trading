@@ -4,6 +4,11 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no,viewport-fit=cover">
 <title>Alfred Quest - Daily Routine</title>
+<link rel="manifest" href="manifest.json">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#0a0a0f">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚔️</text></svg>">
 <!-- Firebase SDK -->
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
@@ -124,6 +129,91 @@ body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display',sans-serif;ba
 .date-display{text-align:center;padding:8px;margin-bottom:12px}
 .date-text{font-size:13px;color:var(--dim)}
 .date-day{font-size:11px;color:var(--gold);margin-top:2px}
+
+/* Tab Navigation */
+.tab-nav{display:flex;gap:4px;margin-bottom:12px;overflow-x:auto;padding:2px}
+.tab-btn{font-size:11px;padding:6px 12px;border-radius:8px;border:1px solid var(--border);background:none;color:var(--dim);cursor:pointer;white-space:nowrap;font-weight:600}
+.tab-btn.active{background:var(--purple);color:#000;border-color:var(--purple)}
+.tab-btn:active{opacity:.7}
+.tab-content{display:none}
+.tab-content.active{display:block}
+
+/* Report Section */
+.report-section{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:16px;margin-bottom:12px}
+.report-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px}
+.report-card{background:var(--card2);border-radius:10px;padding:12px;text-align:center}
+.report-label{font-size:11px;color:var(--dim);margin-bottom:4px}
+.report-value{font-size:20px;font-weight:700}
+.report-sub{font-size:10px;color:var(--dim);margin-top:2px}
+.week-chart{display:flex;align-items:end;gap:4px;height:80px;padding:8px 0}
+.week-bar-wrap{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px}
+.week-bar{width:100%;border-radius:4px 4px 0 0;transition:height .4s;min-height:2px}
+.week-day{font-size:10px;color:var(--dim)}
+.week-pct{font-size:9px;color:var(--dim)}
+
+/* Music Tracker */
+.music-section{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:16px;margin-bottom:12px}
+.song-list{display:flex;flex-direction:column;gap:8px}
+.song-card{background:var(--card2);border:1px solid var(--border);border-radius:10px;padding:12px}
+.song-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
+.song-title{font-size:14px;font-weight:700}
+.song-status{font-size:10px;padding:2px 8px;border-radius:4px;font-weight:600}
+.song-status.wip{background:rgba(255,215,64,.15);color:var(--gold)}
+.song-status.done{background:rgba(0,230,118,.15);color:var(--green)}
+.song-progress-bar{height:6px;background:var(--card);border-radius:3px;overflow:hidden;margin-bottom:8px}
+.song-progress-fill{height:100%;background:linear-gradient(90deg,var(--purple),var(--blue));border-radius:3px;transition:width .3s}
+.song-parts{display:flex;flex-wrap:wrap;gap:4px}
+.song-part{font-size:10px;padding:3px 8px;border-radius:4px;border:1px solid var(--border);cursor:pointer;user-select:none}
+.song-part.done{background:rgba(0,230,118,.15);color:var(--green);border-color:rgba(0,230,118,.3)}
+.song-part.active{background:rgba(179,136,255,.15);color:var(--purple);border-color:rgba(179,136,255,.3)}
+.song-deadline{font-size:10px;color:var(--dim);margin-top:6px}
+.add-song-btn{width:100%;padding:10px;border:1px dashed var(--border);border-radius:10px;background:none;color:var(--dim);cursor:pointer;font-size:12px;margin-top:8px}
+.add-song-btn:active{background:var(--card2)}
+
+/* Modal */
+.modal-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.7);z-index:300;display:flex;align-items:center;justify-content:center;padding:20px;opacity:0;pointer-events:none;transition:opacity .2s}
+.modal-overlay.show{opacity:1;pointer-events:auto}
+.modal{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:20px;width:100%;max-width:400px;max-height:80vh;overflow-y:auto}
+.modal-title{font-size:16px;font-weight:700;margin-bottom:16px;display:flex;align-items:center;gap:8px}
+.modal input,.modal textarea,.modal select{width:100%;padding:10px;background:var(--card2);border:1px solid var(--border);border-radius:8px;color:var(--text);font-size:13px;margin-bottom:10px;font-family:inherit}
+.modal textarea{resize:vertical;min-height:80px}
+.modal-btns{display:flex;gap:8px;margin-top:12px}
+.modal-btn{flex:1;padding:10px;border-radius:8px;border:none;font-size:13px;font-weight:600;cursor:pointer}
+.modal-btn.primary{background:var(--purple);color:#000}
+.modal-btn.cancel{background:var(--card2);color:var(--dim);border:1px solid var(--border)}
+
+/* Notes / Voice */
+.notes-section{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:16px;margin-bottom:12px}
+.note-entry{background:var(--card2);border-radius:8px;padding:10px;margin-bottom:8px;font-size:12px;line-height:1.6}
+.note-time{font-size:10px;color:var(--dim);margin-bottom:4px}
+.note-text{color:var(--text)}
+.voice-btn{display:flex;align-items:center;gap:8px;width:100%;padding:12px;background:var(--card2);border:1px solid var(--border);border-radius:10px;color:var(--text);cursor:pointer;font-size:13px}
+.voice-btn:active{background:rgba(179,136,255,.1);border-color:var(--purple)}
+.voice-btn.recording{background:rgba(255,82,82,.15);border-color:var(--red);animation:recPulse 1s infinite}
+@keyframes recPulse{0%,100%{opacity:1}50%{opacity:.6}}
+.note-input-row{display:flex;gap:8px;margin-top:8px}
+.note-input{flex:1;padding:10px;background:var(--card2);border:1px solid var(--border);border-radius:8px;color:var(--text);font-size:12px}
+.note-send{padding:10px 14px;background:var(--purple);border:none;border-radius:8px;color:#000;font-weight:700;cursor:pointer;font-size:12px}
+
+/* Reminder */
+.reminder-banner{background:linear-gradient(135deg,rgba(68,138,255,.15),rgba(179,136,255,.15));border:1px solid rgba(179,136,255,.3);border-radius:12px;padding:14px;margin-bottom:12px;display:none;animation:reminderSlide .4s ease}
+@keyframes reminderSlide{from{opacity:0;transform:translateY(-10px)}to{opacity:1;transform:translateY(0)}}
+.reminder-banner.show{display:block}
+.reminder-title{font-size:13px;font-weight:700;margin-bottom:4px;display:flex;align-items:center;gap:6px}
+.reminder-text{font-size:12px;color:var(--dim)}
+.reminder-actions{display:flex;gap:8px;margin-top:8px}
+.reminder-btn{padding:6px 14px;border-radius:6px;border:none;font-size:11px;font-weight:600;cursor:pointer}
+.reminder-btn.primary{background:var(--purple);color:#000}
+.reminder-btn.dismiss{background:var(--card2);color:var(--dim);border:1px solid var(--border)}
+
+/* Calendar */
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:2px;margin-top:8px}
+.cal-header{font-size:10px;color:var(--dim);text-align:center;padding:4px}
+.cal-day{aspect-ratio:1;display:flex;align-items:center;justify-content:center;font-size:11px;border-radius:6px;position:relative}
+.cal-day.today{border:1px solid var(--gold);color:var(--gold);font-weight:700}
+.cal-day.completed{background:rgba(0,230,118,.15);color:var(--green)}
+.cal-day.partial{background:rgba(255,215,64,.1);color:var(--gold)}
+.cal-day.empty{opacity:.2}
 </style>
 </head>
 <body>
@@ -172,13 +262,98 @@ body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display',sans-serif;ba
     </div>
   </div>
 
-  <!-- Quest Sections -->
-  <div id="quests-container"></div>
+  <!-- AI Reminder Banner -->
+  <div class="reminder-banner" id="ai-reminder">
+    <div class="reminder-title">🤖 AI 작업 점검 시간!</div>
+    <div class="reminder-text">오전에 할당한 AI 코딩 작업을 점검하고 피드백 후 재할당하세요.</div>
+    <div class="reminder-actions">
+      <button class="reminder-btn primary" onclick="dismissReminder('ai-check');toggleQuest('m4',event)">점검 완료</button>
+      <button class="reminder-btn dismiss" onclick="dismissReminder('ai-check')">나중에</button>
+    </div>
+  </div>
 
-  <!-- Skills -->
-  <div class="skills-section">
-    <div class="section-title">🔮 스킬</div>
-    <div class="skills-grid" id="skills-grid"></div>
+  <!-- Tab Navigation -->
+  <div class="tab-nav">
+    <button class="tab-btn active" onclick="switchTab('quests',this)">⚔️ 퀘스트</button>
+    <button class="tab-btn" onclick="switchTab('music',this)">🎵 작업 트래커</button>
+    <button class="tab-btn" onclick="switchTab('notes',this)">📝 노트</button>
+    <button class="tab-btn" onclick="switchTab('report',this)">📊 리포트</button>
+  </div>
+
+  <!-- Tab: Quests (default) -->
+  <div class="tab-content active" id="tab-quests">
+    <div id="quests-container"></div>
+    <div class="skills-section">
+      <div class="section-title">🔮 스킬</div>
+      <div class="skills-grid" id="skills-grid"></div>
+    </div>
+  </div>
+
+  <!-- Tab: Music Tracker -->
+  <div class="tab-content" id="tab-music">
+    <div class="music-section">
+      <div class="section-title">🎵 음악 작업 트래커</div>
+      <div class="song-list" id="song-list"></div>
+      <button class="add-song-btn" onclick="showAddSongModal()">+ 새 곡 추가</button>
+    </div>
+  </div>
+
+  <!-- Tab: Notes -->
+  <div class="tab-content" id="tab-notes">
+    <div class="notes-section">
+      <div class="section-title">🎙️ 플로우트 노트</div>
+      <button class="voice-btn" id="voice-btn" onclick="toggleVoiceRecord()">
+        <span id="voice-icon">🎤</span>
+        <span id="voice-text">탭하여 음성 메모 시작</span>
+      </button>
+      <div class="note-input-row">
+        <input class="note-input" id="note-input" placeholder="텍스트 메모 입력...">
+        <button class="note-send" onclick="addTextNote()">추가</button>
+      </div>
+      <div style="margin-top:12px" id="notes-list"></div>
+    </div>
+
+    <div class="notes-section">
+      <div class="section-title">📅 캘린더 뷰</div>
+      <div id="calendar-view"></div>
+    </div>
+  </div>
+
+  <!-- Tab: Report -->
+  <div class="tab-content" id="tab-report">
+    <div class="report-section">
+      <div class="section-title">📊 이번 주 리포트</div>
+      <div class="report-grid">
+        <div class="report-card">
+          <div class="report-label">주간 완료율</div>
+          <div class="report-value" id="rpt-weekly-rate" style="color:var(--green)">0%</div>
+        </div>
+        <div class="report-card">
+          <div class="report-label">이번 주 XP</div>
+          <div class="report-value mono" id="rpt-weekly-xp" style="color:var(--gold)">0</div>
+        </div>
+        <div class="report-card">
+          <div class="report-label">가장 성장한 스탯</div>
+          <div class="report-value" id="rpt-top-stat">-</div>
+        </div>
+        <div class="report-card">
+          <div class="report-label">작업한 곡 수</div>
+          <div class="report-value" id="rpt-songs" style="color:var(--purple)">0</div>
+        </div>
+      </div>
+      <div class="section-title" style="margin-top:8px">📈 일별 완료율</div>
+      <div class="week-chart" id="week-chart"></div>
+    </div>
+
+    <div class="report-section">
+      <div class="section-title">🗓️ 월간 히트맵</div>
+      <div id="month-heatmap"></div>
+    </div>
+
+    <div class="report-section">
+      <div class="section-title">📈 스탯 성장 기록</div>
+      <canvas id="stat-growth-chart" width="460" height="200" style="width:100%;height:150px"></canvas>
+    </div>
   </div>
 
   <!-- Sync Status -->
@@ -187,6 +362,22 @@ body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display',sans-serif;ba
   </div>
 
   <div class="footer">Alfred Quest v1.0 · RPG Daily Routine Tracker</div>
+</div>
+
+<!-- Song Modal -->
+<div class="modal-overlay" id="song-modal">
+  <div class="modal">
+    <div class="modal-title">🎵 곡 추가/편집</div>
+    <input id="song-name" placeholder="곡 이름">
+    <input id="song-deadline" type="date" placeholder="마감일 (선택)">
+    <textarea id="song-notes" placeholder="메모 (방향성, 레퍼런스 등)"></textarea>
+    <div style="font-size:12px;color:var(--dim);margin-bottom:8px">파트 (콤마로 구분):</div>
+    <input id="song-parts" placeholder="드럼, 베이스, 멜로디, 후렴, 브릿지, 보컬, 믹스" value="드럼, 베이스, 멜로디, 후렴, 브릿지, 보컬, 믹스">
+    <div class="modal-btns">
+      <button class="modal-btn cancel" onclick="closeSongModal()">취소</button>
+      <button class="modal-btn primary" onclick="saveSong()">저장</button>
+    </div>
+  </div>
 </div>
 
 <!-- Level Up Overlay -->
@@ -812,8 +1003,447 @@ function checkAllClear() {
   }
 }
 
+// ===== TAB NAVIGATION =====
+function switchTab(tabId, btn) {
+  document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('tab-' + tabId).classList.add('active');
+  btn.classList.add('active');
+  if (tabId === 'report') renderReport();
+  if (tabId === 'music') renderSongs();
+  if (tabId === 'notes') { renderNotes(); renderCalendar(); }
+}
+
+// ===== MUSIC TRACKER =====
+let editingSongIdx = -1;
+
+function getSongs() {
+  if (!gameData.songs) gameData.songs = [];
+  return gameData.songs;
+}
+
+function renderSongs() {
+  const list = document.getElementById('song-list');
+  const songs = getSongs();
+  if (songs.length === 0) {
+    list.innerHTML = '<div style="text-align:center;padding:20px;color:var(--dim);font-size:13px">아직 등록된 곡이 없습니다.<br>+ 버튼으로 작업할 곡을 추가하세요!</div>';
+    return;
+  }
+  list.innerHTML = songs.map((song, idx) => {
+    const doneParts = song.parts.filter(p => p.done).length;
+    const totalParts = song.parts.length;
+    const pct = totalParts > 0 ? Math.round(doneParts / totalParts * 100) : 0;
+    const isDone = pct === 100;
+    return `<div class="song-card">
+      <div class="song-header">
+        <span class="song-title">${song.name}</span>
+        <span class="song-status ${isDone?'done':'wip'}">${isDone?'완성':'작업중 '+pct+'%'}</span>
+      </div>
+      <div class="song-progress-bar"><div class="song-progress-fill" style="width:${pct}%"></div></div>
+      <div class="song-parts">${song.parts.map((p, pi) =>
+        `<span class="song-part ${p.done?'done':''} ${p.active?'active':''}" onclick="toggleSongPart(${idx},${pi})">${p.name}</span>`
+      ).join('')}</div>
+      ${song.deadline ? `<div class="song-deadline">마감: ${song.deadline}</div>` : ''}
+      ${song.notes ? `<div style="font-size:11px;color:var(--dim);margin-top:4px">${song.notes}</div>` : ''}
+    </div>`;
+  }).join('');
+}
+
+function showAddSongModal() {
+  editingSongIdx = -1;
+  document.getElementById('song-name').value = '';
+  document.getElementById('song-deadline').value = '';
+  document.getElementById('song-notes').value = '';
+  document.getElementById('song-parts').value = '드럼, 베이스, 멜로디, 후렴, 브릿지, 보컬, 믹스';
+  document.getElementById('song-modal').classList.add('show');
+}
+
+function closeSongModal() {
+  document.getElementById('song-modal').classList.remove('show');
+}
+
+function saveSong() {
+  const name = document.getElementById('song-name').value.trim();
+  if (!name) return;
+  const deadline = document.getElementById('song-deadline').value;
+  const notes = document.getElementById('song-notes').value.trim();
+  const partsStr = document.getElementById('song-parts').value;
+  const parts = partsStr.split(',').map(p => p.trim()).filter(Boolean).map(p => ({name:p, done:false, active:false}));
+
+  const songs = getSongs();
+  if (editingSongIdx >= 0) {
+    songs[editingSongIdx] = {...songs[editingSongIdx], name, deadline, notes, parts};
+  } else {
+    songs.push({name, deadline, notes, parts, created: todayKey});
+  }
+  saveData();
+  renderSongs();
+  closeSongModal();
+}
+
+function toggleSongPart(songIdx, partIdx) {
+  const songs = getSongs();
+  const part = songs[songIdx].parts[partIdx];
+  if (!part.done) {
+    part.done = true;
+    part.active = false;
+    // Bonus XP for completing a song part
+    gameData.character.xp += 5;
+    gameData.character.total_xp += 5;
+    gameData.character.stats.cre = (gameData.character.stats.cre||1) + 1;
+  } else {
+    part.done = false;
+  }
+  saveData();
+  renderSongs();
+  renderStats();
+  renderRadar();
+}
+
+// ===== VOICE NOTES (Speech Recognition) =====
+let isRecording = false;
+let recognition = null;
+
+function toggleVoiceRecord() {
+  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if (!SpeechRecognition) {
+    alert('이 브라우저에서 음성 인식이 지원되지 않습니다.');
+    return;
+  }
+
+  if (isRecording) {
+    recognition.stop();
+    return;
+  }
+
+  recognition = new SpeechRecognition();
+  recognition.lang = 'ko-KR';
+  recognition.continuous = true;
+  recognition.interimResults = true;
+
+  const btn = document.getElementById('voice-btn');
+  const icon = document.getElementById('voice-icon');
+  const text = document.getElementById('voice-text');
+
+  recognition.onstart = () => {
+    isRecording = true;
+    btn.classList.add('recording');
+    icon.textContent = '🔴';
+    text.textContent = '녹음 중... 탭하여 중지';
+  };
+
+  recognition.onresult = (e) => {
+    let transcript = '';
+    for (let i = e.resultIndex; i < e.results.length; i++) {
+      transcript += e.results[i][0].transcript;
+    }
+    if (e.results[e.results.length-1].isFinal) {
+      addNote(transcript, 'voice');
+    }
+  };
+
+  recognition.onend = () => {
+    isRecording = false;
+    btn.classList.remove('recording');
+    icon.textContent = '🎤';
+    text.textContent = '탭하여 음성 메모 시작';
+  };
+
+  recognition.onerror = (e) => {
+    console.error('Speech recognition error:', e.error);
+    isRecording = false;
+    btn.classList.remove('recording');
+    icon.textContent = '🎤';
+    text.textContent = '탭하여 음성 메모 시작';
+  };
+
+  recognition.start();
+}
+
+function addTextNote() {
+  const input = document.getElementById('note-input');
+  const text = input.value.trim();
+  if (!text) return;
+  addNote(text, 'text');
+  input.value = '';
+}
+
+function addNote(text, type) {
+  if (!gameData.notes) gameData.notes = {};
+  if (!gameData.notes[todayKey]) gameData.notes[todayKey] = [];
+  gameData.notes[todayKey].push({
+    text,
+    type,
+    time: new Date().toLocaleTimeString('ko-KR', {hour:'2-digit', minute:'2-digit'}),
+    timestamp: Date.now()
+  });
+  saveData();
+  renderNotes();
+}
+
+function renderNotes() {
+  const list = document.getElementById('notes-list');
+  const notes = (gameData.notes && gameData.notes[todayKey]) || [];
+  if (notes.length === 0) {
+    list.innerHTML = '<div style="text-align:center;padding:16px;font-size:12px;color:var(--dim)">오늘 메모가 없습니다</div>';
+    return;
+  }
+  list.innerHTML = notes.slice().reverse().map(n => `
+    <div class="note-entry">
+      <div class="note-time">${n.type === 'voice' ? '🎤' : '✏️'} ${n.time}</div>
+      <div class="note-text">${n.text}</div>
+    </div>
+  `).join('');
+}
+
+// ===== CALENDAR VIEW =====
+function renderCalendar() {
+  const container = document.getElementById('calendar-view');
+  const now = new Date();
+  const year = now.getFullYear();
+  const month = now.getMonth();
+  const firstDay = new Date(year, month, 1).getDay();
+  const daysInMonth = new Date(year, month + 1, 0).getDate();
+  const todayDate = now.getDate();
+
+  let html = `<div style="text-align:center;font-size:13px;font-weight:700;margin-bottom:8px">${year}년 ${month+1}월</div>`;
+  html += '<div class="cal-grid">';
+  DAYS_KO.forEach(d => html += `<div class="cal-header">${d}</div>`);
+
+  // Empty cells before first day
+  for (let i = 0; i < firstDay; i++) html += '<div class="cal-day empty"></div>';
+
+  for (let d = 1; d <= daysInMonth; d++) {
+    const dateKey = `${year}-${String(month+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+    const hist = gameData.history[dateKey];
+    let cls = '';
+    if (d === todayDate) cls += ' today';
+    if (hist && hist.completed) {
+      const dayOfWeek = new Date(dateKey).getDay();
+      const isRest = gameData.settings.exercise_rest_days.includes(dayOfWeek);
+      let total = 0;
+      for (const [cat, quests] of Object.entries(gameData.quests)) {
+        if (cat === 'exercise' && isRest) continue;
+        total += quests.length;
+      }
+      const rate = total > 0 ? hist.completed.length / total : 0;
+      if (rate >= 0.9) cls += ' completed';
+      else if (rate >= 0.3) cls += ' partial';
+    }
+    html += `<div class="cal-day${cls}">${d}</div>`;
+  }
+  html += '</div>';
+  container.innerHTML = html;
+}
+
+// ===== REPORT =====
+function renderReport() {
+  const now = new Date();
+  const weekDates = [];
+  for (let i = 6; i >= 0; i--) {
+    const d = new Date(now);
+    d.setDate(d.getDate() - i);
+    weekDates.push(d.toISOString().split('T')[0]);
+  }
+
+  let weekXP = 0;
+  let weekCompleted = 0;
+  let weekTotal = 0;
+  const statGrowth = {};
+
+  const chartContainer = document.getElementById('week-chart');
+  let chartHTML = '';
+
+  weekDates.forEach(dateKey => {
+    const hist = gameData.history[dateKey] || {completed:[], xp_earned:0, stats_gained:{}};
+    const dayOfWeek = new Date(dateKey).getDay();
+    const isRest = gameData.settings.exercise_rest_days.includes(dayOfWeek);
+    let total = 0;
+    for (const [cat, quests] of Object.entries(gameData.quests)) {
+      if (cat === 'exercise' && isRest) continue;
+      total += quests.length;
+    }
+
+    const completed = hist.completed ? hist.completed.length : 0;
+    const rate = total > 0 ? Math.round(completed / total * 100) : 0;
+    weekXP += hist.xp_earned || 0;
+    weekCompleted += completed;
+    weekTotal += total;
+
+    // Stat growth
+    if (hist.stats_gained) {
+      for (const [s, v] of Object.entries(hist.stats_gained)) {
+        statGrowth[s] = (statGrowth[s]||0) + v;
+      }
+    }
+
+    const dayLabel = DAYS_KO[new Date(dateKey).getDay()];
+    const barColor = rate >= 90 ? 'var(--green)' : rate >= 50 ? 'var(--gold)' : 'var(--dim)';
+    chartHTML += `<div class="week-bar-wrap">
+      <div class="week-pct">${rate}%</div>
+      <div class="week-bar" style="height:${Math.max(rate, 3)}%;background:${barColor}"></div>
+      <div class="week-day">${dayLabel}</div>
+    </div>`;
+  });
+
+  chartContainer.innerHTML = chartHTML;
+
+  const weekRate = weekTotal > 0 ? Math.round(weekCompleted / weekTotal * 100) : 0;
+  document.getElementById('rpt-weekly-rate').textContent = weekRate + '%';
+  document.getElementById('rpt-weekly-xp').textContent = weekXP;
+
+  // Top stat
+  const topStat = Object.entries(statGrowth).sort((a,b) => b[1]-a[1])[0];
+  if (topStat) {
+    const cfg = STAT_CONFIG[topStat[0]];
+    document.getElementById('rpt-top-stat').innerHTML = `${cfg?.icon||''} ${cfg?.name||topStat[0]} +${topStat[1]}`;
+  }
+
+  // Songs count
+  const songs = getSongs();
+  const activeSongs = songs.filter(s => s.parts.some(p => p.done)).length;
+  document.getElementById('rpt-songs').textContent = activeSongs;
+
+  // Month heatmap
+  renderMonthHeatmap();
+
+  // Stat growth chart
+  renderStatGrowthChart();
+}
+
+function renderMonthHeatmap() {
+  const container = document.getElementById('month-heatmap');
+  const now = new Date();
+  const year = now.getFullYear();
+  const month = now.getMonth();
+  const firstDay = new Date(year, month, 1).getDay();
+  const daysInMonth = new Date(year, month + 1, 0).getDate();
+
+  let html = `<div style="text-align:center;font-size:12px;color:var(--dim);margin-bottom:8px">${year}년 ${month+1}월</div>`;
+  html += '<div class="cal-grid">';
+  DAYS_KO.forEach(d => html += `<div class="cal-header">${d}</div>`);
+  for (let i = 0; i < firstDay; i++) html += '<div class="cal-day empty"></div>';
+  for (let d = 1; d <= daysInMonth; d++) {
+    const dateKey = `${year}-${String(month+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+    const hist = gameData.history[dateKey];
+    let cls = d === now.getDate() ? ' today' : '';
+    if (hist && hist.completed && hist.completed.length > 0) {
+      const dayOfWeek = new Date(dateKey).getDay();
+      const isRest = gameData.settings.exercise_rest_days.includes(dayOfWeek);
+      let total = 0;
+      for (const [cat, quests] of Object.entries(gameData.quests)) {
+        if (cat === 'exercise' && isRest) continue;
+        total += quests.length;
+      }
+      const rate = total > 0 ? hist.completed.length / total : 0;
+      if (rate >= 0.9) cls += ' completed';
+      else if (rate >= 0.3) cls += ' partial';
+    }
+    html += `<div class="cal-day${cls}">${d}</div>`;
+  }
+  html += '</div>';
+  container.innerHTML = html;
+}
+
+function renderStatGrowthChart() {
+  const canvas = document.getElementById('stat-growth-chart');
+  if (!canvas) return;
+  const dpr = window.devicePixelRatio || 1;
+  const W = 460, H = 200;
+  canvas.width = W * dpr;
+  canvas.height = H * dpr;
+  canvas.style.width = '100%';
+  canvas.style.height = '150px';
+  const ctx = canvas.getContext('2d');
+  ctx.scale(dpr, dpr);
+  ctx.clearRect(0, 0, W, H);
+
+  // Get last 7 days of stat data
+  const days = [];
+  for (let i = 6; i >= 0; i--) {
+    const d = new Date();
+    d.setDate(d.getDate() - i);
+    days.push(d.toISOString().split('T')[0]);
+  }
+
+  const pad = {t:10, r:10, b:25, l:30};
+  const cW = W - pad.l - pad.r;
+  const cH = H - pad.t - pad.b;
+
+  // Accumulate stats per day
+  const statKeys = Object.keys(STAT_CONFIG);
+  const dataSeries = {};
+  statKeys.forEach(k => dataSeries[k] = []);
+
+  days.forEach(dateKey => {
+    const hist = gameData.history[dateKey] || {};
+    const gained = hist.stats_gained || {};
+    statKeys.forEach(k => {
+      dataSeries[k].push(gained[k] || 0);
+    });
+  });
+
+  const maxVal = Math.max(1, ...statKeys.flatMap(k => dataSeries[k]));
+
+  // Draw
+  statKeys.forEach(key => {
+    const data = dataSeries[key];
+    const color = STAT_CONFIG[key].color;
+    ctx.beginPath();
+    data.forEach((v, i) => {
+      const x = pad.l + (i / 6) * cW;
+      const y = pad.t + (1 - v / maxVal) * cH;
+      i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+    });
+    ctx.strokeStyle = color;
+    ctx.lineWidth = 2;
+    ctx.stroke();
+  });
+
+  // X labels
+  ctx.fillStyle = '#555';
+  ctx.font = '10px SF Mono,monospace';
+  ctx.textAlign = 'center';
+  days.forEach((d, i) => {
+    const x = pad.l + (i / 6) * cW;
+    const dayLabel = DAYS_KO[new Date(d).getDay()];
+    ctx.fillText(dayLabel, x, H - 5);
+  });
+}
+
+// ===== AI MIDDAY REMINDER =====
+function checkAIReminder() {
+  const now = new Date();
+  const hour = now.getHours();
+  const dismissed = sessionStorage.getItem('ai_reminder_dismissed_' + todayKey);
+
+  // Show reminder between 12:00-14:00 if not dismissed and AI task not done
+  if (hour >= 12 && hour < 14 && !dismissed && !todayCompleted.includes('m4')) {
+    document.getElementById('ai-reminder').classList.add('show');
+  }
+}
+
+function dismissReminder(type) {
+  document.getElementById('ai-reminder').classList.remove('show');
+  sessionStorage.setItem('ai_reminder_dismissed_' + todayKey, 'true');
+}
+
+// Handle enter key in note input
+document.getElementById('note-input').addEventListener('keydown', (e) => {
+  if (e.key === 'Enter') addTextNote();
+});
+
+// ===== PWA SERVICE WORKER =====
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('./sw.js').catch(e => console.log('SW registration failed:', e));
+}
+
 // ===== START =====
 init();
+
+// AI Reminder check every minute
+setInterval(checkAIReminder, 60000);
+checkAIReminder();
 
 // Auto-save every 30s
 setInterval(saveData, 30000);
