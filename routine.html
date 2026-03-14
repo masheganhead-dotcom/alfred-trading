@@ -4,6 +4,9 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no,viewport-fit=cover">
 <title>Alfred Quest - Daily Routine</title>
+<!-- Firebase SDK -->
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 :root{
@@ -178,6 +181,11 @@ body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display',sans-serif;ba
     <div class="skills-grid" id="skills-grid"></div>
   </div>
 
+  <!-- Sync Status -->
+  <div id="sync-status" style="text-align:center;padding:8px;margin-bottom:8px">
+    <span id="sync-indicator" style="font-size:11px;color:var(--dim)"></span>
+  </div>
+
   <div class="footer">Alfred Quest v1.0 · RPG Daily Routine Tracker</div>
 </div>
 
@@ -192,6 +200,55 @@ body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display',sans-serif;ba
 </div>
 
 <script>
+// ===== FIREBASE CONFIG =====
+// TODO: Firebase 콘솔에서 프로젝트 생성 후 아래 값을 채워주세요
+// 설정 방법은 페이지 하단 가이드 참고
+const FIREBASE_CONFIG = {
+  apiKey: "YOUR_API_KEY",
+  authDomain: "YOUR_PROJECT.firebaseapp.com",
+  databaseURL: "https://YOUR_PROJECT-default-rtdb.firebaseio.com",
+  projectId: "YOUR_PROJECT",
+  storageBucket: "YOUR_PROJECT.appspot.com",
+  messagingSenderId: "YOUR_SENDER_ID",
+  appId: "YOUR_APP_ID"
+};
+
+let firebaseEnabled = false;
+let dbRef = null;
+
+function initFirebase() {
+  try {
+    if (FIREBASE_CONFIG.apiKey === "YOUR_API_KEY") {
+      console.log('[Firebase] Config not set - using localStorage only');
+      document.getElementById('sync-indicator').textContent = '💾 로컬 저장 모드 (Firebase 미설정)';
+      return;
+    }
+    firebase.initializeApp(FIREBASE_CONFIG);
+    dbRef = firebase.database().ref('alfred_quest');
+    firebaseEnabled = true;
+    console.log('[Firebase] Connected!');
+    document.getElementById('sync-indicator').textContent = '☁️ Firebase 연동됨';
+    document.getElementById('sync-indicator').style.color = '#00e676';
+
+    // Listen for real-time changes from other devices
+    dbRef.on('value', (snapshot) => {
+      const remoteData = snapshot.val();
+      if (remoteData && remoteData._lastSaved) {
+        const localTime = gameData?._lastSaved || 0;
+        if (remoteData._lastSaved > localTime) {
+          console.log('[Firebase] Syncing from remote...');
+          gameData = remoteData;
+          todayCompleted = (gameData.history[todayKey] && gameData.history[todayKey].completed) || [];
+          localStorage.setItem('alfred_quest_data', JSON.stringify(gameData));
+          renderAll();
+        }
+      }
+    });
+  } catch (e) {
+    console.error('[Firebase] Init failed:', e);
+  }
+}
+
 // ===== GAME CONFIG =====
 const QUEST_CATEGORIES = {
   morning: {name:'아침 퀘스트',icon:'☀️',subtitle:'출근 전'},
@@ -230,6 +287,7 @@ function init() {
   loadData();
   checkDayReset();
   renderAll();
+  initFirebase();
 }
 
 function getDayOfYear(d) {
@@ -243,7 +301,6 @@ function loadData() {
   if (saved) {
     gameData = JSON.parse(saved);
   } else {
-    // Default data
     gameData = getDefaultData();
   }
   todayCompleted = (gameData.history[todayKey] && gameData.history[todayKey].completed) || [];
@@ -254,7 +311,13 @@ function saveData() {
     gameData.history[todayKey] = {completed:[], xp_earned:0, stats_gained:{}};
   }
   gameData.history[todayKey].completed = todayCompleted;
+  gameData._lastSaved = Date.now();
   localStorage.setItem('alfred_quest_data', JSON.stringify(gameData));
+
+  // Sync to Firebase
+  if (firebaseEnabled && dbRef) {
+    dbRef.set(gameData).catch(e => console.error('[Firebase] Save failed:', e));
+  }
 }
 
 function getDefaultData() {
