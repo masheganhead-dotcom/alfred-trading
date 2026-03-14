@@ -556,6 +556,14 @@ body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display',sans-serif;ba
           <div class="report-label">작업한 곡 수</div>
           <div class="report-value" id="rpt-songs" style="color:var(--purple)">0</div>
         </div>
+        <div class="report-card">
+          <div class="report-label">주간 집중 시간</div>
+          <div class="report-value mono" id="rpt-focus-time" style="color:var(--cyan)">0h</div>
+        </div>
+        <div class="report-card">
+          <div class="report-label">평균 에너지</div>
+          <div class="report-value" id="rpt-energy-avg">-</div>
+        </div>
       </div>
       <div class="section-title" style="margin-top:8px">📈 일별 완료율</div>
       <div class="week-chart" id="week-chart"></div>
@@ -2269,6 +2277,26 @@ function renderReport() {
   const songs = getSongs();
   const activeSongs = songs.filter(s => s.parts.some(p => p.done)).length;
   document.getElementById('rpt-songs').textContent = activeSongs;
+
+  // Weekly focus time
+  let weekFocusMins = 0;
+  weekDates.forEach(dateKey => {
+    const sessions = (gameData.focus && gameData.focus[dateKey]) || [];
+    weekFocusMins += sessions.reduce((sum, s) => sum + (s.minutes || 0), 0);
+  });
+  const focusHrs = Math.floor(weekFocusMins / 60);
+  const focusMinsLeft = weekFocusMins % 60;
+  document.getElementById('rpt-focus-time').textContent = focusHrs > 0 ? `${focusHrs}h${focusMinsLeft > 0 ? focusMinsLeft + 'm' : ''}` : `${weekFocusMins}m`;
+
+  // Average energy
+  let energySum = 0, energyCount = 0;
+  weekDates.forEach(dateKey => {
+    const e = gameData.energy && gameData.energy[dateKey];
+    if (e) { energySum += e; energyCount++; }
+  });
+  const avgEnergy = energyCount > 0 ? (energySum / energyCount) : 0;
+  const energyEmojis = ['', '😴', '😕', '😐', '😊', '🔥'];
+  document.getElementById('rpt-energy-avg').textContent = avgEnergy > 0 ? `${energyEmojis[Math.round(avgEnergy)]} ${avgEnergy.toFixed(1)}` : '-';
 
   // Month heatmap
   renderMonthHeatmap();
