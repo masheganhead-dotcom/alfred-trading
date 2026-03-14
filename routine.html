@@ -802,34 +802,34 @@ function getDefaultData() {
     },
     quests:{
       morning:[
-        {id:"m0",name:"햇빛 쬐기",desc:"기상 후 1시간 내 10-30분 야외 햇빛 (Huberman 프로토콜)",xp:15,stats:{str:1,grt:1},icon:"☀️",time:"07:00-07:30"},
-        {id:"m1",name:"미드 공부",desc:"Ginnie&Georgia - 발음/악센트/단어/표현 정리",xp:30,stats:{int:2},icon:"🎬",time:"07:30-08:30"},
-        {id:"m2",name:"복근 운동",desc:"아침 코어 운동 (10분)",xp:20,stats:{str:2},icon:"🏋️",time:"08:30-08:45"},
-        {id:"m3",name:"독서",desc:"정해진 페이지 분량 읽기",xp:25,stats:{int:2},icon:"📖",time:"08:45-09:30"},
-        {id:"m4",name:"AI 작업 할당",desc:"코딩 작업 분배 & 자동화 세팅",xp:20,stats:{biz:1,int:1},icon:"🤖",time:"09:30-10:00"}
+        {id:"m0",name:"햇빛 쬐기",desc:"기상 후 1시간 내 10-30분 야외 햇빛 (Huberman 프로토콜)",xp:15,stats:{str:1,grt:1},icon:"☀️",time:"07:00-07:30",start:"현관문 열기"},
+        {id:"m1",name:"미드 공부",desc:"Ginnie&Georgia - 발음/악센트/단어/표현 정리",xp:30,stats:{int:2},icon:"🎬",time:"07:30-08:30",start:"넷플릭스 켜기"},
+        {id:"m2",name:"복근 운동",desc:"아침 코어 운동 (10분)",xp:20,stats:{str:2},icon:"🏋️",time:"08:30-08:45",start:"매트 깔기"},
+        {id:"m3",name:"독서",desc:"정해진 페이지 분량 읽기",xp:25,stats:{int:2},icon:"📖",time:"08:45-09:30",start:"책 펼치기"},
+        {id:"m4",name:"AI 작업 할당",desc:"코딩 작업 분배 & 자동화 세팅",xp:20,stats:{biz:1,int:1},icon:"🤖",time:"09:30-10:00",start:"Claude 열기"}
       ],
       studio:[
-        {id:"s1",name:"작업 계획 수립",desc:"데드라인 확인, 최소 2곡 계획",xp:15,stats:{biz:1},icon:"📋",time:"10:00-10:15"},
-        {id:"s2",name:"레퍼런스 수집",desc:"오늘 만들 곡의 레퍼런스",xp:20,stats:{cre:2},icon:"🔍",time:"10:15-10:45"},
-        {id:"s3",name:"메인 스케치",desc:"테마 스케치 → 1절 완성 (디테일 집착 X)",xp:40,stats:{cre:3},icon:"🎹",time:"10:45-12:30"},
-        {id:"s4",name:"릴스 제작",desc:"아티스트 릴스 1개 기획+제작",xp:25,stats:{chr:2},icon:"📱",time:"14:00-15:00"},
-        {id:"s5",name:"레슨 사업 기획",desc:"레슨 확장 및 기획",xp:20,stats:{biz:2},icon:"💼",time:"15:00-16:00"}
+        {id:"s1",name:"작업 계획 수립",desc:"데드라인 확인, 최소 2곡 계획",xp:15,stats:{biz:1},icon:"📋",time:"10:00-10:15",start:"노트 앱 열기"},
+        {id:"s2",name:"레퍼런스 수집",desc:"오늘 만들 곡의 레퍼런스 5분 분석 청취",xp:20,stats:{cre:2},icon:"🔍",time:"10:15-10:45",start:"레퍼 1곡 재생"},
+        {id:"s3",name:"메인 스케치",desc:"테마 스케치 → 1절 완성 (디테일 집착 X)",xp:40,stats:{cre:3},icon:"🎹",time:"10:45-12:30",start:"DAW 열고 코드 하나 치기"},
+        {id:"s4",name:"릴스 제작",desc:"아티스트 릴스 1개 기획+제작",xp:25,stats:{chr:2},icon:"📱",time:"14:00-15:00",start:"카메라 앱 열기"},
+        {id:"s5",name:"레슨 사업 기획",desc:"레슨 확장 및 기획",xp:20,stats:{biz:2},icon:"💼",time:"15:00-16:00",start:"레슨 노트 열기"}
       ],
       recovery:[
-        {id:"r1",name:"NSDR 리셋",desc:"10-20분 비수면 깊은 휴식 (도파민 65% 회복)",xp:20,stats:{grt:1,int:1},icon:"🧘",time:"13:00-13:20"}
+        {id:"r1",name:"NSDR 리셋",desc:"10-20분 비수면 깊은 휴식 (도파민 65% 회복)",xp:20,stats:{grt:1,int:1},icon:"🧘",time:"13:00-13:20",start:"눈 감고 누워 숨 3번 쉬기"}
       ],
       exercise:[
-        {id:"e1",name:"웨이트 1시간",desc:"스포짐 웨이트 트레이닝",xp:35,stats:{str:3},icon:"🏋️",time:"16:30-17:30"},
-        {id:"e2",name:"유산소 30분",desc:"러닝/사이클 등",xp:25,stats:{str:2},icon:"🏃",time:"17:30-18:00"}
+        {id:"e1",name:"웨이트 1시간",desc:"스포짐 웨이트 트레이닝",xp:35,stats:{str:3},icon:"🏋️",time:"16:30-17:30",start:"운동복 갈아입기"},
+        {id:"e2",name:"유산소 30분",desc:"러닝/사이클 등",xp:25,stats:{str:2},icon:"🏃",time:"17:30-18:00",start:"러닝화 신기"}
       ],
       evening_work:[
-        {id:"w1",name:"목표 설정",desc:"어떤 곡, 어떤 파트, 어떤 방향인지 명확히",xp:15,stats:{biz:1},icon:"🎯",time:"19:00-19:15"},
-        {id:"w2",name:"창작 실험",desc:"새로운 느낌 탐구, 실험과 도전",xp:35,stats:{cre:3,grt:1},icon:"🧪",time:"19:15-21:00"}
+        {id:"w1",name:"목표 설정",desc:"어떤 곡, 어떤 파트, 어떤 방향인지 명확히",xp:15,stats:{biz:1},icon:"🎯",time:"19:00-19:15",start:"종이에 한 줄 쓰기"},
+        {id:"w2",name:"창작 실험",desc:"새로운 느낌 탐구, 실험과 도전 (판단 OFF, 놀이 ON)",xp:35,stats:{cre:3,grt:1},icon:"🧪",time:"19:15-21:00",start:"랜덤 사운드 하나 고르기"}
       ],
       home:[
-        {id:"h1",name:"샤워 & 정리",desc:"옷 갈아입고 바로 샤워",xp:10,stats:{grt:1},icon:"🚿",time:"21:00-21:30"},
-        {id:"h2",name:"AI 공부",desc:"AI 관련 학습",xp:25,stats:{int:2},icon:"🧠",time:"21:30-22:30"},
-        {id:"h3",name:"셧다운 리추얼",desc:"내일 계획 정리, 전자기기 OFF (Cal Newport)",xp:15,stats:{grt:2},icon:"🌙",time:"22:30-23:00"}
+        {id:"h1",name:"샤워 & 정리",desc:"옷 갈아입고 바로 샤워",xp:10,stats:{grt:1},icon:"🚿",time:"21:00-21:30",start:"옷 벗기"},
+        {id:"h2",name:"AI 공부",desc:"AI 관련 학습",xp:25,stats:{int:2},icon:"🧠",time:"21:30-22:30",start:"강의 영상 재생"},
+        {id:"h3",name:"셧다운 리추얼",desc:"내일 계획 3줄 정리 → 전자기기 OFF → '셧다운 컴플리트'",xp:15,stats:{grt:2},icon:"🌙",time:"22:30-23:00",start:"노트 펼치고 내일 할 일 1줄"}
       ]
     },
     history:{},
@@ -840,13 +840,25 @@ function getDefaultData() {
 function checkDayReset() {
   const last = gameData.character.last_completed_date;
   if (last && last !== todayKey) {
-    // Check streak
+    // Check streak with grace day system (Duolingo research: 1 grace day/week)
     const lastDate = new Date(last);
     const today = new Date(todayKey);
     const diff = Math.floor((today - lastDate) / 86400000);
-    if (diff > 1) {
-      gameData.character.streak = 0; // streak broken
+    if (diff > 2) {
+      // More than 2 days gap = streak broken (no grace)
+      gameData.character.streak = 0;
+    } else if (diff === 2) {
+      // 1 day missed - use grace day if available this week
+      if (!gameData.character.grace_used_week || getWeekKey() !== gameData.character.grace_used_week) {
+        // Grace day available! Keep streak but mark as used
+        gameData.character.grace_used_week = getWeekKey();
+        console.log('[Streak] Grace day used - streak preserved!');
+      } else {
+        // Already used grace this week
+        gameData.character.streak = 0;
+      }
     }
+    // diff === 1 means consecutive day, streak continues normally
   }
   // Ensure today's history exists
   if (!gameData.history[todayKey]) {
@@ -1060,7 +1072,9 @@ function renderXP() {
   document.getElementById('xp-pct').textContent = Math.floor(pct) + '%';
 
   const streakMult = getStreakMultiplier();
-  const streakText = c.streak > 0 ? `🔥 ${c.streak}일 연속` + (streakMult > 1 ? ` (x${streakMult})` : '') : '🔥 0일 연속';
+  const graceUsed = c.grace_used_week === getWeekKey();
+  const graceIcon = graceUsed ? '' : ' 🛡️';
+  const streakText = c.streak > 0 ? `🔥 ${c.streak}일 연속` + (streakMult > 1 ? ` (x${streakMult})` : '') + graceIcon : '🔥 0일 연속' + graceIcon;
   document.getElementById('streak-badge').textContent = streakText;
   document.getElementById('streak-best').textContent = `최고: ${c.best_streak}일`;
 
@@ -1202,6 +1216,7 @@ function renderQuests() {
             <div class="quest-name">${q.icon} ${q.name}</div>
             <div class="quest-desc">${q.desc}</div>
             ${q.time ? `<div class="quest-time-hint"><span class="time-block ${timeHint.cls}">🕐 ${q.time}</span>${timeHint.label}</div>` : ''}
+            ${q.start && !done ? `<div style="font-size:10px;color:var(--gold);margin-top:1px">⚡ 2분룰: ${q.start}</div>` : ''}
             <div class="quest-stats-gain">${statsText}</div>
           </div>
           <div class="quest-xp mono">${done?'✓':''} +${q.xp}</div>
@@ -1976,14 +1991,15 @@ function toggleFocusTimer() {
           focusTimer.sessionCount++;
 
           if (focusTimer.breakMins > 0) {
-            // Start break
+            // Start break with rest quality guidance (DMN research)
             focusTimer.isBreak = true;
             focusTimer.remaining = focusTimer.breakMins * 60;
             focusTimer.total = focusTimer.breakMins * 60;
-            document.getElementById('focus-session-label').textContent = '☕ 휴식 시간!';
+            const restTips = ['🚶 산책하기 (화면 X)', '🧘 스트레칭', '☕ 차 마시기', '🌿 창밖 보기', '🎸 악기 만지기'];
+            const tip = restTips[Math.floor(Math.random() * restTips.length)];
+            document.getElementById('focus-session-label').textContent = `☕ 휴식! ${tip}`;
             btn.textContent = '▶ 휴식 시작';
             btn.className = 'focus-btn start';
-            // Vibrate if available
             if (navigator.vibrate) navigator.vibrate([200, 100, 200]);
           } else {
             resetFocusTimer();
