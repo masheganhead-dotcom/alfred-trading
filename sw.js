@@ -1,4 +1,4 @@
-const CACHE_NAME = 'alfred-quest-v1';
+const CACHE_NAME = 'alfred-quest-v1.1';
 const ASSETS = [
   './routine.html',
   './manifest.json'

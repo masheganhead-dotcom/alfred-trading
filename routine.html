@@ -214,6 +214,60 @@ body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display',sans-serif;ba
 .cal-day.completed{background:rgba(0,230,118,.15);color:var(--green)}
 .cal-day.partial{background:rgba(255,215,64,.1);color:var(--gold)}
 .cal-day.empty{opacity:.2}
+
+/* Calendar Tab - iCloud Events */
+.ical-section{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:16px;margin-bottom:12px}
+.ical-event{display:flex;align-items:flex-start;gap:10px;padding:10px 8px;border-radius:10px;border-left:3px solid var(--blue);background:var(--card2);margin-bottom:6px}
+.ical-event.now{border-left-color:var(--green);background:rgba(0,230,118,.06)}
+.ical-event.past{opacity:.5;border-left-color:var(--dim)}
+.ical-time{font-size:11px;font-weight:700;color:var(--blue);min-width:50px;white-space:nowrap;font-family:'SF Mono',Menlo,monospace}
+.ical-event.now .ical-time{color:var(--green)}
+.ical-event.past .ical-time{color:var(--dim)}
+.ical-details{flex:1;min-width:0}
+.ical-title{font-size:13px;font-weight:600;margin-bottom:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ical-location{font-size:11px;color:var(--dim);display:flex;align-items:center;gap:4px}
+.ical-allday{font-size:10px;padding:2px 8px;border-radius:4px;background:rgba(179,136,255,.12);color:var(--purple);font-weight:600}
+.ical-empty{text-align:center;padding:24px;color:var(--dim);font-size:13px}
+.ical-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+.ical-refresh{background:none;border:1px solid var(--border);border-radius:6px;padding:5px 10px;color:var(--dim);cursor:pointer;font-size:11px}
+.ical-refresh:active{background:var(--card2)}
+.ical-status{font-size:10px;color:var(--dim);text-align:center;margin-top:8px}
+.ical-setup{text-align:center;padding:20px}
+.ical-setup-text{font-size:12px;color:var(--dim);margin-bottom:12px;line-height:1.6}
+.ical-setup-btn{padding:10px 20px;background:var(--blue);border:none;border-radius:8px;color:#fff;font-size:13px;font-weight:600;cursor:pointer}
+.ical-setup-btn:active{opacity:.8}
+.ical-today-strip{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:12px;margin-bottom:12px;display:none}
+.ical-today-strip.show{display:block}
+.ical-today-title{font-size:12px;font-weight:700;color:var(--blue);margin-bottom:8px;display:flex;align-items:center;gap:6px}
+.ical-today-events{display:flex;flex-direction:column;gap:4px}
+.ical-today-item{display:flex;align-items:center;gap:8px;font-size:11px;padding:4px 6px;border-radius:6px;background:var(--card2)}
+.ical-today-time{font-weight:700;color:var(--blue);min-width:42px;font-family:'SF Mono',Menlo,monospace;font-size:10px}
+.ical-today-name{flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+
+/* Settings Modal */
+.settings-btn{background:none;border:1px solid var(--border);border-radius:6px;padding:5px 10px;color:var(--dim);cursor:pointer;font-size:12px}
+.settings-btn:active{background:var(--card2)}
+.settings-group{margin-bottom:16px}
+.settings-label{font-size:12px;font-weight:700;color:var(--dim);margin-bottom:6px;display:flex;align-items:center;gap:6px}
+.settings-help{font-size:11px;color:var(--dim);line-height:1.5;margin-bottom:8px;background:var(--card2);padding:8px;border-radius:6px}
+
+/* Note/Song delete */
+.note-delete{position:absolute;top:6px;right:8px;background:none;border:none;color:var(--dim);cursor:pointer;font-size:12px;opacity:.5}
+.note-delete:hover,.note-delete:active{opacity:1;color:var(--red)}
+.note-entry{position:relative}
+.song-delete{position:absolute;top:8px;right:8px;background:none;border:none;color:var(--dim);cursor:pointer;font-size:14px;opacity:.5;z-index:1}
+.song-delete:hover,.song-delete:active{opacity:1;color:var(--red)}
+.song-card{position:relative}
+
+/* Quest complete celebration */
+.all-clear-banner{background:linear-gradient(135deg,rgba(255,215,64,.15),rgba(0,230,118,.15));border:1px solid rgba(255,215,64,.3);border-radius:12px;padding:16px;margin-bottom:12px;text-align:center;display:none;animation:allClearPulse 2s ease infinite}
+.all-clear-banner.show{display:block}
+@keyframes allClearPulse{0%,100%{box-shadow:0 0 0 0 rgba(255,215,64,.2)}50%{box-shadow:0 0 20px 4px rgba(255,215,64,.15)}}
+.all-clear-text{font-size:16px;font-weight:700;color:var(--gold)}
+.all-clear-sub{font-size:12px;color:var(--dim);margin-top:4px}
+
+/* Time indicator on quests */
+.quest-time-hint{font-size:10px;color:var(--blue);margin-top:2px;display:flex;align-items:center;gap:4px}
 </style>
 </head>
 <body>
@@ -225,6 +279,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display',sans-serif;ba
   </div>
   <div class="hdr-right">
     <span class="hdr-level" id="hdr-level">Lv.1</span>
+    <button class="settings-btn" onclick="showSettingsModal()">⚙️</button>
     <a href="index.html" class="hdr-link">📊 Trading</a>
   </div>
 </div>
@@ -272,9 +327,22 @@ body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display',sans-serif;ba
     </div>
   </div>
 
+  <!-- All Clear Banner -->
+  <div class="all-clear-banner" id="all-clear-banner">
+    <div class="all-clear-text">🏆 ALL QUEST CLEAR!</div>
+    <div class="all-clear-sub">오늘의 모든 퀘스트를 완료했습니다! +50 보너스 XP</div>
+  </div>
+
+  <!-- iCloud Today Strip (shows on quest tab) -->
+  <div class="ical-today-strip" id="ical-today-strip">
+    <div class="ical-today-title">📅 오늘 일정</div>
+    <div class="ical-today-events" id="ical-today-events"></div>
+  </div>
+
   <!-- Tab Navigation -->
   <div class="tab-nav">
     <button class="tab-btn active" onclick="switchTab('quests',this)">⚔️ 퀘스트</button>
+    <button class="tab-btn" onclick="switchTab('calendar',this)">📅 캘린더</button>
     <button class="tab-btn" onclick="switchTab('music',this)">🎵 작업 트래커</button>
     <button class="tab-btn" onclick="switchTab('notes',this)">📝 노트</button>
     <button class="tab-btn" onclick="switchTab('report',this)">📊 리포트</button>
@@ -286,6 +354,23 @@ body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display',sans-serif;ba
     <div class="skills-section">
       <div class="section-title">🔮 스킬</div>
       <div class="skills-grid" id="skills-grid"></div>
+    </div>
+  </div>
+
+  <!-- Tab: Calendar (iCloud + Heatmap) -->
+  <div class="tab-content" id="tab-calendar">
+    <div class="ical-section">
+      <div class="ical-header">
+        <div class="section-title" style="margin-bottom:0">📅 오늘 일정</div>
+        <button class="ical-refresh" onclick="fetchICalEvents()">🔄 새로고침</button>
+      </div>
+      <div id="ical-events-list"></div>
+      <div class="ical-status" id="ical-status"></div>
+    </div>
+
+    <div class="ical-section">
+      <div class="section-title">🗓️ 퀘스트 달력</div>
+      <div id="calendar-view-main"></div>
     </div>
   </div>
 
@@ -313,10 +398,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display',sans-serif;ba
       <div style="margin-top:12px" id="notes-list"></div>
     </div>
 
-    <div class="notes-section">
-      <div class="section-title">📅 캘린더 뷰</div>
-      <div id="calendar-view"></div>
-    </div>
   </div>
 
   <!-- Tab: Report -->
@@ -361,7 +442,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display',sans-serif;ba
     <span id="sync-indicator" style="font-size:11px;color:var(--dim)"></span>
   </div>
 
-  <div class="footer">Alfred Quest v1.0 · RPG Daily Routine Tracker</div>
+  <div class="footer">Alfred Quest v1.1 · RPG Daily Routine Tracker · iCloud Calendar 연동</div>
 </div>
 
 <!-- Song Modal -->
@@ -376,6 +457,33 @@ body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display',sans-serif;ba
     <div class="modal-btns">
       <button class="modal-btn cancel" onclick="closeSongModal()">취소</button>
       <button class="modal-btn primary" onclick="saveSong()">저장</button>
+    </div>
+  </div>
+</div>
+
+<!-- Settings Modal -->
+<div class="modal-overlay" id="settings-modal">
+  <div class="modal">
+    <div class="modal-title">⚙️ 설정</div>
+    <div class="settings-group">
+      <div class="settings-label">📅 iCloud 캘린더 연동</div>
+      <div class="settings-help">
+        iCloud.com → 캘린더 → 공유할 캘린더 우클릭 → '공개 캘린더' 체크 → URL 복사<br>
+        형식: webcal://p00-caldav.icloud.com/... 또는 https://...
+      </div>
+      <input id="settings-ical-url" placeholder="iCloud 캘린더 공개 URL 붙여넣기">
+    </div>
+    <div class="settings-group">
+      <div class="settings-label">🏋️ 운동 휴무일</div>
+      <div id="settings-rest-days" style="display:flex;gap:6px;flex-wrap:wrap"></div>
+    </div>
+    <div class="settings-group">
+      <div class="settings-label">👤 캐릭터 이름</div>
+      <input id="settings-char-name" placeholder="이름">
+    </div>
+    <div class="modal-btns">
+      <button class="modal-btn cancel" onclick="closeSettingsModal()">취소</button>
+      <button class="modal-btn primary" onclick="saveSettings()">저장</button>
     </div>
   </div>
 </div>
@@ -673,8 +781,9 @@ function toggleQuest(questId, e) {
     removeStats(quest.stats);
   }
 
-  // Update streak
+  // Update streak & check all clear
   updateStreak();
+  checkAllClear();
   saveData();
   renderAll();
 }
@@ -995,11 +1104,29 @@ function showLevelUp() {
 // ===== BONUS: All quests done today check =====
 function checkAllClear() {
   const total = getTotalQuestCount();
+  const banner = document.getElementById('all-clear-banner');
   if (todayCompleted.length >= total && total > 0) {
-    // All clear bonus
-    const bonusXP = 50;
-    gameData.character.xp += bonusXP;
-    gameData.character.total_xp += bonusXP;
+    // Show banner
+    banner.classList.add('show');
+    // Give bonus XP only once per day
+    if (!gameData.history[todayKey]._allClearBonus) {
+      const bonusXP = 50;
+      gameData.character.xp += bonusXP;
+      gameData.character.total_xp += bonusXP;
+      gameData.history[todayKey].xp_earned = (gameData.history[todayKey].xp_earned||0) + bonusXP;
+      gameData.history[todayKey]._allClearBonus = true;
+    }
+  } else {
+    banner.classList.remove('show');
+    if (gameData.history[todayKey]._allClearBonus) {
+      // Undo bonus if quests unchecked
+      gameData.character.xp -= 50;
+      gameData.character.total_xp -= 50;
+      if (gameData.character.xp < 0) gameData.character.xp = 0;
+      if (gameData.character.total_xp < 0) gameData.character.total_xp = 0;
+      gameData.history[todayKey].xp_earned = (gameData.history[todayKey].xp_earned||0) - 50;
+      delete gameData.history[todayKey]._allClearBonus;
+    }
   }
 }
 
@@ -1011,7 +1138,8 @@ function switchTab(tabId, btn) {
   btn.classList.add('active');
   if (tabId === 'report') renderReport();
   if (tabId === 'music') renderSongs();
-  if (tabId === 'notes') { renderNotes(); renderCalendar(); }
+  if (tabId === 'notes') renderNotes();
+  if (tabId === 'calendar') { renderCalendarMain(); fetchICalEvents(); }
 }
 
 // ===== MUSIC TRACKER =====
@@ -1035,6 +1163,7 @@ function renderSongs() {
     const pct = totalParts > 0 ? Math.round(doneParts / totalParts * 100) : 0;
     const isDone = pct === 100;
     return `<div class="song-card">
+      <button class="song-delete" onclick="deleteSong(${idx})" title="삭제">✕</button>
       <div class="song-header">
         <span class="song-title">${song.name}</span>
         <span class="song-status ${isDone?'done':'wip'}">${isDone?'완성':'작업중 '+pct+'%'}</span>
@@ -1098,6 +1227,14 @@ function toggleSongPart(songIdx, partIdx) {
   renderSongs();
   renderStats();
   renderRadar();
+}
+
+function deleteSong(idx) {
+  if (!confirm('이 곡을 삭제하시겠습니까?')) return;
+  const songs = getSongs();
+  songs.splice(idx, 1);
+  saveData();
+  renderSongs();
 }
 
 // ===== VOICE NOTES (Speech Recognition) =====
@@ -1188,17 +1325,33 @@ function renderNotes() {
     list.innerHTML = '<div style="text-align:center;padding:16px;font-size:12px;color:var(--dim)">오늘 메모가 없습니다</div>';
     return;
   }
-  list.innerHTML = notes.slice().reverse().map(n => `
-    <div class="note-entry">
+  list.innerHTML = notes.slice().reverse().map((n, i) => {
+    const realIdx = notes.length - 1 - i;
+    return `<div class="note-entry">
+      <button class="note-delete" onclick="deleteNote(${realIdx})" title="삭제">✕</button>
       <div class="note-time">${n.type === 'voice' ? '🎤' : '✏️'} ${n.time}</div>
-      <div class="note-text">${n.text}</div>
-    </div>
-  `).join('');
+      <div class="note-text">${escapeHTML(n.text)}</div>
+    </div>`;
+  }).join('');
+}
+
+function deleteNote(idx) {
+  if (!gameData.notes || !gameData.notes[todayKey]) return;
+  gameData.notes[todayKey].splice(idx, 1);
+  saveData();
+  renderNotes();
+}
+
+function escapeHTML(str) {
+  const div = document.createElement('div');
+  div.textContent = str;
+  return div.innerHTML;
 }
 
 // ===== CALENDAR VIEW =====
-function renderCalendar() {
-  const container = document.getElementById('calendar-view');
+function renderCalendarMain() {
+  const container = document.getElementById('calendar-view-main');
+  if (!container) return;
   const now = new Date();
   const year = now.getFullYear();
   const month = now.getMonth();
@@ -1210,7 +1363,6 @@ function renderCalendar() {
   html += '<div class="cal-grid">';
   DAYS_KO.forEach(d => html += `<div class="cal-header">${d}</div>`);
 
-  // Empty cells before first day
   for (let i = 0; i < firstDay; i++) html += '<div class="cal-day empty"></div>';
 
   for (let d = 1; d <= daysInMonth; d++) {
@@ -1234,6 +1386,287 @@ function renderCalendar() {
   }
   html += '</div>';
   container.innerHTML = html;
+}
+
+// ===== iCLOUD CALENDAR (ICS) INTEGRATION =====
+let cachedICalEvents = null;
+let lastICalFetch = 0;
+
+function getICalURL() {
+  return gameData.settings?.ical_url || '';
+}
+
+function fetchICalEvents() {
+  const url = getICalURL();
+  const eventsList = document.getElementById('ical-events-list');
+  const status = document.getElementById('ical-status');
+
+  if (!url) {
+    eventsList.innerHTML = `<div class="ical-setup">
+      <div style="font-size:32px;margin-bottom:12px">📅</div>
+      <div class="ical-setup-text">
+        Apple 캘린더를 연동하면 오늘 일정을<br>퀘스트 화면에서 바로 확인할 수 있습니다.
+      </div>
+      <button class="ical-setup-btn" onclick="showSettingsModal()">⚙️ 캘린더 URL 설정</button>
+    </div>`;
+    if (status) status.textContent = '';
+    return;
+  }
+
+  // Use cache if less than 5 minutes old
+  if (cachedICalEvents && (Date.now() - lastICalFetch < 300000)) {
+    renderICalEvents(cachedICalEvents);
+    if (status) status.textContent = `마지막 동기화: ${new Date(lastICalFetch).toLocaleTimeString('ko-KR', {hour:'2-digit',minute:'2-digit'})}`;
+    return;
+  }
+
+  eventsList.innerHTML = '<div class="ical-empty">📡 캘린더 불러오는 중...</div>';
+
+  // Convert webcal:// to https://
+  let fetchUrl = url.replace(/^webcal:\/\//, 'https://');
+
+  // Use CORS proxy for iCloud
+  const proxyUrl = 'https://corsproxy.io/?' + encodeURIComponent(fetchUrl);
+
+  fetch(proxyUrl)
+    .then(r => {
+      if (!r.ok) throw new Error('HTTP ' + r.status);
+      return r.text();
+    })
+    .then(icsText => {
+      const events = parseICS(icsText);
+      cachedICalEvents = events;
+      lastICalFetch = Date.now();
+      renderICalEvents(events);
+      renderICalTodayStrip(events);
+      if (status) status.textContent = `마지막 동기화: ${new Date().toLocaleTimeString('ko-KR', {hour:'2-digit',minute:'2-digit'})}`;
+    })
+    .catch(err => {
+      console.error('[iCal] Fetch failed:', err);
+      if (cachedICalEvents) {
+        renderICalEvents(cachedICalEvents);
+        if (status) status.textContent = '⚠️ 새로고침 실패 - 캐시된 데이터 표시 중';
+      } else {
+        eventsList.innerHTML = `<div class="ical-empty">
+          ⚠️ 캘린더를 불러올 수 없습니다<br>
+          <span style="font-size:11px;color:var(--dim)">URL을 확인해주세요. 공개 캘린더만 지원됩니다.</span>
+        </div>`;
+      }
+    });
+}
+
+function parseICS(icsText) {
+  const events = [];
+  const lines = icsText.replace(/\r\n /g, '').replace(/\r/g, '\n').split('\n');
+  let current = null;
+
+  for (const line of lines) {
+    if (line === 'BEGIN:VEVENT') {
+      current = {};
+    } else if (line === 'END:VEVENT' && current) {
+      events.push(current);
+      current = null;
+    } else if (current) {
+      const colonIdx = line.indexOf(':');
+      if (colonIdx === -1) continue;
+      const key = line.substring(0, colonIdx);
+      const val = line.substring(colonIdx + 1);
+
+      if (key.startsWith('DTSTART')) {
+        current.dtstart = parseICSDate(val);
+        current.allDay = val.length === 8; // YYYYMMDD = all day
+      } else if (key.startsWith('DTEND')) {
+        current.dtend = parseICSDate(val);
+      } else if (key === 'SUMMARY') {
+        current.summary = val.replace(/\\,/g, ',').replace(/\\n/g, ' ').replace(/\\\\/g, '\\');
+      } else if (key === 'LOCATION') {
+        current.location = val.replace(/\\,/g, ',').replace(/\\n/g, ' ').replace(/\\\\/g, '\\');
+      } else if (key === 'DESCRIPTION') {
+        current.description = val.replace(/\\,/g, ',').replace(/\\n/g, '\n').replace(/\\\\/g, '\\');
+      } else if (key === 'RRULE') {
+        current.rrule = val;
+      }
+    }
+  }
+  return events;
+}
+
+function parseICSDate(val) {
+  // Handle YYYYMMDD (all day)
+  if (val.length === 8 && /^\d{8}$/.test(val)) {
+    return new Date(val.slice(0,4), parseInt(val.slice(4,6))-1, val.slice(6,8));
+  }
+  // Handle YYYYMMDDTHHMMSS or YYYYMMDDTHHMMSSZ
+  const match = val.match(/^(\d{4})(\d{2})(\d{2})T(\d{2})(\d{2})(\d{2})(Z?)$/);
+  if (match) {
+    const [,y,m,d,h,mi,s,z] = match;
+    if (z) {
+      return new Date(Date.UTC(y, parseInt(m)-1, d, h, mi, s));
+    }
+    return new Date(y, parseInt(m)-1, d, h, mi, s);
+  }
+  // Fallback
+  return new Date(val);
+}
+
+function getTodayEvents(events) {
+  const now = new Date();
+  const todayStr = now.toISOString().split('T')[0];
+
+  return events.filter(ev => {
+    if (!ev.dtstart) return false;
+    const evDate = ev.dtstart.toISOString().split('T')[0];
+
+    // Simple check: event starts today
+    if (evDate === todayStr) return true;
+
+    // Check recurring events (basic DAILY/WEEKLY support)
+    if (ev.rrule) {
+      const rule = ev.rrule;
+      const startDate = ev.dtstart;
+      const daysDiff = Math.floor((now - startDate) / 86400000);
+
+      if (daysDiff < 0) return false;
+
+      if (rule.includes('FREQ=DAILY')) return true;
+      if (rule.includes('FREQ=WEEKLY')) {
+        if (rule.includes('BYDAY=')) {
+          const dayMap = {SU:0,MO:1,TU:2,WE:3,TH:4,FR:5,SA:6};
+          const byDay = rule.match(/BYDAY=([A-Z,]+)/);
+          if (byDay) {
+            const days = byDay[1].split(',').map(d => dayMap[d]);
+            return days.includes(now.getDay());
+          }
+        }
+        return daysDiff % 7 === 0;
+      }
+    }
+    return false;
+  }).sort((a, b) => {
+    if (a.allDay && !b.allDay) return -1;
+    if (!a.allDay && b.allDay) return 1;
+    return (a.dtstart || 0) - (b.dtstart || 0);
+  });
+}
+
+function renderICalEvents(events) {
+  const list = document.getElementById('ical-events-list');
+  if (!list) return;
+
+  const todayEvents = getTodayEvents(events);
+  if (todayEvents.length === 0) {
+    list.innerHTML = '<div class="ical-empty">오늘 예정된 일정이 없습니다 🎉</div>';
+    return;
+  }
+
+  const now = new Date();
+  list.innerHTML = todayEvents.map(ev => {
+    const isAllDay = ev.allDay;
+    const isPast = ev.dtend && ev.dtend < now;
+    const isNow = !isAllDay && ev.dtstart <= now && ev.dtend && ev.dtend > now;
+    const statusClass = isNow ? 'now' : (isPast ? 'past' : '');
+
+    let timeStr = '';
+    if (isAllDay) {
+      timeStr = '<span class="ical-allday">종일</span>';
+    } else {
+      const h = ev.dtstart.getHours().toString().padStart(2,'0');
+      const m = ev.dtstart.getMinutes().toString().padStart(2,'0');
+      timeStr = `${h}:${m}`;
+    }
+
+    return `<div class="ical-event ${statusClass}">
+      <div class="ical-time">${timeStr}</div>
+      <div class="ical-details">
+        <div class="ical-title">${isNow ? '🔴 ' : ''}${escapeHTML(ev.summary || '(제목 없음)')}</div>
+        ${ev.location ? `<div class="ical-location">📍 ${escapeHTML(ev.location)}</div>` : ''}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function renderICalTodayStrip(events) {
+  const strip = document.getElementById('ical-today-strip');
+  const evContainer = document.getElementById('ical-today-events');
+  if (!strip || !evContainer) return;
+
+  const todayEvents = getTodayEvents(events);
+  if (todayEvents.length === 0) {
+    strip.classList.remove('show');
+    return;
+  }
+
+  // Show max 3 upcoming events on quest tab
+  const now = new Date();
+  const upcoming = todayEvents.filter(ev => !ev.dtend || ev.dtend > now).slice(0, 3);
+  if (upcoming.length === 0) {
+    strip.classList.remove('show');
+    return;
+  }
+
+  strip.classList.add('show');
+  evContainer.innerHTML = upcoming.map(ev => {
+    let timeStr = '종일';
+    if (!ev.allDay) {
+      const h = ev.dtstart.getHours().toString().padStart(2,'0');
+      const m = ev.dtstart.getMinutes().toString().padStart(2,'0');
+      timeStr = `${h}:${m}`;
+    }
+    return `<div class="ical-today-item">
+      <span class="ical-today-time">${timeStr}</span>
+      <span class="ical-today-name">${escapeHTML(ev.summary || '(제목 없음)')}</span>
+    </div>`;
+  }).join('');
+}
+
+// ===== SETTINGS =====
+function showSettingsModal() {
+  const modal = document.getElementById('settings-modal');
+  document.getElementById('settings-ical-url').value = gameData.settings?.ical_url || '';
+  document.getElementById('settings-char-name').value = gameData.character.name || 'Alfred';
+
+  // Rest days checkboxes
+  const restContainer = document.getElementById('settings-rest-days');
+  const restDays = gameData.settings?.exercise_rest_days || [];
+  restContainer.innerHTML = DAYS_KO.map((d, i) => {
+    const checked = restDays.includes(i) ? 'checked' : '';
+    return `<label style="display:flex;align-items:center;gap:4px;font-size:12px;color:var(--text);cursor:pointer">
+      <input type="checkbox" class="rest-day-cb" value="${i}" ${checked}> ${d}
+    </label>`;
+  }).join('');
+
+  modal.classList.add('show');
+}
+
+function closeSettingsModal() {
+  document.getElementById('settings-modal').classList.remove('show');
+}
+
+function saveSettings() {
+  const icalUrl = document.getElementById('settings-ical-url').value.trim();
+  const charName = document.getElementById('settings-char-name').value.trim();
+  const restDays = [];
+  document.querySelectorAll('.rest-day-cb:checked').forEach(cb => {
+    restDays.push(parseInt(cb.value));
+  });
+
+  if (!gameData.settings) gameData.settings = {};
+  gameData.settings.ical_url = icalUrl;
+  gameData.settings.exercise_rest_days = restDays;
+  if (charName) gameData.character.name = charName;
+
+  // Reset iCal cache to force re-fetch
+  cachedICalEvents = null;
+  lastICalFetch = 0;
+
+  saveData();
+  renderAll();
+  closeSettingsModal();
+
+  // Auto-fetch calendar if URL is set
+  if (icalUrl) {
+    fetchICalEvents();
+  }
 }
 
 // ===== REPORT =====
@@ -1441,6 +1874,22 @@ if ('serviceWorker' in navigator) {
 // ===== START =====
 init();
 
+// Fetch iCal events on startup (silently for today strip)
+if (getICalURL()) {
+  const url = getICalURL().replace(/^webcal:\/\//, 'https://');
+  fetch('https://corsproxy.io/?' + encodeURIComponent(url))
+    .then(r => r.ok ? r.text() : Promise.reject('HTTP ' + r.status))
+    .then(icsText => {
+      cachedICalEvents = parseICS(icsText);
+      lastICalFetch = Date.now();
+      renderICalTodayStrip(cachedICalEvents);
+    })
+    .catch(e => console.log('[iCal] Startup fetch failed:', e));
+}
+
+// Check all clear status on load
+checkAllClear();
+
 // AI Reminder check every minute
 setInterval(checkAIReminder, 60000);
 checkAIReminder();
@@ -1458,6 +1907,23 @@ setInterval(() => {
     renderAll();
   }
 }, 60000);
+
+// Refresh iCal every 10 minutes
+setInterval(() => {
+  if (getICalURL()) {
+    cachedICalEvents = null;
+    lastICalFetch = 0;
+    const url = getICalURL().replace(/^webcal:\/\//, 'https://');
+    fetch('https://corsproxy.io/?' + encodeURIComponent(url))
+      .then(r => r.ok ? r.text() : Promise.reject())
+      .then(icsText => {
+        cachedICalEvents = parseICS(icsText);
+        lastICalFetch = Date.now();
+        renderICalTodayStrip(cachedICalEvents);
+      })
+      .catch(() => {});
+  }
+}, 600000);
 </script>
 </body>
 </html>
