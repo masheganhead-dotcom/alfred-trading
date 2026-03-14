@@ -1,7 +1,10 @@
-const CACHE_NAME = 'alfred-quest-v1.1';
+const CACHE_NAME = 'alfred-quest-v2.0';
 const ASSETS = [
   './routine.html',
-  './manifest.json'
+  './manifest.json',
+  './icon-180.png',
+  './icon-192.png',
+  './icon-512.png'
 ];
 
 self.addEventListener('install', e => {

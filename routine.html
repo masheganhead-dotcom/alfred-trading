@@ -7,7 +7,12 @@
 <link rel="manifest" href="manifest.json">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Alfred Quest">
 <meta name="theme-color" content="#0a0a0f">
+<meta name="mobile-web-app-capable" content="yes">
+<link rel="apple-touch-icon" href="icon-180.png">
+<link rel="apple-touch-icon" sizes="180x180" href="icon-180.png">
+<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚔️</text></svg>">
 <!-- Firebase SDK -->
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
@@ -22,7 +27,8 @@
   --xp-from:#7c4dff;--xp-to:#448aff;
   --quest-done:rgba(0,230,118,.08);
 }
-body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;-webkit-tap-highlight-color:transparent;padding-bottom:env(safe-area-inset-bottom)}
+body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;min-height:100dvh;-webkit-tap-highlight-color:transparent;padding-bottom:env(safe-area-inset-bottom);padding-top:env(safe-area-inset-top);overscroll-behavior-y:contain;-webkit-overflow-scrolling:touch}
+@supports(padding-top:env(safe-area-inset-top)){.hdr{padding-top:calc(14px + env(safe-area-inset-top))}}
 .mono{font-family:'SF Mono',Menlo,monospace}
 
 /* Header */
@@ -268,6 +274,69 @@ body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display',sans-serif;ba
 
 /* Time indicator on quests */
 .quest-time-hint{font-size:10px;color:var(--blue);margin-top:2px;display:flex;align-items:center;gap:4px}
+
+/* Focus Timer */
+.focus-section{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:16px;margin-bottom:12px;text-align:center}
+.focus-timer-display{font-size:56px;font-weight:200;color:var(--text);font-family:'SF Mono',Menlo,monospace;letter-spacing:2px;margin:16px 0}
+.focus-timer-display.running{color:var(--green)}
+.focus-timer-display.break-time{color:var(--gold)}
+.focus-label{font-size:12px;color:var(--dim);margin-bottom:8px}
+.focus-session-info{font-size:11px;color:var(--dim);margin-bottom:12px}
+.focus-btns{display:flex;gap:8px;justify-content:center;margin-top:12px}
+.focus-btn{padding:10px 24px;border-radius:10px;border:none;font-size:13px;font-weight:600;cursor:pointer}
+.focus-btn.start{background:var(--green);color:#000}
+.focus-btn.pause{background:var(--gold);color:#000}
+.focus-btn.stop{background:var(--card2);color:var(--dim);border:1px solid var(--border)}
+.focus-btn:active{opacity:.8}
+.focus-presets{display:flex;gap:6px;justify-content:center;margin:12px 0}
+.focus-preset{padding:6px 14px;border-radius:6px;border:1px solid var(--border);background:none;color:var(--dim);cursor:pointer;font-size:11px;font-weight:600}
+.focus-preset.active{border-color:var(--purple);color:var(--purple);background:rgba(179,136,255,.1)}
+.focus-preset:active{opacity:.7}
+.focus-stats{display:flex;gap:12px;justify-content:center;margin-top:12px}
+.focus-stat{text-align:center}
+.focus-stat-val{font-size:18px;font-weight:700;color:var(--purple);font-family:'SF Mono',Menlo,monospace}
+.focus-stat-label{font-size:10px;color:var(--dim)}
+.focus-progress-ring{position:relative;width:200px;height:200px;margin:0 auto}
+.focus-progress-ring svg{transform:rotate(-90deg)}
+.focus-progress-ring .time-text{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center}
+
+/* Energy Tracker */
+.energy-section{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:14px;margin-bottom:12px}
+.energy-row{display:flex;align-items:center;gap:8px}
+.energy-label{font-size:12px;color:var(--dim);min-width:60px}
+.energy-dots{display:flex;gap:4px;flex:1}
+.energy-dot{width:32px;height:32px;border-radius:8px;border:1px solid var(--border);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:14px;transition:all .2s;background:var(--card2)}
+.energy-dot.active{border-color:var(--gold);background:rgba(255,215,64,.15)}
+.energy-dot:active{transform:scale(.9)}
+.energy-history{display:flex;gap:2px;margin-top:8px;justify-content:center}
+.energy-history-dot{width:8px;height:24px;border-radius:2px;background:var(--card2)}
+.energy-history-dot.e1{background:var(--red)}
+.energy-history-dot.e2{background:#ff9800}
+.energy-history-dot.e3{background:var(--gold)}
+.energy-history-dot.e4{background:#8bc34a}
+.energy-history-dot.e5{background:var(--green)}
+
+/* Weekly Review */
+.review-section{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:16px;margin-bottom:12px}
+.review-question{margin-bottom:12px}
+.review-q{font-size:12px;font-weight:700;color:var(--text);margin-bottom:6px}
+.review-a{width:100%;padding:8px;background:var(--card2);border:1px solid var(--border);border-radius:8px;color:var(--text);font-size:12px;font-family:inherit;resize:vertical;min-height:50px}
+.review-saved{font-size:11px;color:var(--green);text-align:center;margin-top:8px;opacity:0;transition:opacity .3s}
+.review-saved.show{opacity:1}
+
+/* Motivational quote */
+.quote-banner{background:linear-gradient(135deg,rgba(179,136,255,.08),rgba(68,138,255,.08));border:1px solid var(--border);border-radius:12px;padding:14px;margin-bottom:12px;text-align:center}
+.quote-text{font-size:12px;color:var(--text);font-style:italic;line-height:1.6}
+.quote-author{font-size:10px;color:var(--dim);margin-top:4px}
+
+/* Time block indicator */
+.time-block{display:inline-flex;align-items:center;gap:4px;font-size:10px;color:var(--blue);padding:2px 6px;border-radius:4px;background:rgba(68,138,255,.08)}
+.time-block.current{color:var(--green);background:rgba(0,230,118,.08)}
+.time-block.passed{color:var(--dim);background:transparent}
+
+/* Improved tab scrollbar */
+.tab-nav::-webkit-scrollbar{display:none}
+.tab-nav{-ms-overflow-style:none;scrollbar-width:none}
 </style>
 </head>
 <body>
@@ -317,6 +386,21 @@ body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display',sans-serif;ba
     </div>
   </div>
 
+  <!-- Daily Quote -->
+  <div class="quote-banner" id="daily-quote">
+    <div class="quote-text" id="quote-text"></div>
+    <div class="quote-author" id="quote-author"></div>
+  </div>
+
+  <!-- Energy Check-in -->
+  <div class="energy-section" id="energy-section">
+    <div class="energy-row">
+      <span class="energy-label">오늘 컨디션</span>
+      <div class="energy-dots" id="energy-dots"></div>
+    </div>
+    <div class="energy-history" id="energy-history"></div>
+  </div>
+
   <!-- AI Reminder Banner -->
   <div class="reminder-banner" id="ai-reminder">
     <div class="reminder-title">🤖 AI 작업 점검 시간!</div>
@@ -342,8 +426,9 @@ body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display',sans-serif;ba
   <!-- Tab Navigation -->
   <div class="tab-nav">
     <button class="tab-btn active" onclick="switchTab('quests',this)">⚔️ 퀘스트</button>
+    <button class="tab-btn" onclick="switchTab('focus',this)">🎯 포커스</button>
     <button class="tab-btn" onclick="switchTab('calendar',this)">📅 캘린더</button>
-    <button class="tab-btn" onclick="switchTab('music',this)">🎵 작업 트래커</button>
+    <button class="tab-btn" onclick="switchTab('music',this)">🎵 작업</button>
     <button class="tab-btn" onclick="switchTab('notes',this)">📝 노트</button>
     <button class="tab-btn" onclick="switchTab('report',this)">📊 리포트</button>
   </div>
@@ -354,6 +439,56 @@ body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display',sans-serif;ba
     <div class="skills-section">
       <div class="section-title">🔮 스킬</div>
       <div class="skills-grid" id="skills-grid"></div>
+    </div>
+  </div>
+
+  <!-- Tab: Focus Timer -->
+  <div class="tab-content" id="tab-focus">
+    <div class="focus-section">
+      <div class="section-title">🎯 딥 포커스 타이머</div>
+      <div class="focus-label" id="focus-mode-label">작업 모드</div>
+      <div class="focus-progress-ring" id="focus-ring">
+        <svg width="200" height="200">
+          <circle cx="100" cy="100" r="90" fill="none" stroke="var(--card2)" stroke-width="6"/>
+          <circle cx="100" cy="100" r="90" fill="none" stroke="var(--purple)" stroke-width="6"
+            id="focus-ring-circle"
+            stroke-dasharray="565.5" stroke-dashoffset="0"
+            stroke-linecap="round"/>
+        </svg>
+        <div class="time-text">
+          <div class="focus-timer-display" id="focus-timer">25:00</div>
+          <div class="focus-label" id="focus-session-label">세션 준비</div>
+        </div>
+      </div>
+      <div class="focus-presets">
+        <button class="focus-preset active" onclick="setFocusPreset(25,5,'pomodoro',this)">🍅 25/5</button>
+        <button class="focus-preset" onclick="setFocusPreset(50,10,'deep',this)">🧠 50/10</button>
+        <button class="focus-preset" onclick="setFocusPreset(90,20,'flow',this)">🔥 90/20</button>
+        <button class="focus-preset" onclick="setFocusPreset(0,0,'free',this)">⏱️ 자유</button>
+      </div>
+      <div class="focus-btns">
+        <button class="focus-btn start" id="focus-start-btn" onclick="toggleFocusTimer()">▶ 시작</button>
+        <button class="focus-btn stop" onclick="resetFocusTimer()">■ 리셋</button>
+      </div>
+      <div class="focus-stats">
+        <div class="focus-stat">
+          <div class="focus-stat-val" id="focus-today-sessions">0</div>
+          <div class="focus-stat-label">오늘 세션</div>
+        </div>
+        <div class="focus-stat">
+          <div class="focus-stat-val" id="focus-today-minutes">0</div>
+          <div class="focus-stat-label">총 집중 (분)</div>
+        </div>
+        <div class="focus-stat">
+          <div class="focus-stat-val" id="focus-streak">0</div>
+          <div class="focus-stat-label">연속 세션</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="focus-section">
+      <div class="section-title">📋 오늘의 포커스 로그</div>
+      <div id="focus-log"></div>
     </div>
   </div>
 
@@ -435,6 +570,23 @@ body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display',sans-serif;ba
       <div class="section-title">📈 스탯 성장 기록</div>
       <canvas id="stat-growth-chart" width="460" height="200" style="width:100%;height:150px"></canvas>
     </div>
+
+    <div class="review-section">
+      <div class="section-title">📝 주간 리뷰 (일요일)</div>
+      <div class="review-question">
+        <div class="review-q">1. 이번 주 가장 잘한 것은?</div>
+        <textarea class="review-a" id="review-q1" placeholder="가장 생산적이었던 순간, 완성한 작업..." onchange="saveWeeklyReview()"></textarea>
+      </div>
+      <div class="review-question">
+        <div class="review-q">2. 이번 주 가장 아쉬운 것은?</div>
+        <textarea class="review-a" id="review-q2" placeholder="놓친 루틴, 미룬 작업..." onchange="saveWeeklyReview()"></textarea>
+      </div>
+      <div class="review-question">
+        <div class="review-q">3. 다음 주 집중할 1가지는?</div>
+        <textarea class="review-a" id="review-q3" placeholder="한 가지 핵심 목표..." onchange="saveWeeklyReview()"></textarea>
+      </div>
+      <div class="review-saved" id="review-saved">✓ 저장됨</div>
+    </div>
   </div>
 
   <!-- Sync Status -->
@@ -442,7 +594,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display',sans-serif;ba
     <span id="sync-indicator" style="font-size:11px;color:var(--dim)"></span>
   </div>
 
-  <div class="footer">Alfred Quest v1.1 · RPG Daily Routine Tracker · iCloud Calendar 연동</div>
+  <div class="footer">Alfred Quest v2.0 · RPG Daily Routine Tracker · Focus Timer · iCloud Calendar</div>
 </div>
 
 <!-- Song Modal -->
@@ -636,29 +788,29 @@ function getDefaultData() {
     },
     quests:{
       morning:[
-        {id:"m1",name:"미드 공부",desc:"Ginnie&Georgia - 발음/악센트/단어/표현 정리",xp:30,stats:{int:2},icon:"🎬"},
-        {id:"m2",name:"복근 운동",desc:"아침 코어 운동",xp:20,stats:{str:2},icon:"🏋️"},
-        {id:"m3",name:"독서",desc:"정해진 페이지 분량 읽기",xp:25,stats:{int:2},icon:"📖"},
-        {id:"m4",name:"AI 작업 할당",desc:"코딩 작업 분배 & 자동화 세팅",xp:20,stats:{biz:1,int:1},icon:"🤖"}
+        {id:"m1",name:"미드 공부",desc:"Ginnie&Georgia - 발음/악센트/단어/표현 정리",xp:30,stats:{int:2},icon:"🎬",time:"07:00-08:00"},
+        {id:"m2",name:"복근 운동",desc:"아침 코어 운동 (10분)",xp:20,stats:{str:2},icon:"🏋️",time:"08:00-08:15"},
+        {id:"m3",name:"독서",desc:"정해진 페이지 분량 읽기",xp:25,stats:{int:2},icon:"📖",time:"08:15-09:00"},
+        {id:"m4",name:"AI 작업 할당",desc:"코딩 작업 분배 & 자동화 세팅",xp:20,stats:{biz:1,int:1},icon:"🤖",time:"09:00-09:30"}
       ],
       studio:[
-        {id:"s1",name:"작업 계획 수립",desc:"데드라인 확인, 최소 2곡 계획",xp:15,stats:{biz:1},icon:"📋"},
-        {id:"s2",name:"레퍼런스 수집",desc:"오늘 만들 곡의 레퍼런스",xp:20,stats:{cre:2},icon:"🔍"},
-        {id:"s3",name:"메인 스케치",desc:"테마 스케치 → 1절 완성 (디테일 집착 X)",xp:40,stats:{cre:3},icon:"🎹"},
-        {id:"s4",name:"릴스 제작",desc:"아티스트 릴스 1개 기획+제작",xp:25,stats:{chr:2},icon:"📱"},
-        {id:"s5",name:"레슨 사업 기획",desc:"레슨 확장 및 기획",xp:20,stats:{biz:2},icon:"💼"}
+        {id:"s1",name:"작업 계획 수립",desc:"데드라인 확인, 최소 2곡 계획",xp:15,stats:{biz:1},icon:"📋",time:"10:00-10:15"},
+        {id:"s2",name:"레퍼런스 수집",desc:"오늘 만들 곡의 레퍼런스",xp:20,stats:{cre:2},icon:"🔍",time:"10:15-10:45"},
+        {id:"s3",name:"메인 스케치",desc:"테마 스케치 → 1절 완성 (디테일 집착 X)",xp:40,stats:{cre:3},icon:"🎹",time:"10:45-12:30"},
+        {id:"s4",name:"릴스 제작",desc:"아티스트 릴스 1개 기획+제작",xp:25,stats:{chr:2},icon:"📱",time:"14:00-15:00"},
+        {id:"s5",name:"레슨 사업 기획",desc:"레슨 확장 및 기획",xp:20,stats:{biz:2},icon:"💼",time:"15:00-16:00"}
       ],
       exercise:[
-        {id:"e1",name:"웨이트 1시간",desc:"스포짐 웨이트 트레이닝",xp:35,stats:{str:3},icon:"🏋️"},
-        {id:"e2",name:"유산소 30분",desc:"러닝/사이클 등",xp:25,stats:{str:2},icon:"🏃"}
+        {id:"e1",name:"웨이트 1시간",desc:"스포짐 웨이트 트레이닝",xp:35,stats:{str:3},icon:"🏋️",time:"16:30-17:30"},
+        {id:"e2",name:"유산소 30분",desc:"러닝/사이클 등",xp:25,stats:{str:2},icon:"🏃",time:"17:30-18:00"}
       ],
       evening_work:[
-        {id:"w1",name:"목표 설정",desc:"어떤 곡, 어떤 파트, 어떤 방향인지 명확히",xp:15,stats:{biz:1},icon:"🎯"},
-        {id:"w2",name:"창작 실험",desc:"새로운 느낌 탐구, 실험과 도전",xp:35,stats:{cre:3,grt:1},icon:"🧪"}
+        {id:"w1",name:"목표 설정",desc:"어떤 곡, 어떤 파트, 어떤 방향인지 명확히",xp:15,stats:{biz:1},icon:"🎯",time:"19:00-19:15"},
+        {id:"w2",name:"창작 실험",desc:"새로운 느낌 탐구, 실험과 도전",xp:35,stats:{cre:3,grt:1},icon:"🧪",time:"19:15-21:00"}
       ],
       home:[
-        {id:"h1",name:"샤워 & 정리",desc:"옷 갈아입고 바로 샤워",xp:10,stats:{grt:1},icon:"🚿"},
-        {id:"h2",name:"AI 공부",desc:"AI 관련 학습",xp:25,stats:{int:2},icon:"🧠"}
+        {id:"h1",name:"샤워 & 정리",desc:"옷 갈아입고 바로 샤워",xp:10,stats:{grt:1},icon:"🚿",time:"21:00-21:30"},
+        {id:"h2",name:"AI 공부",desc:"AI 관련 학습",xp:25,stats:{int:2},icon:"🧠",time:"21:30-22:30"}
       ]
     },
     history:{},
@@ -682,6 +834,15 @@ function checkDayReset() {
     gameData.history[todayKey] = {completed:[], xp_earned:0, stats_gained:{}};
   }
   todayCompleted = gameData.history[todayKey].completed || [];
+
+  // Ensure new data structures exist (v2.0 migration)
+  if (!gameData.settings) gameData.settings = {exercise_rest_days:[5,6]};
+  if (!gameData.settings.exercise_rest_days) gameData.settings.exercise_rest_days = [5,6];
+  if (!gameData.energy) gameData.energy = {};
+  if (!gameData.focus) gameData.focus = {};
+  if (!gameData.reviews) gameData.reviews = {};
+  if (!gameData.notes) gameData.notes = {};
+  if (!gameData.songs) gameData.songs = [];
 }
 
 // ===== XP & LEVELING =====
@@ -857,6 +1018,9 @@ function renderAll() {
   renderRadar();
   renderQuests();
   renderSkills();
+  renderEnergyTracker();
+  renderDailyQuote();
+  updateFocusDisplay();
 }
 
 function renderHeader() {
@@ -1008,11 +1172,13 @@ function renderQuests() {
       questsHTML = quests.map(q => {
         const done = todayCompleted.includes(q.id);
         const statsText = Object.entries(q.stats).map(([k,v]) => `${STAT_CONFIG[k]?.icon||''}+${v}`).join(' ');
+        const timeHint = getTimeBlockStatus(q.time);
         return `<div class="quest-item ${done?'done':''}" onclick="toggleQuest('${q.id}',event)">
           <div class="quest-check">${done?'✓':''}</div>
           <div class="quest-info">
             <div class="quest-name">${q.icon} ${q.name}</div>
             <div class="quest-desc">${q.desc}</div>
+            ${q.time ? `<div class="quest-time-hint"><span class="time-block ${timeHint.cls}">🕐 ${q.time}</span>${timeHint.label}</div>` : ''}
             <div class="quest-stats-gain">${statsText}</div>
           </div>
           <div class="quest-xp mono">${done?'✓':''} +${q.xp}</div>
@@ -1136,10 +1302,11 @@ function switchTab(tabId, btn) {
   document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
   document.getElementById('tab-' + tabId).classList.add('active');
   btn.classList.add('active');
-  if (tabId === 'report') renderReport();
+  if (tabId === 'report') { renderReport(); loadWeeklyReview(); }
   if (tabId === 'music') renderSongs();
   if (tabId === 'notes') renderNotes();
   if (tabId === 'calendar') { renderCalendarMain(); fetchICalEvents(); }
+  if (tabId === 'focus') renderFocusStats();
 }
 
 // ===== MUSIC TRACKER =====
@@ -1165,7 +1332,7 @@ function renderSongs() {
     return `<div class="song-card">
       <button class="song-delete" onclick="deleteSong(${idx})" title="삭제">✕</button>
       <div class="song-header">
-        <span class="song-title">${song.name}</span>
+        <span class="song-title">${escapeHTML(song.name)}</span>
         <span class="song-status ${isDone?'done':'wip'}">${isDone?'완성':'작업중 '+pct+'%'}</span>
       </div>
       <div class="song-progress-bar"><div class="song-progress-fill" style="width:${pct}%"></div></div>
@@ -1173,7 +1340,7 @@ function renderSongs() {
         `<span class="song-part ${p.done?'done':''} ${p.active?'active':''}" onclick="toggleSongPart(${idx},${pi})">${p.name}</span>`
       ).join('')}</div>
       ${song.deadline ? `<div class="song-deadline">마감: ${song.deadline}</div>` : ''}
-      ${song.notes ? `<div style="font-size:11px;color:var(--dim);margin-top:4px">${song.notes}</div>` : ''}
+      ${song.notes ? `<div style="font-size:11px;color:var(--dim);margin-top:4px">${escapeHTML(song.notes)}</div>` : ''}
     </div>`;
   }).join('');
 }
@@ -1617,6 +1784,355 @@ function renderICalTodayStrip(events) {
       <span class="ical-today-name">${escapeHTML(ev.summary || '(제목 없음)')}</span>
     </div>`;
   }).join('');
+}
+
+// ===== TIME BLOCK STATUS =====
+function getTimeBlockStatus(timeStr) {
+  if (!timeStr) return {cls:'', label:''};
+  const [start, end] = timeStr.split('-');
+  const now = new Date();
+  const nowMins = now.getHours() * 60 + now.getMinutes();
+  const [sh, sm] = start.split(':').map(Number);
+  const [eh, em] = end.split(':').map(Number);
+  const startMins = sh * 60 + sm;
+  const endMins = eh * 60 + em;
+
+  if (nowMins >= startMins && nowMins < endMins) {
+    return {cls:'current', label:' ← 지금!'};
+  } else if (nowMins >= endMins) {
+    return {cls:'passed', label:''};
+  }
+  return {cls:'', label:''};
+}
+
+// ===== DAILY QUOTES (for creative producers) =====
+const QUOTES = [
+  {text:"완벽함은 완성의 적이다. 일단 끝내라.", author:"Rick Rubin"},
+  {text:"매일 작업실에 나타나는 것 자체가 절반의 전투다.", author:"Steven Pressfield"},
+  {text:"영감은 아마추어를 위한 것이다. 프로는 그냥 출근한다.", author:"Chuck Close"},
+  {text:"창의성은 습관이다. 최고의 창의성은 좋은 작업 습관의 결과다.", author:"Twyla Tharp"},
+  {text:"하루에 두 곡을 만들어라. 하나는 연습이고, 하나는 작품이 된다.", author:"Pharrell Williams"},
+  {text:"음악은 매일의 수련이다. 감정이 아니라 규율에서 나온다.", author:"Quincy Jones"},
+  {text:"1%만 매일 나아져라. 1년이면 37배가 된다.", author:"James Clear"},
+  {text:"딥 워크는 새 경제의 슈퍼파워다. 집중하는 능력을 훈련하라.", author:"Cal Newport"},
+  {text:"작은 습관이 큰 변화를 만든다. 시스템이 목표를 이긴다.", author:"James Clear"},
+  {text:"프로와 아마추어의 차이? 프로는 기분과 상관없이 작업한다.", author:"Steven Pressfield"},
+  {text:"90분 집중, 20분 휴식. 이것이 인간 뇌의 자연스러운 리듬이다.", author:"Andrew Huberman"},
+  {text:"아침 루틴이 하루를 결정한다. 의지력이 가장 높을 때 가장 중요한 일을.", author:"Hal Elrod"},
+  {text:"레퍼런스를 두려워하지 마라. 위대한 예술가는 훔친다.", author:"Pablo Picasso"},
+  {text:"매일 최소한의 창작을 하라. 양이 질을 만든다.", author:"Ira Glass"},
+  {text:"루틴은 자유의 반대가 아니라, 자유를 위한 도구다.", author:"Jocko Willink"},
+  {text:"운동은 뇌를 위한 최고의 투자다. BDNF가 창의력을 높인다.", author:"John Ratey"},
+  {text:"아이디어는 책상이 아닌 샤워실에서 온다. 의식적 휴식을 설계하라.", author:"Alex Soojung-Kim Pang"},
+  {text:"세상에서 가장 위험한 말: 내일 하지 뭐.", author:"자기 자신에게"},
+  {text:"프로듀서는 매일 사운드를 만져야 한다. 근육처럼 감각도 퇴화한다.", author:"Timbaland"},
+  {text:"스트릭을 끊지 마라. 연속성이 실력을 만든다.", author:"Jerry Seinfeld"},
+  {text:"완벽한 루틴은 없다. 오늘 할 수 있는 것을 하라.", author:"Marcus Aurelius (의역)"}
+];
+
+function renderDailyQuote() {
+  const dayOfYear = Math.floor((new Date() - new Date(new Date().getFullYear(), 0, 0)) / 86400000);
+  const quote = QUOTES[dayOfYear % QUOTES.length];
+  const qt = document.getElementById('quote-text');
+  const qa = document.getElementById('quote-author');
+  if (qt) qt.textContent = `"${quote.text}"`;
+  if (qa) qa.textContent = `— ${quote.author}`;
+}
+
+// ===== ENERGY TRACKER =====
+const ENERGY_LEVELS = [
+  {level:1, emoji:'😴', label:'매우 낮음'},
+  {level:2, emoji:'😕', label:'낮음'},
+  {level:3, emoji:'😐', label:'보통'},
+  {level:4, emoji:'😊', label:'좋음'},
+  {level:5, emoji:'🔥', label:'최고'}
+];
+
+function renderEnergyTracker() {
+  const dots = document.getElementById('energy-dots');
+  const history = document.getElementById('energy-history');
+  if (!dots) return;
+
+  const todayEnergy = (gameData.energy && gameData.energy[todayKey]) || 0;
+
+  dots.innerHTML = ENERGY_LEVELS.map(e =>
+    `<div class="energy-dot ${todayEnergy === e.level ? 'active' : ''}"
+          onclick="setEnergy(${e.level})" title="${e.label}">
+      ${e.emoji}
+    </div>`
+  ).join('');
+
+  // Show last 14 days history
+  if (history && gameData.energy) {
+    const days = [];
+    for (let i = 13; i >= 0; i--) {
+      const d = new Date();
+      d.setDate(d.getDate() - i);
+      const key = d.toISOString().split('T')[0];
+      days.push(gameData.energy[key] || 0);
+    }
+    history.innerHTML = days.map(e =>
+      `<div class="energy-history-dot ${e ? 'e'+e : ''}" title="에너지: ${e || '미입력'}"></div>`
+    ).join('');
+  }
+}
+
+function setEnergy(level) {
+  if (!gameData.energy) gameData.energy = {};
+  gameData.energy[todayKey] = level;
+  saveData();
+  renderEnergyTracker();
+}
+
+// ===== FOCUS TIMER =====
+let focusTimer = {
+  running: false,
+  isBreak: false,
+  workMins: 25,
+  breakMins: 5,
+  mode: 'pomodoro',
+  remaining: 25 * 60, // seconds
+  total: 25 * 60,
+  interval: null,
+  sessionCount: 0
+};
+
+function setFocusPreset(work, brk, mode, btn) {
+  if (focusTimer.running) return;
+  document.querySelectorAll('.focus-preset').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  focusTimer.workMins = work;
+  focusTimer.breakMins = brk;
+  focusTimer.mode = mode;
+  if (mode === 'free') {
+    focusTimer.remaining = 0;
+    focusTimer.total = 0;
+    updateFocusDisplay();
+  } else {
+    focusTimer.remaining = work * 60;
+    focusTimer.total = work * 60;
+    focusTimer.isBreak = false;
+    updateFocusDisplay();
+  }
+}
+
+function toggleFocusTimer() {
+  const btn = document.getElementById('focus-start-btn');
+  if (focusTimer.running) {
+    // Pause
+    clearInterval(focusTimer.interval);
+    focusTimer.running = false;
+    btn.textContent = '▶ 재개';
+    btn.className = 'focus-btn start';
+  } else {
+    // Start
+    focusTimer.running = true;
+    btn.textContent = '⏸ 일시정지';
+    btn.className = 'focus-btn pause';
+    document.getElementById('focus-session-label').textContent =
+      focusTimer.isBreak ? '☕ 휴식 중' : '🔥 집중 중';
+
+    focusTimer.interval = setInterval(() => {
+      if (focusTimer.mode === 'free') {
+        focusTimer.remaining++;
+        focusTimer.total = focusTimer.remaining;
+      } else {
+        focusTimer.remaining--;
+      }
+      updateFocusDisplay();
+
+      if (focusTimer.mode !== 'free' && focusTimer.remaining <= 0) {
+        clearInterval(focusTimer.interval);
+        focusTimer.running = false;
+
+        if (!focusTimer.isBreak) {
+          // Work session complete
+          logFocusSession();
+          focusTimer.sessionCount++;
+
+          if (focusTimer.breakMins > 0) {
+            // Start break
+            focusTimer.isBreak = true;
+            focusTimer.remaining = focusTimer.breakMins * 60;
+            focusTimer.total = focusTimer.breakMins * 60;
+            document.getElementById('focus-session-label').textContent = '☕ 휴식 시간!';
+            btn.textContent = '▶ 휴식 시작';
+            btn.className = 'focus-btn start';
+            // Vibrate if available
+            if (navigator.vibrate) navigator.vibrate([200, 100, 200]);
+          } else {
+            resetFocusTimer();
+          }
+        } else {
+          // Break complete
+          focusTimer.isBreak = false;
+          focusTimer.remaining = focusTimer.workMins * 60;
+          focusTimer.total = focusTimer.workMins * 60;
+          document.getElementById('focus-session-label').textContent = '세션 준비';
+          btn.textContent = '▶ 시작';
+          btn.className = 'focus-btn start';
+          if (navigator.vibrate) navigator.vibrate([100, 50, 100, 50, 100]);
+        }
+        renderFocusStats();
+        updateFocusDisplay();
+      }
+    }, 1000);
+  }
+}
+
+function resetFocusTimer() {
+  clearInterval(focusTimer.interval);
+  focusTimer.running = false;
+  focusTimer.isBreak = false;
+  if (focusTimer.mode === 'free') {
+    if (focusTimer.remaining > 60) {
+      logFocusSession();
+    }
+    focusTimer.remaining = 0;
+    focusTimer.total = 0;
+  } else {
+    focusTimer.remaining = focusTimer.workMins * 60;
+    focusTimer.total = focusTimer.workMins * 60;
+  }
+  const btn = document.getElementById('focus-start-btn');
+  btn.textContent = '▶ 시작';
+  btn.className = 'focus-btn start';
+  document.getElementById('focus-session-label').textContent = '세션 준비';
+  updateFocusDisplay();
+}
+
+function updateFocusDisplay() {
+  const display = document.getElementById('focus-timer');
+  const ring = document.getElementById('focus-ring-circle');
+  const modeLabel = document.getElementById('focus-mode-label');
+
+  const mins = Math.floor(Math.abs(focusTimer.remaining) / 60);
+  const secs = Math.abs(focusTimer.remaining) % 60;
+  display.textContent = `${String(mins).padStart(2,'0')}:${String(secs).padStart(2,'0')}`;
+
+  display.className = 'focus-timer-display' +
+    (focusTimer.running && !focusTimer.isBreak ? ' running' : '') +
+    (focusTimer.isBreak ? ' break-time' : '');
+
+  // Ring progress
+  const circumference = 2 * Math.PI * 90; // r=90
+  if (focusTimer.total > 0) {
+    const progress = focusTimer.mode === 'free'
+      ? 0
+      : (1 - focusTimer.remaining / focusTimer.total);
+    ring.setAttribute('stroke-dashoffset', circumference * (1 - progress));
+    ring.style.stroke = focusTimer.isBreak ? 'var(--gold)' : 'var(--purple)';
+  } else {
+    ring.setAttribute('stroke-dashoffset', 0);
+  }
+
+  const modeNames = {pomodoro:'🍅 포모도로', deep:'🧠 딥 포커스', flow:'🔥 플로우', free:'⏱️ 자유 모드'};
+  if (modeLabel) modeLabel.textContent = modeNames[focusTimer.mode] || '';
+}
+
+function logFocusSession() {
+  if (!gameData.focus) gameData.focus = {};
+  if (!gameData.focus[todayKey]) gameData.focus[todayKey] = [];
+  const mins = focusTimer.mode === 'free'
+    ? Math.floor(focusTimer.remaining / 60)
+    : focusTimer.workMins;
+  gameData.focus[todayKey].push({
+    mode: focusTimer.mode,
+    minutes: mins,
+    time: new Date().toLocaleTimeString('ko-KR', {hour:'2-digit', minute:'2-digit'}),
+    timestamp: Date.now()
+  });
+
+  // Bonus XP for focus sessions
+  const xpBonus = Math.min(Math.round(mins * 0.5), 25);
+  gameData.character.xp += xpBonus;
+  gameData.character.total_xp += xpBonus;
+  gameData.character.stats.grt = (gameData.character.stats.grt || 1) + 1;
+  if (mins >= 50) gameData.character.stats.int = (gameData.character.stats.int || 1) + 1;
+
+  saveData();
+  renderFocusStats();
+}
+
+function renderFocusStats() {
+  const sessions = (gameData.focus && gameData.focus[todayKey]) || [];
+  const totalMins = sessions.reduce((sum, s) => sum + s.minutes, 0);
+
+  const sessionsEl = document.getElementById('focus-today-sessions');
+  const minsEl = document.getElementById('focus-today-minutes');
+  const streakEl = document.getElementById('focus-streak');
+  const logEl = document.getElementById('focus-log');
+
+  if (sessionsEl) sessionsEl.textContent = sessions.length;
+  if (minsEl) minsEl.textContent = totalMins;
+
+  // Calculate focus streak (consecutive days with at least 1 session)
+  let streak = 0;
+  const today = new Date();
+  for (let i = 0; i < 365; i++) {
+    const d = new Date(today);
+    d.setDate(d.getDate() - i);
+    const key = d.toISOString().split('T')[0];
+    if (gameData.focus && gameData.focus[key] && gameData.focus[key].length > 0) {
+      streak++;
+    } else if (i > 0) {
+      break;
+    }
+  }
+  if (streakEl) streakEl.textContent = streak;
+
+  // Render log
+  if (logEl) {
+    if (sessions.length === 0) {
+      logEl.innerHTML = '<div style="text-align:center;padding:16px;font-size:12px;color:var(--dim)">오늘 포커스 세션이 없습니다. 시작해보세요!</div>';
+    } else {
+      const modeIcons = {pomodoro:'🍅', deep:'🧠', flow:'🔥', free:'⏱️'};
+      logEl.innerHTML = sessions.slice().reverse().map(s =>
+        `<div style="display:flex;align-items:center;gap:8px;padding:8px;background:var(--card2);border-radius:8px;margin-bottom:4px;font-size:12px">
+          <span>${modeIcons[s.mode] || '🎯'}</span>
+          <span style="color:var(--dim);font-family:'SF Mono',monospace;font-size:10px">${s.time}</span>
+          <span style="flex:1">${s.minutes}분 집중</span>
+          <span style="color:var(--purple);font-size:10px">+${Math.min(Math.round(s.minutes * 0.5), 25)} XP</span>
+        </div>`
+      ).join('');
+    }
+  }
+}
+
+// ===== WEEKLY REVIEW =====
+function getWeekKey() {
+  const now = new Date();
+  const startOfYear = new Date(now.getFullYear(), 0, 1);
+  const weekNum = Math.ceil(((now - startOfYear) / 86400000 + startOfYear.getDay() + 1) / 7);
+  return `${now.getFullYear()}-W${String(weekNum).padStart(2,'0')}`;
+}
+
+function saveWeeklyReview() {
+  if (!gameData.reviews) gameData.reviews = {};
+  const weekKey = getWeekKey();
+  gameData.reviews[weekKey] = {
+    q1: document.getElementById('review-q1')?.value || '',
+    q2: document.getElementById('review-q2')?.value || '',
+    q3: document.getElementById('review-q3')?.value || '',
+    updated: Date.now()
+  };
+  saveData();
+  const saved = document.getElementById('review-saved');
+  if (saved) {
+    saved.classList.add('show');
+    setTimeout(() => saved.classList.remove('show'), 2000);
+  }
+}
+
+function loadWeeklyReview() {
+  const weekKey = getWeekKey();
+  const review = gameData.reviews && gameData.reviews[weekKey];
+  const q1 = document.getElementById('review-q1');
+  const q2 = document.getElementById('review-q2');
+  const q3 = document.getElementById('review-q3');
+  if (q1) q1.value = review?.q1 || '';
+  if (q2) q2.value = review?.q2 || '';
+  if (q3) q3.value = review?.q3 || '';
 }
 
 // ===== SETTINGS =====

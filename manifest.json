@@ -1,17 +1,32 @@
 {
   "name": "Alfred Quest - Daily Routine",
   "short_name": "Alfred Quest",
-  "description": "RPG 스타일 일일 루틴 트래커",
+  "description": "RPG 스타일 일일 루틴 트래커 · 음악 프로듀서를 위한 습관 관리",
   "start_url": "./routine.html",
+  "scope": "./",
   "display": "standalone",
   "background_color": "#0a0a0f",
   "theme_color": "#0a0a0f",
   "orientation": "portrait",
+  "categories": ["productivity", "lifestyle"],
   "icons": [
     {
-      "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚔️</text></svg>",
-      "sizes": "any",
-      "type": "image/svg+xml"
+      "src": "icon-180.png",
+      "sizes": "180x180",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
     }
   ]
 }
