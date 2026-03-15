@@ -328,8 +328,9 @@ body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','SF Pro Text'
 .tab-btn{font-size:10px;padding:4px 2px;border-radius:0;border:none;background:none;color:var(--dim);cursor:pointer;white-space:nowrap;font-weight:600;display:flex;flex-direction:column;align-items:center;gap:2px;flex:1;transition:color .15s}
 .tab-btn.active{color:var(--purple)}
 .tab-btn:active{opacity:.7}
-.tab-content{display:none;animation:tabFadeIn .25s ease}
+.tab-content{display:none}
 .tab-content.active{display:block}
+.tab-content.tab-entering{animation:tabFadeIn .25s ease}
 @keyframes tabFadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
 
 /* Report Section */
@@ -1307,7 +1308,7 @@ const ACHIEVEMENTS = [
     const h = new Date().getHours();
     return h >= 22;
   }},
-  {id:'freeze_buyer',name:'보험왕',desc:'스트릭 프리즈 처음 구매',icon:'🛡️',check:g=>(g.character.streak_freezes||0)>0 || g._achievements?.includes('freeze_buyer')},
+  {id:'freeze_buyer',name:'보험왕',desc:'스트릭 프리즈 처음 구매',icon:'🛡️',check:g=>(g.character.streak_freezes||0)>0 || (g.character._ever_bought_freeze)},
   {id:'combo_master',name:'콤보 마스터',desc:'5x 콤보 달성',icon:'💥',check:()=>comboCount>=5},
   {id:'level_30',name:'레전드의 시작',desc:'레벨 30 달성',icon:'🏆',check:g=>g.character.level>=30},
   {id:'xp_10000',name:'만의 경지',desc:'총 10000 XP 획득',icon:'🌟',check:g=>g.character.total_xp>=10000},
@@ -1389,7 +1390,11 @@ function updateComboDisplay() {
   else if (comboCount >= 3) el.classList.add('x3');
   else el.classList.add('x2');
   el.textContent = `${comboCount}x COMBO! (x${mult})`;
-  if (comboCount === 5) screenFlash('gold');
+  if (comboCount === 5) {
+    screenFlash('gold');
+    // Immediately check combo_master achievement while combo is active
+    checkAchievements();
+  }
   setTimeout(() => el.classList.remove('combo-pulse'), 500);
 }
 
@@ -1895,6 +1900,7 @@ function buyStreakFreeze() {
   gameData.character.skill_points -= 2;
   if (!gameData.character.streak_freezes) gameData.character.streak_freezes = 0;
   gameData.character.streak_freezes++;
+  gameData.character._ever_bought_freeze = true;
   playSound('achievement');
   hapticFeedback('medium');
   showAchievementToast({icon:'🛡️', name:'스트릭 프리즈 획득!', desc:`보유: ${gameData.character.streak_freezes}개`});
@@ -2586,9 +2592,12 @@ function checkAllClear() {
 
 // ===== TAB NAVIGATION =====
 function switchTab(tabId, btn) {
-  document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.tab-content').forEach(t => { t.classList.remove('active'); t.classList.remove('tab-entering'); });
   document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-  document.getElementById('tab-' + tabId).classList.add('active');
+  const tab = document.getElementById('tab-' + tabId);
+  tab.classList.add('active');
+  // Re-trigger fade-in animation
+  requestAnimationFrame(() => tab.classList.add('tab-entering'));
   btn.classList.add('active');
   if (tabId === 'report') { renderReport(); loadWeeklyReview(); renderAchievementsGrid(); renderEvolutionTimeline(); }
   if (tabId === 'music') renderSongs();
