@@ -932,6 +932,11 @@ input:focus,textarea:focus,select:focus{outline:none;box-shadow:0 0 0 2px rgba(5
 .tl-equip-slot.equipped{border-color:rgba(124,58,237,.2);background:rgba(124,58,237,.05)}
 
 /* Daily login reward */
+/* Growth garden - Forest-inspired progress tree */
+.tl-garden{text-align:center;padding:12px 0 16px;animation:fadeIn .6s var(--ease-out)}
+.tl-garden-tree{display:inline-block;transition:font-size .8s var(--ease-out);filter:drop-shadow(0 4px 8px rgba(0,0,0,.08));animation:treeGrow .6s var(--ease-out)}
+@keyframes treeGrow{from{transform:scale(.5);opacity:0}to{transform:scale(1);opacity:1}}
+.tl-garden-label{font-size:11px;color:var(--dim);margin-top:6px;font-weight:600}
 /* Nag banner - attention-grabbing but not annoying */
 .tl-nag-banner{background:linear-gradient(135deg,#1e293b,#334155);border-radius:var(--radius-md);padding:16px 18px;margin-bottom:16px;cursor:pointer;animation:fadeInUp .4s var(--ease-out) .1s both;transition:all .3s var(--ease-out)}
 .tl-nag-banner:active{transform:scale(.97);opacity:.85}
@@ -2620,20 +2625,29 @@ function checkDayReset() {
       const freezes = gameData.character.streak_freezes || 0;
       if (freezes >= diff - 1) {
         gameData.character.streak_freezes -= (diff - 1);
-        console.log(`[Streak] ${diff-1} freeze(s) used - streak preserved!`);
+        setTimeout(() => showAchievementToast({icon:'🛡️', name:'스트릭 프리즈 사용!', desc:`${diff-1}개 사용, 스트릭 유지됨`}), 2000);
       } else {
+        const lostStreak = gameData.character.streak;
         gameData.character.streak = 0;
+        // Finch-style compassionate return (guilt-free)
+        if (lostStreak > 0) {
+          setTimeout(() => showAchievementToast({icon:'🌱', name:'다시 시작해요!', desc:`${lostStreak}일 스트릭은 끝났지만, 돌아온 것 자체가 대단해요`}), 2000);
+        }
       }
     } else if (diff === 2) {
       // 1 day missed - use grace day or freeze
       if (!gameData.character.grace_used_week || getWeekKey() !== gameData.character.grace_used_week) {
         gameData.character.grace_used_week = getWeekKey();
-        console.log('[Streak] Grace day used - streak preserved!');
+        setTimeout(() => showAchievementToast({icon:'💛', name:'그레이스 데이 사용', desc:'하루 쉬었어도 괜찮아요. 오늘 다시 시작!'}), 2000);
       } else if (gameData.character.streak_freezes > 0) {
         gameData.character.streak_freezes--;
-        console.log('[Streak] Freeze used - streak preserved!');
+        setTimeout(() => showAchievementToast({icon:'🛡️', name:'스트릭 프리즈 사용!', desc:'스트릭이 보호되었어요'}), 2000);
       } else {
+        const lostStreak = gameData.character.streak;
         gameData.character.streak = 0;
+        if (lostStreak > 0) {
+          setTimeout(() => showAchievementToast({icon:'🌱', name:'돌아온 것만으로 충분해요', desc:`새로운 스트릭을 시작합시다! 이전: ${lostStreak}일`}), 2000);
+        }
       }
     }
     // diff === 1 means consecutive day, streak continues normally
@@ -2962,18 +2976,20 @@ function renderWeeklyGoal() {
 
 // ===== PRAISE TEXT SYSTEM =====
 const PRAISE_TEXTS = [
-  {text:'NICE!', color:'var(--duo-green)'},
+  {text:'좋아요!', color:'var(--duo-green)'},
+  {text:'잘했어!', color:'var(--duo-green)'},
+  {text:'바로 이거지!', color:'var(--duo-blue)'},
   {text:'GREAT!', color:'var(--duo-yellow)'},
-  {text:'AWESOME!', color:'var(--duo-blue)'},
-  {text:'PERFECT!', color:'var(--gold)'},
-  {text:'INCREDIBLE!', color:'var(--duo-orange)'},
-  {text:'LEGENDARY!', color:'var(--purple)'}
+  {text:'완벽해!', color:'var(--gold)'},
+  {text:'대단해!', color:'var(--duo-orange)'},
+  {text:'LEGENDARY!', color:'var(--purple)'},
+  {text:'뇌가 좋아해!', color:'var(--accent)'},
 ];
 
 function showPraise(e) {
-  const praise = comboCount >= 5 ? PRAISE_TEXTS[5] :
-                 comboCount >= 3 ? PRAISE_TEXTS[3 + Math.floor(Math.random()*2)] :
-                 PRAISE_TEXTS[Math.floor(Math.random()*3)];
+  const praise = comboCount >= 5 ? PRAISE_TEXTS[6] :
+                 comboCount >= 3 ? PRAISE_TEXTS[4 + Math.floor(Math.random()*2)] :
+                 PRAISE_TEXTS[Math.floor(Math.random()*4)];
   const el = document.createElement('div');
   el.className = 'praise-float';
   el.textContent = praise.text;
@@ -3244,6 +3260,14 @@ function renderNowNext() {
       <div class="tl-progress"><b>${completedCount}</b>/${totalQuests} <span class="tl-pct">${pct}%</span></div>
     </div>
     <div class="tl-bar"><div class="tl-bar-fill" style="width:${pct}%"></div></div>`;
+
+  // Growth garden (Forest-inspired)
+  const treeStage = pct >= 100 ? '🌳' : pct >= 75 ? '🌲' : pct >= 50 ? '🌿' : pct >= 25 ? '🌱' : '🫘';
+  const treeName = pct >= 100 ? '만개!' : pct >= 75 ? '거의 다 왔어요' : pct >= 50 ? '잘 자라고 있어요' : pct >= 25 ? '싹이 트고 있어요' : '씨앗을 심었어요';
+  html += `<div class="tl-garden">
+    <div class="tl-garden-tree" style="font-size:${24 + pct * 0.3}px">${treeStage}</div>
+    <div class="tl-garden-label">${treeName}</div>
+  </div>`;
 
   // Smart nag banner (inline)
   const currentNags = getSmartNag();
