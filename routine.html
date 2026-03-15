@@ -613,6 +613,16 @@ body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','SF Pro Text'
 .now-card{border:1px solid transparent;transition:border-color .3s}
 .now-card:has(.now-quest:active){border-color:rgba(179,136,255,.3)}
 
+/* Streak milestone celebration */
+.streak-milestone{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);z-index:400;text-align:center;pointer-events:none;animation:milestoneAppear .8s cubic-bezier(.68,-.55,.27,1.55) forwards}
+@keyframes milestoneAppear{0%{opacity:0;transform:translate(-50%,-50%) scale(0)}50%{transform:translate(-50%,-50%) scale(1.2)}100%{opacity:1;transform:translate(-50%,-50%) scale(1)}}
+.streak-milestone.fade-out{animation:milestoneFade .5s ease forwards}
+@keyframes milestoneFade{to{opacity:0;transform:translate(-50%,-60%) scale(.8)}}
+
+/* Quest complete slide effect */
+.quest-complete-slide{animation:questSlide .4s ease}
+@keyframes questSlide{0%{transform:translateX(0);opacity:1}30%{transform:translateX(20px);opacity:.8}100%{transform:translateX(0);opacity:1}}
+
 /* Header progress mini dots */
 .hdr-progress{display:flex;gap:2px;align-items:center}
 .hdr-dot{width:4px;height:4px;border-radius:50%;background:rgba(255,255,255,.15);transition:background .2s}
@@ -1811,8 +1821,12 @@ function toggleQuest(questId, e) {
     playSound('complete');
     screenFlash('green');
     showPraise(e);
-    // Particle effect
-    if (e && e.currentTarget) spawnParticles(e.currentTarget);
+    // Particle + slide effect
+    if (e && e.currentTarget) {
+      spawnParticles(e.currentTarget);
+      e.currentTarget.classList.add('quest-complete-slide');
+      setTimeout(() => e.currentTarget?.classList?.remove('quest-complete-slide'), 400);
+    }
   } else {
     // Uncomplete quest
     todayCompleted.splice(idx, 1);
@@ -1825,6 +1839,7 @@ function toggleQuest(questId, e) {
 
   // Update streak & check all clear
   updateStreak();
+  checkStreakMilestone();
   checkAllClear();
   checkAchievements();
   renderDailyChallenge();
@@ -3947,6 +3962,45 @@ function renderEvolutionTimeline() {
       ${reached ? '<span style="font-size:14px;color:var(--green)">✓</span>' : '<span style="font-size:10px;color:var(--dim)">🔒</span>'}
     </div>`;
   }).join('');
+}
+
+// ===== STREAK MILESTONES =====
+const STREAK_MILESTONES = [
+  {days:3, msg:'3일 연속 달성!', emoji:'🔥', sub:'습관이 만들어지고 있어요'},
+  {days:7, msg:'1주일 전사!', emoji:'⚔️', sub:'이제 습관이 잡혔어요'},
+  {days:14, msg:'2주 연속!', emoji:'🏅', sub:'당신의 의지력은 대단해요'},
+  {days:30, msg:'한 달의 기적!', emoji:'🏆', sub:'1%의 사람만 달성하는 기록'},
+  {days:50, msg:'50일 돌파!', emoji:'💎', sub:'이미 다른 차원의 존재'},
+  {days:100, msg:'100일! 전설 달성!', emoji:'🌟', sub:'불멸의 루틴 마스터'}
+];
+
+function checkStreakMilestone() {
+  const streak = gameData.character.streak;
+  const milestone = STREAK_MILESTONES.find(m => m.days === streak);
+  if (!milestone) return;
+
+  // Only show once per milestone
+  if (!gameData._shownMilestones) gameData._shownMilestones = [];
+  if (gameData._shownMilestones.includes(milestone.days)) return;
+  gameData._shownMilestones.push(milestone.days);
+  saveData();
+
+  // Show celebration
+  const el = document.createElement('div');
+  el.className = 'streak-milestone';
+  el.innerHTML = `
+    <div style="font-size:64px;margin-bottom:8px">${milestone.emoji}</div>
+    <div style="font-size:24px;font-weight:900;color:var(--gold);text-shadow:0 2px 12px rgba(255,215,64,.5)">${milestone.msg}</div>
+    <div style="font-size:14px;color:var(--text);margin-top:6px">${milestone.sub}</div>
+    <div style="font-size:12px;color:var(--dim);margin-top:8px">🔥 ${streak}일 연속</div>
+  `;
+  document.body.appendChild(el);
+  playSound('levelup');
+  hapticFeedback('heavy');
+  screenFlash('gold');
+
+  setTimeout(() => el.classList.add('fade-out'), 2500);
+  setTimeout(() => el.remove(), 3000);
 }
 
 // ===== DATA EXPORT/IMPORT =====
