@@ -98,6 +98,11 @@ body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','SF Pro Text'
 .quest-xp{font-size:12px;font-weight:800;color:var(--purple);white-space:nowrap}
 .quest-item.done .quest-xp{color:var(--green)}
 .quest-stats-gain{font-size:10px;color:var(--dim);margin-top:1px}
+.quest-difficulty{display:inline-flex;gap:1px;margin-left:6px;vertical-align:middle}
+.quest-difficulty-dot{width:5px;height:5px;border-radius:50%;background:var(--dim)}
+.quest-difficulty-dot.active{background:var(--gold)}
+.quest-difficulty-dot.hard{background:var(--duo-orange)}
+.quest-difficulty-dot.epic{background:var(--purple)}
 .quest-rest{text-align:center;padding:14px;font-size:13px;color:var(--dim)}
 .quest-rest-icon{font-size:24px;margin-bottom:4px}
 
@@ -2108,15 +2113,25 @@ function renderCharacter() {
   document.getElementById('char-level-badge').innerHTML =
     `<span>${league.icon}</span> Lv.${c.level} · ${league.name} 리그`;
 
-  // Today's XP earned
+  // Today's XP earned + streak multiplier
   const todayXP = gameData.history[todayKey]?.xp_earned || 0;
+  const streakMult = getStreakMultiplier();
   const todayXPEl = document.getElementById('char-today-xp');
-  if (todayXPEl) todayXPEl.textContent = todayXP > 0 ? `오늘 +${todayXP} XP 획득` : '';
+  if (todayXPEl) {
+    let xpText = todayXP > 0 ? `오늘 +${todayXP} XP` : '';
+    if (streakMult > 1) xpText += ` · 🔥 x${streakMult} 보너스`;
+    todayXPEl.textContent = xpText;
+  }
 
   // XP bar
   document.getElementById('xp-bar-duo').style.width = pct + '%';
   document.getElementById('xp-duo-text').textContent = `${c.xp} XP`;
-  document.getElementById('xp-duo-need').textContent = `${needed} XP`;
+  const remaining = needed - c.xp;
+  const avgXPPerQuest = 25;
+  const questsToLevel = Math.ceil(remaining / avgXPPerQuest);
+  document.getElementById('xp-duo-need').textContent = pct >= 70
+    ? `${remaining} XP 남음 (~${questsToLevel}퀘스트)`
+    : `${needed} XP`;
 
   // Streak
   const fire = document.getElementById('streak-fire');
@@ -2467,10 +2482,13 @@ function renderQuests() {
         const done = todayCompleted.includes(q.id);
         const statsText = Object.entries(q.stats).map(([k,v]) => `${STAT_CONFIG[k]?.icon||''}+${v}`).join(' ');
         const timeHint = getTimeBlockStatus(q.time);
+        const difficulty = q.xp >= 35 ? 3 : q.xp >= 25 ? 2 : 1;
+        const diffClass = difficulty >= 3 ? 'epic' : difficulty >= 2 ? 'hard' : 'active';
+        const diffDots = Array.from({length:3}, (_, i) => `<div class="quest-difficulty-dot ${i < difficulty ? diffClass : ''}"></div>`).join('');
         return `<div class="quest-item ${done?'done':''}" onclick="toggleQuest('${q.id}',event)">
           <div class="quest-check">${done?'✓':''}</div>
           <div class="quest-info">
-            <div class="quest-name">${q.icon} ${q.name}</div>
+            <div class="quest-name">${q.icon} ${q.name} <span class="quest-difficulty">${diffDots}</span></div>
             <div class="quest-desc">${q.desc}</div>
             ${q.time ? `<div class="quest-time-hint"><span class="time-block ${timeHint.cls}">🕐 ${q.time}</span>${timeHint.label}</div>` : ''}
             ${q.start && !done ? `<div style="font-size:10px;color:var(--gold);margin-top:1px">⚡ 2분룰: ${q.start}</div>` : ''}
