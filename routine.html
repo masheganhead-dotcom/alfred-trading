@@ -8,7 +8,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="Routine Game">
-<meta name="theme-color" content="#f8f9fc">
+<meta name="theme-color" content="#eef1f6">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -103,34 +103,34 @@
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 :root{
-  /* Premium Design System — inspired by Fabulous + Finch + Duolingo */
-  --bg:#f8f9fc;--card:#ffffff;--card2:#f1f3f9;
-  --text:#1a1d2e;--dim:#8b93a7;--border:rgba(0,0,0,.04);
-  --gold:#f5a623;--purple:#7c5cfc;--blue:#4f8cff;
-  --green:#2dd4a8;--red:#ff5a5f;--cyan:#22d3ee;
-  --xp-from:#7c5cfc;--xp-to:#4f8cff;
-  --quest-done:rgba(45,212,168,.04);
-  --shadow:0 2px 8px rgba(26,29,46,.04),0 0 1px rgba(26,29,46,.06);
-  --shadow-md:0 4px 16px rgba(26,29,46,.06),0 1px 3px rgba(26,29,46,.04);
-  --shadow-lg:0 12px 40px rgba(26,29,46,.1),0 2px 8px rgba(26,29,46,.04);
-  --shadow-glow:0 4px 24px rgba(79,140,255,.2);
-  --shadow-card:0 2px 12px rgba(26,29,46,.05),0 0 0 1px rgba(26,29,46,.03);
-  --duo-green:#2dd4a8;--duo-yellow:#fbbf24;--duo-red:#ff5a5f;
-  --duo-blue:#4f8cff;--duo-orange:#fb923c;
-  --accent:#6c5cfc;
-  --accent-glow:rgba(108,92,252,.15);
-  --accent-light:rgba(108,92,252,.06);
-  --accent-mid:rgba(108,92,252,.12);
-  --accent-gradient:linear-gradient(135deg,#6c5cfc,#4f8cff);
-  --warm-gradient:linear-gradient(135deg,#f5a623,#fb923c);
-  --success-gradient:linear-gradient(135deg,#2dd4a8,#22d3ee);
+  /* Premium Design System v2 — Duolingo + Finch + Fabulous (High Contrast) */
+  --bg:#eef1f6;--card:#ffffff;--card2:#f4f6fa;
+  --text:#111827;--dim:#5f6b7a;--border:rgba(0,0,0,.06);
+  --gold:#e8920d;--purple:#6d4aff;--blue:#3b7dff;
+  --green:#10b981;--red:#ef4444;--cyan:#06b6d4;
+  --xp-from:#6d4aff;--xp-to:#3b7dff;
+  --quest-done:rgba(16,185,129,.06);
+  --shadow:0 1px 3px rgba(0,0,0,.06),0 1px 2px rgba(0,0,0,.04);
+  --shadow-md:0 4px 12px rgba(0,0,0,.07),0 1px 3px rgba(0,0,0,.05);
+  --shadow-lg:0 10px 32px rgba(0,0,0,.1),0 2px 8px rgba(0,0,0,.05);
+  --shadow-glow:0 4px 20px rgba(59,125,255,.25);
+  --shadow-card:0 1px 4px rgba(0,0,0,.05),0 0 0 1px rgba(0,0,0,.03);
+  --duo-green:#10b981;--duo-yellow:#f59e0b;--duo-red:#ef4444;
+  --duo-blue:#3b7dff;--duo-orange:#f97316;
+  --accent:#6d4aff;
+  --accent-glow:rgba(109,74,255,.18);
+  --accent-light:rgba(109,74,255,.07);
+  --accent-mid:rgba(109,74,255,.14);
+  --accent-gradient:linear-gradient(135deg,#6d4aff,#3b7dff);
+  --warm-gradient:linear-gradient(135deg,#f59e0b,#f97316);
+  --success-gradient:linear-gradient(135deg,#10b981,#06b6d4);
   --spring:cubic-bezier(.175,.885,.32,1.275);
   --ease-out:cubic-bezier(.16,1,.3,1);
   --ease-spring:cubic-bezier(.34,1.56,.64,1);
   --ease-premium:cubic-bezier(.22,1,.36,1);
-  --glass:rgba(255,255,255,.82);
-  --glass-border:rgba(255,255,255,.6);
-  --glass-blur:blur(40px) saturate(2);
+  --glass:rgba(255,255,255,.88);
+  --glass-border:rgba(255,255,255,.7);
+  --glass-blur:blur(40px) saturate(1.8);
   --radius-sm:14px;
   --radius-md:20px;
   --radius-lg:26px;
@@ -140,7 +140,7 @@
   --font-body:'Inter',-apple-system,BlinkMacSystemFont,sans-serif;
   --font-mono:'JetBrains Mono','SF Mono','Fira Code',monospace;
 }
-body{font-family:var(--font-body);background:var(--bg);color:var(--text);min-height:100vh;min-height:100dvh;-webkit-tap-highlight-color:transparent;padding-bottom:calc(90px + env(safe-area-inset-bottom));padding-top:env(safe-area-inset-top);overscroll-behavior-y:contain;-webkit-overflow-scrolling:touch;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;text-rendering:optimizeLegibility;letter-spacing:-.02em;line-height:1.55;background-image:radial-gradient(ellipse 80% 50% at 50% -20%,rgba(108,92,252,.03),transparent)}
+body{font-family:var(--font-body);background:var(--bg);color:var(--text);min-height:100vh;min-height:100dvh;-webkit-tap-highlight-color:transparent;padding-bottom:calc(90px + env(safe-area-inset-bottom));padding-top:env(safe-area-inset-top);overscroll-behavior-y:contain;-webkit-overflow-scrolling:touch;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;text-rendering:optimizeLegibility;letter-spacing:-.01em;line-height:1.55}
 @supports(padding-top:env(safe-area-inset-top)){.hdr{padding-top:calc(14px + env(safe-area-inset-top))}}
 .mono{font-family:var(--font-mono)}
 
@@ -216,7 +216,7 @@ input:focus,textarea:focus,select:focus{outline:none;box-shadow:0 0 0 2px rgba(5
 .alarm-snooze:active{color:var(--accent)}
 
 /* Header - Premium Glassmorphism Bar */
-.hdr{display:flex;align-items:center;justify-content:space-between;padding:14px 20px;position:sticky;top:0;background:rgba(248,249,252,.85);backdrop-filter:var(--glass-blur);-webkit-backdrop-filter:var(--glass-blur);z-index:100;border-bottom:1px solid rgba(108,92,252,.06)}
+.hdr{display:flex;align-items:center;justify-content:space-between;padding:14px 20px;position:sticky;top:0;background:rgba(238,241,246,.92);backdrop-filter:var(--glass-blur);-webkit-backdrop-filter:var(--glass-blur);z-index:100;border-bottom:1px solid rgba(0,0,0,.06)}
 .hdr-left{display:flex;align-items:center;gap:12px}
 .hdr-logo{font-size:24px;transition:transform .4s var(--spring);filter:drop-shadow(0 2px 8px rgba(108,92,252,.2))}
 .hdr-logo:active{transform:rotate(20deg) scale(1.3)}
@@ -273,7 +273,7 @@ input:focus,textarea:focus,select:focus{outline:none;box-shadow:0 0 0 2px rgba(5
 .quest-item{display:flex;align-items:center;gap:14px;padding:14px 14px;border-radius:16px;cursor:pointer;transition:all .3s var(--ease-premium);position:relative;user-select:none;border-left:3px solid transparent;overflow:hidden;margin-bottom:4px}
 .quest-item:hover{background:rgba(0,0,0,.015)}
 .quest-item:active{transform:scale(.975);transition-duration:.1s}
-.quest-item.done{background:var(--quest-done);opacity:.85}
+.quest-item.done{background:var(--quest-done);opacity:.9}
 .quest-item.completing{animation:questComplete .5s var(--spring)}
 @keyframes questComplete{0%{transform:scale(1)}20%{transform:scale(.95) translateX(4px)}50%{transform:scale(1.02)}100%{transform:scale(1)}}
 .quest-check{width:28px;height:28px;border:2.5px solid rgba(108,92,252,.15);border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .3s var(--spring);font-size:13px;background:transparent}
@@ -332,7 +332,7 @@ input:focus,textarea:focus,select:focus{outline:none;box-shadow:0 0 0 2px rgba(5
 
 /* ===== CHARACTER SECTION ===== */
 .char-section{text-align:center;padding:36px 0 28px;position:relative;background:var(--card);border-radius:var(--radius-xl);margin-bottom:16px;box-shadow:var(--shadow-card);overflow:hidden}
-.char-section::before{content:'';position:absolute;top:0;left:0;right:0;height:160px;background:linear-gradient(135deg,rgba(108,92,252,.04),rgba(79,140,255,.03));pointer-events:none}
+.char-section::before{content:'';position:absolute;top:0;left:0;right:0;height:160px;background:linear-gradient(135deg,rgba(109,74,255,.06),rgba(59,125,255,.04));pointer-events:none}
 .char-avatar-wrap{position:relative;display:inline-block;margin-bottom:8px}
 .char-avatar{font-size:64px;line-height:1;display:block;cursor:pointer;transition:transform .2s}
 .char-avatar:active{transform:scale(1.2) rotate(10deg) !important;animation:none !important}
@@ -508,12 +508,12 @@ input:focus,textarea:focus,select:focus{outline:none;box-shadow:0 0 0 2px rgba(5
 .quote-mini-text{font-size:12px;color:var(--dim);font-style:italic;line-height:1.5}
 .quote-mini-author{font-size:10px;color:var(--accent);margin-top:4px;font-weight:600}
 
-/* Time-of-day background gradient - Premium Ambient */
-.time-dawn{background:linear-gradient(180deg,#fef3e2 0%,var(--bg) 50%)}
-.time-morning{background:linear-gradient(180deg,#edf4ff 0%,var(--bg) 50%)}
-.time-afternoon{background:linear-gradient(180deg,#ede9fe 0%,var(--bg) 50%)}
-.time-evening{background:linear-gradient(180deg,#f0ecff 0%,var(--bg) 50%)}
-.time-night{background:linear-gradient(180deg,#e8ecf4 0%,var(--bg) 50%)}
+/* Time-of-day background gradient - Vivid Ambient */
+.time-dawn{background:linear-gradient(180deg,#fde9c8 0%,#fdf2e0 20%,var(--bg) 55%)}
+.time-morning{background:linear-gradient(180deg,#d6e8ff 0%,#e8f0ff 20%,var(--bg) 55%)}
+.time-afternoon{background:linear-gradient(180deg,#e4deff 0%,#ede9ff 20%,var(--bg) 55%)}
+.time-evening{background:linear-gradient(180deg,#ddd5ff 0%,#e8e2ff 20%,var(--bg) 55%)}
+.time-night{background:linear-gradient(180deg,#cfd5e3 0%,#dde1ec 20%,var(--bg) 55%)}
 
 /* XP Breakdown Toast */
 .xp-breakdown{position:fixed;bottom:90px;left:50%;transform:translateX(-50%);z-index:250;background:var(--card);border:1px solid var(--border);border-radius:14px;padding:12px 18px;min-width:200px;box-shadow:var(--shadow-lg);pointer-events:none;animation:breakdownSlide .4s cubic-bezier(.68,-.55,.27,1.55)}
@@ -547,7 +547,7 @@ input:focus,textarea:focus,select:focus{outline:none;box-shadow:0 0 0 2px rgba(5
 .date-day{font-size:11px;color:var(--accent);margin-top:2px;font-weight:600}
 
 /* Tab Navigation - Premium Floating Bottom Bar */
-.tab-nav{position:fixed;bottom:0;left:0;right:0;display:flex;justify-content:space-around;background:rgba(255,255,255,.92);backdrop-filter:var(--glass-blur);-webkit-backdrop-filter:var(--glass-blur);border-top:1px solid rgba(108,92,252,.05);padding:8px 16px calc(8px + env(safe-area-inset-bottom));z-index:100}
+.tab-nav{position:fixed;bottom:0;left:0;right:0;display:flex;justify-content:space-around;background:rgba(255,255,255,.95);backdrop-filter:var(--glass-blur);-webkit-backdrop-filter:var(--glass-blur);border-top:1px solid rgba(0,0,0,.06);padding:8px 16px calc(8px + env(safe-area-inset-bottom));z-index:100;box-shadow:0 -2px 12px rgba(0,0,0,.04)}
 .tab-btn{font-family:var(--font-display);font-size:10px;padding:8px 4px 4px;border-radius:var(--radius-sm);border:none;background:none;color:var(--dim);cursor:pointer;white-space:nowrap;font-weight:600;display:flex;flex-direction:column;align-items:center;gap:4px;flex:1;transition:all .25s var(--ease-premium);position:relative}
 .tab-icon{font-size:22px;display:block;line-height:1;transition:all .3s var(--spring)}
 .tab-btn.active{color:var(--accent);font-weight:700}
@@ -604,7 +604,7 @@ input:focus,textarea:focus,select:focus{outline:none;box-shadow:0 0 0 2px rgba(5
 .notes-overlay{position:fixed;inset:0;background:rgba(26,29,46,.3);z-index:199;opacity:0;pointer-events:none;transition:opacity .3s}
 .notes-overlay.show{opacity:1;pointer-events:auto}
 /* Nag toast — Premium Dark Glass */
-.nag-toast{position:fixed;top:-100px;left:12px;right:12px;background:linear-gradient(135deg,#1a1d2e,#2d3148);color:#fff;border-radius:var(--radius-lg);padding:16px 18px;z-index:300;display:flex;align-items:center;gap:12px;box-shadow:0 12px 40px rgba(26,29,46,.35);transition:top .5s var(--ease-premium);font-size:13px;line-height:1.6;border:1px solid rgba(255,255,255,.06)}
+.nag-toast{position:fixed;top:-100px;left:12px;right:12px;background:linear-gradient(135deg,#1e1145,#2d1b69);color:#fff;border-radius:var(--radius-lg);padding:18px 20px;z-index:300;display:flex;align-items:center;gap:12px;box-shadow:0 12px 40px rgba(30,17,69,.5),0 0 0 1px rgba(109,74,255,.2);transition:top .5s var(--ease-premium);font-size:14px;line-height:1.7;border:none}
 .nag-toast.show{top:calc(14px + env(safe-area-inset-top,0px))}
 .nag-toast-content{flex:1;font-weight:500}
 .nag-toast-close{background:rgba(255,255,255,.1);border:none;color:#fff;width:30px;height:30px;border-radius:50%;font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:background .15s}
@@ -906,7 +906,7 @@ input:focus,textarea:focus,select:focus{outline:none;box-shadow:0 0 0 2px rgba(5
 
 /* ===== PREMIUM TIMELINE VIEW ===== */
 /* Greeting - Fabulous/Finch inspired hero */
-.tl-greeting{font-family:var(--font-display);font-size:34px;font-weight:900;letter-spacing:-1.5px;color:var(--text);margin-bottom:4px;line-height:1.1}
+.tl-greeting{font-family:var(--font-display);font-size:34px;font-weight:900;letter-spacing:-1.5px;color:var(--text);margin-bottom:6px;line-height:1.15;background:linear-gradient(135deg,var(--text) 60%,var(--accent));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
 .tl-greeting-sub{font-size:14px;color:var(--dim);margin-bottom:28px;font-weight:500;line-height:1.5}
 .tl-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;padding:0 2px}
 .tl-date{font-family:var(--font-display);font-size:13px;font-weight:600;letter-spacing:-.2px;color:var(--dim)}
@@ -915,8 +915,8 @@ input:focus,textarea:focus,select:focus{outline:none;box-shadow:0 0 0 2px rgba(5
 .tl-progress b{color:var(--accent);font-size:20px}
 .tl-pct{font-family:var(--font-display);font-size:12px;color:#fff;font-weight:800;background:var(--accent-gradient);padding:3px 10px;border-radius:var(--radius-pill);box-shadow:0 2px 8px rgba(108,92,252,.2)}
 /* Progress bar - Premium rounded bar */
-.tl-bar{height:10px;background:var(--card2);border-radius:10px;margin-bottom:28px;overflow:hidden;position:relative}
-.tl-bar-fill{height:100%;background:var(--accent-gradient);border-radius:10px;transition:width 1.2s var(--ease-premium);position:relative;box-shadow:0 2px 8px rgba(108,92,252,.25)}
+.tl-bar{height:12px;background:var(--card);border-radius:10px;margin-bottom:28px;overflow:hidden;position:relative;box-shadow:inset 0 1px 3px rgba(0,0,0,.08)}
+.tl-bar-fill{height:100%;background:var(--accent-gradient);border-radius:10px;transition:width 1.2s var(--ease-premium);position:relative;box-shadow:0 2px 8px rgba(109,74,255,.3)}
 .tl-bar-fill::after{content:'';position:absolute;top:0;left:0;right:0;height:50%;background:linear-gradient(180deg,rgba(255,255,255,.35),transparent);border-radius:10px}
 
 /* Daily challenge inline */
@@ -944,13 +944,13 @@ input:focus,textarea:focus,select:focus{outline:none;box-shadow:0 0 0 2px rgba(5
 /* Timeline item — Premium Design */
 .tl-item{display:flex;gap:14px;margin-bottom:4px;position:relative;padding:15px 18px;border-radius:var(--radius-md);cursor:pointer;transition:all .3s var(--ease-premium);-webkit-user-select:none;user-select:none}
 .tl-item:active{transform:scale(.97);background:rgba(0,0,0,.015)}
-.tl-item.done{opacity:.4}
+.tl-item.done{opacity:.55}
 .tl-item.done.just-done{animation:tlDoneSlide .6s var(--ease-out)}
 @keyframes tlDoneSlide{0%{transform:scale(1);opacity:1}20%{transform:scale(1.02)}40%{transform:scale(.97) translateX(4px);opacity:.6}100%{transform:scale(1) translateX(0);opacity:.4}}
-.tl-item.past:not(.done):not(.now){opacity:.45}
+.tl-item.past:not(.done):not(.now){opacity:.55}
 .tl-item.past:not(.done) .tl-dot{background:var(--red);border-color:var(--red);opacity:.4;width:7px;height:7px}
 /* NOW card - Premium hero element */
-.tl-item.now{background:var(--card);box-shadow:0 4px 12px rgba(108,92,252,.06),0 12px 40px rgba(108,92,252,.1);border-radius:var(--radius-lg);padding:20px 22px;margin:10px -4px 14px;opacity:1;border:1px solid rgba(108,92,252,.08)}
+.tl-item.now{background:var(--card);box-shadow:0 4px 12px rgba(109,74,255,.08),0 12px 36px rgba(109,74,255,.12);border-radius:var(--radius-lg);padding:20px 22px;margin:10px -4px 14px;opacity:1;border:1px solid rgba(109,74,255,.15)}
 .tl-item.now .tl-name{font-size:17px;font-weight:700}
 .tl-item.now::before{content:'NOW';position:absolute;top:12px;right:56px;font-family:var(--font-display);font-size:9px;font-weight:800;color:#fff;letter-spacing:1.5px;background:var(--accent-gradient);padding:3px 10px;border-radius:var(--radius-pill);box-shadow:0 2px 8px rgba(108,92,252,.2)}
 
@@ -1035,7 +1035,7 @@ input:focus,textarea:focus,select:focus{outline:none;box-shadow:0 0 0 2px rgba(5
 @keyframes treeGrow{from{transform:scale(.5);opacity:0}to{transform:scale(1);opacity:1}}
 .tl-garden-label{font-size:11px;color:var(--dim);margin-top:6px;font-weight:600}
 /* Nag banner - attention-grabbing but not annoying */
-.tl-nag-banner{background:linear-gradient(135deg,#1e293b,#334155);border-radius:var(--radius-md);padding:16px 18px;margin-bottom:16px;cursor:pointer;animation:fadeInUp .4s var(--ease-out) .1s both;transition:all .3s var(--ease-out)}
+.tl-nag-banner{background:linear-gradient(135deg,#1e1145,#2d1b69);border-radius:var(--radius-md);padding:16px 18px;margin-bottom:16px;cursor:pointer;animation:fadeInUp .4s var(--ease-out) .1s both;transition:all .3s var(--ease-out);box-shadow:0 4px 16px rgba(30,17,69,.25)}
 .tl-nag-banner:active{transform:scale(.97);opacity:.85}
 .tl-nag-text{color:#fff;font-size:13px;font-weight:600;line-height:1.6}
 .tl-nag-sub{color:rgba(255,255,255,.35);font-size:10px;margin-top:6px;font-weight:500}
@@ -1722,7 +1722,7 @@ async function initCapacitor() {
         const { StatusBar, Style } = await import('@capacitor/status-bar');
         NativeStatusBar = StatusBar;
         StatusBar.setStyle({ style: Style.Light });
-        StatusBar.setBackgroundColor({ color: '#f5f6fa' });
+        StatusBar.setBackgroundColor({ color: '#eef1f6' });
       } catch(e) {}
       try {
         const { LocalNotifications } = await import('@capacitor/local-notifications');
@@ -1883,11 +1883,12 @@ let nagCheckInterval = null;
 const SMART_NAGS = {
   // 아침 시간대 (7:00~10:00)
   morning: [
-    {questId:'m0', after:'07:30', msg:'☀️ 아직 햇빛을 안 쬐셨네요! 10분만 밖에 나가세요. 도파민 리셋 시작!'},
-    {questId:'m1', after:'09:00', msg:'🎬 미드 공부 안 하셨어요! 영어는 매일 해야 느는 거 알죠?'},
-    {questId:'m2', after:'09:00', msg:'🏋️ 아침 복근 운동 건너뛰셨네요. 10분이면 되는데... 핑계 대지 마세요!'},
-    {questId:'m3', after:'09:45', msg:'📖 독서 체크가 안 되어있어요. 한 페이지라도 읽으세요!'},
-    {questId:'m4', after:'10:15', msg:'🤖 AI 작업 할당 아직이에요. Claude한테 일 시켜야죠!'},
+    {questId:'m0', after:'07:30', msg:'☀️ 아직 이불 속이세요? 햇빛은 기다려주지 않습니다! 10분만 밖에 나가면 도파민 공장이 가동돼요 🏭'},
+    {questId:'m0', after:'08:00', msg:'☀️ Huberman 교수님이 우시겠어요... 기상 후 1시간 내 햇빛이라고 했잖아요! 현관문 열고 나가세요!'},
+    {questId:'m1', after:'09:00', msg:'🎬 미드 공부 안 하셨어요! 영어 실력은 복리로 쌓이는 거예요. 오늘 안 하면 내일 더 밀립니다 📈'},
+    {questId:'m2', after:'09:00', msg:'🏋️ 복근은 하루아침에 안 생깁니다! 10분이면 끝나는데 핑계가 10분보다 길어요 ㅋㅋ 매트 까세요!'},
+    {questId:'m3', after:'09:45', msg:'📖 오늘도 독서 패스하시려고요? 한 페이지가 뭐가 어렵다고! 책 펴면 이미 절반 성공이에요.'},
+    {questId:'m4', after:'10:15', msg:'🤖 Claude가 할 일 없어서 심심해하고 있어요. AI한테 일 시키세요! 노동은 기계에게, 창작은 당신에게!'},
   ],
   // 작업실 시간대 (10:00~16:30)
   studio: [
@@ -1902,21 +1903,26 @@ const SMART_NAGS = {
   ],
   // 운동 시간대 (16:00~18:30)
   exercise: [
-    {questId:'e1', after:'17:00', msg:'🏋️ 운동 시간 지나고 있어요! 스포짐 아직 안 가신 거예요?'},
-    {questId:'e2', after:'18:15', msg:'🏃 유산소 건너뛰려고요? 30분만 뛰세요. 체력이 자본이에요!'},
+    {questId:'e1', after:'17:00', msg:'🏋️ 스포짐 안 가시는 거예요? 근육이 "오늘 쉬는 날이야?" 하고 물어봅니다. 운동복 입으세요!'},
+    {questId:'e1', after:'17:30', msg:'🏋️ 17시 30분인데 아직 짐 안 가셨으면 지금 당장 나가세요. 운동은 미루면 절대 안 하게 됩니다!'},
+    {questId:'e2', after:'18:15', msg:'🏃 유산소 건너뛰면 심장이 서운해해요 💔 30분만 뛰세요. 체력이 곧 자본입니다!'},
   ],
   // 창의력 타임 (18:30~23:00)
   evening: [
-    {questId:'w1', after:'19:00', msg:'🚿 운동 끝났으면 샤워부터! 씻었다는 체크 안 되어있어요. 사소한 습관이 인생을 바꿉니다!'},
-    {questId:'w2', after:'19:30', msg:'🎯 창의력 타임 준비 안 했어요. 오늘 밤 뭘 만들지 방향부터 잡으세요!'},
-    {questId:'w3', after:'20:30', msg:'🔮 창의력 몰입 시간인데 아직 시작 안 하셨네요. 감각 열고 들어가세요!'},
-    {questId:'w3', after:'22:00', msg:'🔮 창의력 몰입 체크가 안 되어있어요. 오늘 밤 아무것도 안 만든 건 아니죠?'},
-    {questId:'w4', after:'22:30', msg:'🌌 프리 세션 어때요? 흐름이 올 때 놓치지 마세요!'},
+    {questId:'w1', after:'18:40', msg:'🚿 혹시 아직 안 씻으셨죠? 운동하고 땀범벅인 채로 돌아다니시면... 주변 사람들이 웁니다 😭'},
+    {questId:'w1', after:'19:00', msg:'🧴 잠깐!! 피부는 하루라도 관리 안 하면 나중에 누적으로 타격입니다! 샤워 + 세안 + 보습 지금 당장!!'},
+    {questId:'w1', after:'19:20', msg:'🚨 긴급속보: 샤워 체크가 아직 안 되어있습니다. 피부세포들이 SOS를 보내고 있어요. 지금 즉시 욕실로 이동하세요!'},
+    {questId:'w2', after:'19:30', msg:'🎯 창의력 타임 준비 안 했어요. 방향 없이 작업하면 표류하는 배예요. 종이에 한 줄만 쓰세요!'},
+    {questId:'w3', after:'20:30', msg:'🔮 창의력 몰입 시간인데 뭐 하고 계세요? 넷플릭스 보고 있으면 리모컨 내려놓고 DAW 켜세요!'},
+    {questId:'w3', after:'22:00', msg:'🔮 오늘 밤 아무것도 안 만든 건 아니죠? 1마디라도 만들었으면 체크하세요. 안 만들었으면... 지금이라도!'},
+    {questId:'w4', after:'22:30', msg:'🌌 프리 세션 어때요? 밤의 고요함은 최고의 사운드 디자인 시간이에요!'},
   ],
   // 마무리 (22:00~24:00)
   home: [
-    {questId:'h1', after:'23:00', msg:'🧠 AI 공부 빼먹으셨네요. 하루 30분이면 1년 뒤 엄청난 차이를 만들어요!'},
-    {questId:'h2', after:'23:30', msg:'🌙 셧다운 리추얼 안 하셨어요! 내일 계획 정리하고 편하게 주무세요.'},
+    {questId:'h1', after:'23:00', msg:'🧠 AI 공부 빼먹으셨네요. 옆 동네 개발자는 지금 Claude로 앱 만들고 있답니다. 30분만 투자하세요!'},
+    {questId:'h2', after:'23:15', msg:'🌙 자기 전 준비 잘 하셨어요? 세안 + 토너 + 수분크림 필수입니다. 피부는 밤에 재생돼요! 🧴✨'},
+    {questId:'h2', after:'23:30', msg:'🌙 셧다운 리추얼 체크! 내일 계획 3줄 + 전자기기 OFF. 수면의 질이 내일의 퍼포먼스를 결정합니다!'},
+    {questId:'h2', after:'23:50', msg:'😴 아직도 안 주무세요? 셧다운 리추얼 하고 자야 내일 7시에 일어날 수 있어요. 폰 내려놓으세요!'},
   ]
 };
 
@@ -1981,26 +1987,41 @@ function checkSmartNags() {
 }
 
 function showNagToast(msg) {
+  // Remove any existing nag toast
+  document.querySelectorAll('.nag-toast').forEach(t => t.remove());
   const toast = document.createElement('div');
   toast.className = 'nag-toast';
-  toast.innerHTML = `<div class="nag-toast-content">${msg}</div><button class="nag-toast-close" onclick="this.parentElement.remove()">✕</button>`;
+  toast.innerHTML = `<div class="nag-toast-content">${msg}</div><button class="nag-toast-close" onclick="this.parentElement.classList.remove('show');setTimeout(()=>this.parentElement.remove(),400)">✕</button>`;
   document.body.appendChild(toast);
   requestAnimationFrame(() => toast.classList.add('show'));
   playSound('click');
-  hapticFeedback('medium');
-  // Auto-dismiss after 8 seconds
+  hapticFeedback('heavy');
+  // Auto-dismiss after 10 seconds
   setTimeout(() => {
-    toast.classList.remove('show');
-    setTimeout(() => toast.remove(), 400);
-  }, 8000);
+    if (toast.parentElement) {
+      toast.classList.remove('show');
+      setTimeout(() => toast.remove(), 400);
+    }
+  }, 10000);
 }
 
 function sendNagNotification(msg) {
+  const nagTitles = [
+    '📢 잔소리 타임!',
+    '🔔 알프레드가 한마디',
+    '⚡ 루틴 경고!',
+    '🫵 이거 안 하셨죠?',
+    '😤 다 보고 있어요',
+    '🚨 루틴 미완료!',
+    '💪 지금이에요!',
+    '👀 혹시 까먹으셨어요?',
+  ];
+  const title = nagTitles[Math.floor(Math.random() * nagTitles.length)];
+  const cleanMsg = msg.replace(/^[^\s]+\s/, '');
+
   // Browser push notification
   if ('Notification' in window && Notification.permission === 'granted') {
-    const cleanMsg = msg.replace(/^[^\s]+\s/, ''); // Remove leading emoji for title
-    const emoji = msg.match(/^[^\s]+/)?.[0] || '📢';
-    new Notification(`${emoji} 루틴 잔소리`, {
+    new Notification(title, {
       body: cleanMsg,
       icon: 'icon-192.png',
       tag: 'smart-nag',
@@ -2014,7 +2035,7 @@ function sendNagNotification(msg) {
     NativeNotifications.schedule({
       notifications: [{
         id: 9999,
-        title: '📢 루틴 잔소리',
+        title: title,
         body: msg,
         schedule: { at: new Date() },
         sound: 'default'
