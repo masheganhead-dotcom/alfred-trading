@@ -1651,30 +1651,34 @@ const SMART_NAGS = {
     {questId:'m3', after:'09:45', msg:'📖 독서 체크가 안 되어있어요. 한 페이지라도 읽으세요!'},
     {questId:'m4', after:'10:15', msg:'🤖 AI 작업 할당 아직이에요. Claude한테 일 시켜야죠!'},
   ],
-  // 작업실 시간대 (10:00~16:00)
+  // 작업실 시간대 (10:00~16:30)
   studio: [
     {check:'not_at_studio', after:'10:30', msg:'🎵 10시 반인데 아직 작업실 안 가셨나요? 왜요? 빨리 가세요!'},
-    {questId:'s1', after:'10:30', msg:'📋 작업 계획도 안 세우고 뭐 하고 계세요? 계획부터!'},
-    {questId:'s2', after:'11:00', msg:'🔍 레퍼런스 수집 안 했네요. 좋은 음악은 좋은 레퍼에서 나와요!'},
-    {questId:'s3', after:'13:00', msg:'🎹 메인 스케치 아직이요? 완벽주의 금지! DAW부터 켜세요!'},
-    {questId:'s4', after:'15:30', msg:'📱 릴스 아직 안 만드셨네요. 아티스트는 보여줘야 해요!'},
-    {questId:'s5', after:'16:15', msg:'💼 레슨 사업 기획 빼먹으셨어요. 사업도 중요합니다!'},
+    {questId:'s1', after:'10:40', msg:'📋 계획+레퍼 30분이면 끝나는데 아직이요? 방향부터 잡으세요!'},
+    {questId:'s2', after:'11:30', msg:'🎹 테마 스케치 시작 안 하셨네요. 완벽주의 금지! DAW부터 켜세요! 느낌이 먼저예요.'},
+    {questId:'s2', after:'12:45', msg:'🎹 테마 스케치가 아직 안 끝났나요? 2시간이면 충분해요. 붙잡지 말고 다음으로!'},
+    {questId:'s3', after:'14:00', msg:'🎼 1절 스케치 시작하셨나요? 테마 잡았으면 흐름 확장해야죠! 2시간 집중!'},
+    {questId:'s3', after:'15:30', msg:'🎼 1절 스케치 아직이에요. 인트로→벌스→훅 흐름부터 잡으세요. 디테일은 나중에!'},
+    {questId:'s4', after:'16:15', msg:'📱 릴스 아직 안 만드셨네요. 아티스트는 보여줘야 해요!'},
+    {questId:'s5', after:'16:45', msg:'💼 레슨 사업 기획 빼먹으셨어요. 사업도 중요합니다!'},
   ],
   // 운동 시간대 (16:00~18:30)
   exercise: [
     {questId:'e1', after:'17:00', msg:'🏋️ 운동 시간 지나고 있어요! 스포짐 아직 안 가신 거예요?'},
     {questId:'e2', after:'18:15', msg:'🏃 유산소 건너뛰려고요? 30분만 뛰세요. 체력이 자본이에요!'},
   ],
-  // 야간 작업 (19:00~21:00)
+  // 창의력 타임 (18:30~23:00)
   evening: [
-    {questId:'w1', after:'19:30', msg:'🎯 야간 작업 목표 설정 안 했어요. 방향 없이 작업하면 시간 낭비예요!'},
-    {questId:'w2', after:'21:15', msg:'🧪 창작 실험 시간이었는데 안 하셨네요. 실험이 곧 성장이에요!'},
+    {questId:'w1', after:'19:00', msg:'🚿 운동 끝났으면 샤워부터! 씻었다는 체크 안 되어있어요. 사소한 습관이 인생을 바꿉니다!'},
+    {questId:'w2', after:'19:30', msg:'🎯 창의력 타임 준비 안 했어요. 오늘 밤 뭘 만들지 방향부터 잡으세요!'},
+    {questId:'w3', after:'20:30', msg:'🔮 창의력 몰입 시간인데 아직 시작 안 하셨네요. 감각 열고 들어가세요!'},
+    {questId:'w3', after:'22:00', msg:'🔮 창의력 몰입 체크가 안 되어있어요. 오늘 밤 아무것도 안 만든 건 아니죠?'},
+    {questId:'w4', after:'22:30', msg:'🌌 프리 세션 어때요? 흐름이 올 때 놓치지 마세요!'},
   ],
-  // 귀가 후 (21:00~23:00)
+  // 마무리 (22:00~24:00)
   home: [
-    {questId:'h1', after:'21:45', msg:'🚿 씻으셨나요? 샤워 체크가 안 되어있어요. 사소한 습관이 인생을 바꿉니다!'},
-    {questId:'h2', after:'22:45', msg:'🧠 AI 공부 빼먹으셨네요. 하루 1시간이 1년 뒤 엄청난 차이를 만들어요!'},
-    {questId:'h3', after:'23:15', msg:'🌙 셧다운 리추얼 안 하셨어요! 내일 계획 정리하고 편하게 주무세요.'},
+    {questId:'h1', after:'23:00', msg:'🧠 AI 공부 빼먹으셨네요. 하루 30분이면 1년 뒤 엄청난 차이를 만들어요!'},
+    {questId:'h2', after:'23:30', msg:'🌙 셧다운 리추얼 안 하셨어요! 내일 계획 정리하고 편하게 주무세요.'},
   ]
 };
 
@@ -1691,8 +1695,8 @@ function getSmartNag() {
   if (hh >= 7 && hh < 10) nagGroups.push('morning');
   if (hh >= 10 && hh < 16) nagGroups.push('studio');
   if (hh >= 16 && hh < 19) nagGroups.push('exercise');
-  if (hh >= 19 && hh < 21) nagGroups.push('evening');
-  if (hh >= 21 && hh < 24) nagGroups.push('home');
+  if (hh >= 18 && hh < 23) nagGroups.push('evening'); // 창의력 타임
+  if (hh >= 22 && hh < 24) nagGroups.push('home');
   // Also check previous period's undone quests (catch-up nag)
   if (hh >= 10 && hh < 12) nagGroups.push('morning'); // Morning catch-up
   if (hh >= 19 && hh < 20) nagGroups.push('exercise'); // Exercise catch-up
@@ -2011,7 +2015,7 @@ const QUEST_CATEGORIES = {
   studio: {name:'작업실 퀘스트',icon:'🎵',subtitle:'살폿스튜디오'},
   recovery: {name:'회복 퀘스트',icon:'🧘',subtitle:'오후 리셋'},
   exercise: {name:'운동 퀘스트',icon:'🏋️',subtitle:'스포짐'},
-  evening_work: {name:'야간 작업 퀘스트',icon:'🌙',subtitle:'운동 후 작업실'},
+  evening_work: {name:'창의력 타임',icon:'🔮',subtitle:'몰입 & 창작'},
   home: {name:'귀환 퀘스트',icon:'🏠',subtitle:'셧다운 루틴'}
 };
 
@@ -2553,11 +2557,11 @@ function getDefaultData() {
         {id:"m4",name:"AI 작업 할당",desc:"코딩 작업 분배 & 자동화 세팅",xp:20,stats:{biz:1,int:1},icon:"🤖",time:"09:30-10:00",start:"Claude 열기"}
       ],
       studio:[
-        {id:"s1",name:"작업 계획 수립",desc:"데드라인 확인, 최소 2곡 계획",xp:15,stats:{biz:1},icon:"📋",time:"10:00-10:15",start:"노트 앱 열기"},
-        {id:"s2",name:"레퍼런스 수집",desc:"오늘 만들 곡의 레퍼런스 5분 분석 청취",xp:20,stats:{cre:2},icon:"🔍",time:"10:15-10:45",start:"레퍼 1곡 재생"},
-        {id:"s3",name:"메인 스케치",desc:"테마 스케치 → 1절 완성 (디테일 집착 X)",xp:40,stats:{cre:3},icon:"🎹",time:"10:45-12:30",start:"DAW 열고 코드 하나 치기"},
-        {id:"s4",name:"릴스 제작",desc:"아티스트 릴스 1개 기획+제작",xp:25,stats:{chr:2},icon:"📱",time:"14:00-15:00",start:"카메라 앱 열기"},
-        {id:"s5",name:"레슨 사업 기획",desc:"레슨 확장 및 기획",xp:20,stats:{biz:2},icon:"💼",time:"15:00-16:00",start:"레슨 노트 열기"}
+        {id:"s1",name:"계획 & 레퍼런스",desc:"데드라인 확인 → 오늘 작업 방향 설정 → 레퍼런스 분석 청취 (30분 내 끝내기!)",xp:20,stats:{biz:1,cre:1},icon:"📋",time:"10:00-10:30",start:"노트 앱 열고 오늘 방향 한 줄 쓰기"},
+        {id:"s2",name:"테마 스케치",desc:"곡의 핵심 무드·코드·사운드 잡기 (완벽주의 X, 느낌 우선)",xp:45,stats:{cre:3},icon:"🎹",time:"10:30-12:30",start:"DAW 열고 코드 하나 치기"},
+        {id:"s3",name:"1절 스케치",desc:"테마 기반으로 1절 구조 완성 (인트로→벌스→훅 흐름잡기)",xp:50,stats:{cre:3,grt:1},icon:"🎼",time:"13:20-15:20",start:"테마 트랙 복사해서 확장 시작"},
+        {id:"s4",name:"릴스 제작",desc:"아티스트 릴스 1개 기획+제작",xp:25,stats:{chr:2},icon:"📱",time:"15:20-16:00",start:"카메라 앱 열기"},
+        {id:"s5",name:"레슨 사업 기획",desc:"레슨 확장 및 기획",xp:20,stats:{biz:2},icon:"💼",time:"16:00-16:30",start:"레슨 노트 열기"}
       ],
       recovery:[
         {id:"r1",name:"NSDR 리셋",desc:"10-20분 비수면 깊은 휴식 (도파민 65% 회복)",xp:20,stats:{grt:1,int:1},icon:"🧘",time:"13:00-13:20",start:"눈 감고 누워 숨 3번 쉬기"}
@@ -2567,13 +2571,14 @@ function getDefaultData() {
         {id:"e2",name:"유산소 30분",desc:"러닝/사이클 등",xp:25,stats:{str:2},icon:"🏃",time:"17:30-18:00",start:"러닝화 신기"}
       ],
       evening_work:[
-        {id:"w1",name:"목표 설정",desc:"어떤 곡, 어떤 파트, 어떤 방향인지 명확히",xp:15,stats:{biz:1},icon:"🎯",time:"19:00-19:15",start:"종이에 한 줄 쓰기"},
-        {id:"w2",name:"창작 실험",desc:"새로운 느낌 탐구, 실험과 도전 (판단 OFF, 놀이 ON)",xp:35,stats:{cre:3,grt:1},icon:"🧪",time:"19:15-21:00",start:"랜덤 사운드 하나 고르기"}
+        {id:"w1",name:"샤워 & 리셋",desc:"운동 후 바로 씻고 컨디션 전환. 사소한 습관이 인생을 바꿈!",xp:10,stats:{grt:1},icon:"🚿",time:"18:30-19:00",start:"옷 벗기"},
+        {id:"w2",name:"창의력 타임 준비",desc:"오늘 밤 작업 방향 설정. 어떤 곡, 어떤 느낌, 어떤 실험?",xp:15,stats:{biz:1},icon:"🎯",time:"19:00-19:15",start:"종이에 한 줄 쓰기"},
+        {id:"w3",name:"창의력 몰입",desc:"판단 OFF, 감각 ON. 자유로운 사운드 실험과 창작 (몰입 모드)",xp:50,stats:{cre:4,grt:1},icon:"🔮",time:"19:15-21:30",start:"헤드폰 쓰고 눈 감고 사운드 하나 고르기"},
+        {id:"w4",name:"프리 세션",desc:"흐름이 오면 계속. 마감 없는 순수한 창작 시간",xp:35,stats:{cre:3},icon:"🌌",time:"21:30-23:00",start:"영감이 떠오르면 바로 작업"}
       ],
       home:[
-        {id:"h1",name:"샤워 & 정리",desc:"옷 갈아입고 바로 샤워",xp:10,stats:{grt:1},icon:"🚿",time:"21:00-21:30",start:"옷 벗기"},
-        {id:"h2",name:"AI 공부",desc:"AI 관련 학습",xp:25,stats:{int:2},icon:"🧠",time:"21:30-22:30",start:"강의 영상 재생"},
-        {id:"h3",name:"셧다운 리추얼",desc:"내일 계획 3줄 정리 → 전자기기 OFF → '셧다운 컴플리트'",xp:15,stats:{grt:2},icon:"🌙",time:"22:30-23:00",start:"노트 펼치고 내일 할 일 1줄"}
+        {id:"h1",name:"AI 공부",desc:"AI 관련 학습 (창의력 타임 중 or 이후)",xp:25,stats:{int:2},icon:"🧠",time:"22:00-23:00",start:"강의 영상 재생"},
+        {id:"h2",name:"셧다운 리추얼",desc:"내일 계획 3줄 정리 → 전자기기 OFF → '셧다운 컴플리트'",xp:15,stats:{grt:2},icon:"🌙",time:"23:00-23:30",start:"노트 펼치고 내일 할 일 1줄"}
       ]
     },
     history:{},
@@ -5134,7 +5139,7 @@ function renderCategoryBreakdown(catStats, weekDates) {
     morning: {icon:'☀️', name:'아침 루틴', color:'var(--gold)'},
     studio: {icon:'🎵', name:'작업실', color:'var(--purple)'},
     exercise: {icon:'🏋️', name:'운동', color:'var(--green)'},
-    evening_work: {icon:'🌙', name:'야간 작업', color:'var(--cyan)'},
+    evening_work: {icon:'🔮', name:'창의력 타임', color:'var(--purple)'},
     home: {icon:'🏠', name:'귀환', color:'var(--accent)'}
   };
 
