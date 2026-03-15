@@ -67,6 +67,23 @@ body{font-family:'Inter',-apple-system,BlinkMacSystemFont,'SF Pro Display',sans-
 .stagger-1{animation-delay:.05s}.stagger-2{animation-delay:.1s}.stagger-3{animation-delay:.15s}
 .stagger-4{animation-delay:.2s}.stagger-5{animation-delay:.25s}.stagger-6{animation-delay:.3s}
 
+/* Premium scrollbar */
+::-webkit-scrollbar{width:4px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:rgba(0,0,0,.1);border-radius:4px}
+::-webkit-scrollbar-thumb:hover{background:rgba(0,0,0,.2)}
+
+/* Smooth focus */
+input:focus,textarea:focus,select:focus{outline:none;box-shadow:0 0 0 2px rgba(59,130,246,.15);border-color:var(--accent)!important;transition:box-shadow .2s,border-color .2s}
+
+/* Section entrance animation */
+.report-section,.review-section,.shop-section,.music-section{animation:fadeInUp .4s var(--ease-out) both}
+.report-section:nth-child(2){animation-delay:.08s}
+.report-section:nth-child(3){animation-delay:.16s}
+.report-section:nth-child(4){animation-delay:.24s}
+.report-section:nth-child(5){animation-delay:.32s}
+.report-section:nth-child(6){animation-delay:.4s}
+
 /* Pull to refresh indicator */
 .ptr-indicator{position:fixed;top:-60px;left:50%;transform:translateX(-50%);z-index:200;width:40px;height:40px;border-radius:50%;background:var(--card);box-shadow:var(--shadow-lg);display:flex;align-items:center;justify-content:center;transition:top .3s var(--ease-out);font-size:18px}
 .ptr-indicator.pulling{top:20px}
@@ -438,17 +455,48 @@ body{font-family:'Inter',-apple-system,BlinkMacSystemFont,'SF Pro Display',sans-
 @keyframes tabSlideIn{from{opacity:0;transform:translateY(12px) scale(.98)}to{opacity:1;transform:translateY(0) scale(1)}}
 
 /* Report Section */
-.report-section{background:var(--card);border-radius:20px;padding:20px;margin-bottom:16px;box-shadow:var(--shadow)}
-.report-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px}
-.report-card{background:var(--card2);border-radius:14px;padding:16px;text-align:center}
-.report-label{font-size:11px;color:var(--dim);margin-bottom:6px;font-weight:500}
-.report-value{font-size:24px;font-weight:800;color:var(--text)}
-.report-sub{font-size:10px;color:var(--dim);margin-top:2px}
-.week-chart{display:flex;align-items:end;gap:6px;height:80px;padding:8px 0}
-.week-bar-wrap{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px}
-.week-bar{width:100%;border-radius:6px 6px 0 0;transition:height .4s;min-height:2px}
-.week-day{font-size:10px;color:var(--dim)}
-.week-pct{font-size:9px;color:var(--dim)}
+.report-section{background:var(--card);border-radius:20px;padding:20px;margin-bottom:16px;box-shadow:var(--shadow);position:relative;overflow:hidden}
+.report-section::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--accent),var(--purple),var(--gold));opacity:.5}
+.report-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:14px}
+.report-card{background:var(--card2);border-radius:14px;padding:14px 10px;text-align:center;position:relative;overflow:hidden;transition:transform .2s var(--ease-out)}
+.report-card:active{transform:scale(.96)}
+.report-card-icon{font-size:20px;margin-bottom:4px;filter:drop-shadow(0 2px 4px rgba(0,0,0,.08))}
+.report-label{font-size:10px;color:var(--dim);margin-bottom:4px;font-weight:600;letter-spacing:.02em}
+.report-value{font-size:22px;font-weight:800;color:var(--text);letter-spacing:-.5px}
+.report-sub{font-size:9px;color:var(--dim);margin-top:2px}
+.report-card.highlight{background:linear-gradient(135deg,rgba(59,130,246,.06),rgba(124,58,237,.06));border:1px solid rgba(59,130,246,.1)}
+.week-chart{display:flex;align-items:end;gap:4px;height:100px;padding:12px 0 4px}
+.week-bar-wrap{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px}
+.week-bar{width:100%;border-radius:6px 6px 0 0;transition:height .6s var(--ease-out);min-height:2px;position:relative}
+.week-bar.today-bar{box-shadow:0 0 8px rgba(59,130,246,.3)}
+.week-day{font-size:10px;color:var(--dim);font-weight:600}
+.week-day.today-label{color:var(--accent);font-weight:700}
+.week-pct{font-size:9px;color:var(--dim);font-weight:600}
+/* Category breakdown */
+.cat-breakdown{display:flex;flex-direction:column;gap:8px;margin-top:8px}
+.cat-row{display:flex;align-items:center;gap:10px}
+.cat-icon{font-size:16px;width:24px;text-align:center}
+.cat-info{flex:1}
+.cat-name{font-size:11px;font-weight:600;color:var(--text);margin-bottom:3px}
+.cat-bar{height:6px;background:var(--card2);border-radius:3px;overflow:hidden}
+.cat-fill{height:100%;border-radius:3px;transition:width .6s var(--ease-out)}
+.cat-pct{font-size:11px;font-weight:700;min-width:32px;text-align:right;color:var(--dim)}
+/* Stat radar */
+.radar-container{display:flex;justify-content:center;padding:8px 0}
+/* Level progress card */
+.level-progress-card{background:linear-gradient(135deg,rgba(59,130,246,.05),rgba(124,58,237,.05));border-radius:16px;padding:16px;margin-bottom:14px;text-align:center}
+.level-progress-title{font-size:13px;font-weight:700;color:var(--text);margin-bottom:8px}
+.level-progress-bar{height:8px;background:var(--card2);border-radius:4px;overflow:hidden;margin-bottom:6px}
+.level-progress-fill{height:100%;background:linear-gradient(90deg,var(--accent),var(--purple));border-radius:4px;transition:width .8s var(--ease-out)}
+.level-progress-text{font-size:11px;color:var(--dim)}
+/* Notes floating button */
+.notes-fab{position:fixed;bottom:80px;right:16px;width:52px;height:52px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--purple));color:#fff;border:none;font-size:22px;cursor:pointer;box-shadow:0 4px 16px rgba(59,130,246,.35);z-index:100;display:flex;align-items:center;justify-content:center;transition:all .25s var(--ease-out)}
+.notes-fab:active{transform:scale(.9)}
+.notes-panel{position:fixed;bottom:0;left:0;right:0;max-height:70vh;background:var(--card);border-radius:24px 24px 0 0;box-shadow:0 -4px 32px rgba(0,0,0,.12);z-index:200;transform:translateY(100%);transition:transform .35s var(--ease-out);padding:20px 16px env(safe-area-inset-bottom,20px);overflow-y:auto}
+.notes-panel.open{transform:translateY(0)}
+.notes-panel-handle{width:40px;height:4px;background:var(--dim);opacity:.3;border-radius:2px;margin:0 auto 16px}
+.notes-overlay{position:fixed;inset:0;background:rgba(0,0,0,.3);z-index:199;opacity:0;pointer-events:none;transition:opacity .3s}
+.notes-overlay.show{opacity:1;pointer-events:auto}
 
 /* Music Tracker */
 .music-section{background:var(--card);border-radius:20px;padding:20px;margin-bottom:16px;box-shadow:var(--shadow)}
@@ -1157,53 +1205,80 @@ body{font-family:'Inter',-apple-system,BlinkMacSystemFont,'SF Pro Display',sans-
 
   <!-- Tab: Report -->
   <div class="tab-content" id="tab-report">
+    <!-- Level Progress -->
+    <div class="level-progress-card">
+      <div class="level-progress-title" id="rpt-level-title">Lv.1 → Lv.2</div>
+      <div class="level-progress-bar"><div class="level-progress-fill" id="rpt-level-fill" style="width:0%"></div></div>
+      <div class="level-progress-text" id="rpt-level-text">0 / 100 XP</div>
+    </div>
+
+    <!-- Weekly Summary Cards -->
     <div class="report-section">
       <div class="section-title">📊 이번 주 리포트</div>
       <div class="report-grid">
-        <div class="report-card">
-          <div class="report-label">주간 완료율</div>
+        <div class="report-card highlight">
+          <div class="report-card-icon">✅</div>
+          <div class="report-label">완료율</div>
           <div class="report-value" id="rpt-weekly-rate" style="color:var(--green)">0%</div>
         </div>
         <div class="report-card">
-          <div class="report-label">이번 주 XP</div>
+          <div class="report-card-icon">⚡</div>
+          <div class="report-label">XP</div>
           <div class="report-value mono" id="rpt-weekly-xp" style="color:var(--gold)">0</div>
         </div>
         <div class="report-card">
-          <div class="report-label">가장 성장한 스탯</div>
-          <div class="report-value" id="rpt-top-stat">-</div>
+          <div class="report-card-icon">📈</div>
+          <div class="report-label">Top 스탯</div>
+          <div class="report-value" id="rpt-top-stat" style="font-size:16px">-</div>
         </div>
         <div class="report-card">
-          <div class="report-label">작업한 곡 수</div>
+          <div class="report-card-icon">🎵</div>
+          <div class="report-label">작업 곡</div>
           <div class="report-value" id="rpt-songs" style="color:var(--purple)">0</div>
         </div>
         <div class="report-card">
-          <div class="report-label">주간 집중 시간</div>
-          <div class="report-value mono" id="rpt-focus-time" style="color:var(--cyan)">0h</div>
+          <div class="report-card-icon">🎯</div>
+          <div class="report-label">집중</div>
+          <div class="report-value mono" id="rpt-focus-time" style="color:var(--cyan);font-size:18px">0h</div>
         </div>
         <div class="report-card">
-          <div class="report-label">평균 에너지</div>
+          <div class="report-card-icon">🔋</div>
+          <div class="report-label">에너지</div>
           <div class="report-value" id="rpt-energy-avg">-</div>
         </div>
       </div>
-      <div class="section-title" style="margin-top:8px">📈 일별 완료율</div>
+
+      <div class="section-title" style="margin-top:12px">📈 일별 완료율</div>
       <div class="week-chart" id="week-chart"></div>
     </div>
 
+    <!-- Category Breakdown -->
+    <div class="report-section">
+      <div class="section-title">🗂️ 카테고리별 달성률</div>
+      <div class="cat-breakdown" id="cat-breakdown"></div>
+    </div>
+
+    <!-- Stat Radar + Growth -->
+    <div class="report-section">
+      <div class="section-title">🛡️ 능력치 레이더</div>
+      <div class="radar-container"><canvas id="stat-radar-chart" width="300" height="300" style="width:260px;height:260px"></canvas></div>
+      <div class="section-title" style="margin-top:12px">📈 주간 스탯 변화</div>
+      <canvas id="stat-growth-chart" width="460" height="200" style="width:100%;height:150px"></canvas>
+    </div>
+
+    <!-- Month Heatmap -->
     <div class="report-section">
       <div class="section-title">🗓️ 월간 히트맵</div>
       <div id="month-heatmap"></div>
     </div>
 
+    <!-- Calendar -->
     <div class="report-section">
       <div class="section-title">🗓️ 퀘스트 달력</div>
       <div id="calendar-view-main"></div>
     </div>
 
-    <div class="report-section">
-      <div class="section-title">📈 스탯 성장 기록</div>
-      <canvas id="stat-growth-chart" width="460" height="200" style="width:100%;height:150px"></canvas>
-    </div>
-
+    <!-- Weekly Review -->
     <div class="review-section">
       <div class="section-title">📝 주간 리뷰 (일요일)</div>
       <div class="review-question">
@@ -1221,13 +1296,13 @@ body{font-family:'Inter',-apple-system,BlinkMacSystemFont,'SF Pro Display',sans-
       <div class="review-saved" id="review-saved">✓ 저장됨</div>
     </div>
 
-    <!-- Achievement Section -->
+    <!-- Achievements -->
     <div class="report-section">
       <div class="section-title">🏆 업적</div>
       <div class="achievements-grid" id="achievements-grid"></div>
     </div>
 
-    <!-- Character Evolution Timeline -->
+    <!-- Character Evolution -->
     <div class="report-section">
       <div class="section-title">🌱 캐릭터 성장 히스토리</div>
       <div id="char-evolution-timeline" style="padding:8px 0"></div>
@@ -1239,7 +1314,24 @@ body{font-family:'Inter',-apple-system,BlinkMacSystemFont,'SF Pro Display',sans-
     <span id="sync-indicator" style="font-size:11px;color:var(--dim)"></span>
   </div>
 
-  <div class="footer" id="app-footer">Routine Game v3.7 · Gamified Routine</div>
+  <div class="footer" id="app-footer">Routine Game v4.0 · Gamified Routine</div>
+</div>
+
+<!-- Notes FAB -->
+<button class="notes-fab" id="notes-fab" onclick="toggleNotesPanel()">✏️</button>
+<div class="notes-overlay" id="notes-overlay" onclick="toggleNotesPanel()"></div>
+<div class="notes-panel" id="notes-panel">
+  <div class="notes-panel-handle"></div>
+  <div class="section-title" style="margin-bottom:12px">✏️ 빠른 메모</div>
+  <button class="voice-btn" id="voice-btn-panel" onclick="toggleVoiceRecord()">
+    <span id="voice-icon-panel">🎤</span>
+    <span id="voice-text-panel">탭하여 음성 메모 시작</span>
+  </button>
+  <div class="note-input-row" style="margin-top:10px">
+    <input class="note-input" id="note-input-panel" placeholder="텍스트 메모 입력..." onkeydown="if(event.key==='Enter')addTextNotePanel()">
+    <button class="note-send" onclick="addTextNotePanel()">추가</button>
+  </div>
+  <div style="margin-top:12px" id="notes-list-panel"></div>
 </div>
 
 <!-- Song Modal -->
@@ -1997,65 +2089,61 @@ function getAudioCtx() {
 function playSound(type) {
   try {
     const ctx = getAudioCtx();
-    const osc = ctx.createOscillator();
-    const gain = ctx.createGain();
-    osc.connect(gain);
-    gain.connect(ctx.destination);
-    gain.gain.value = 0.08;
+    const t = ctx.currentTime;
+
+    function makeOsc(freq, oscType, gainVal, startTime, stopTime, freqSchedule) {
+      const o = ctx.createOscillator();
+      const g = ctx.createGain();
+      o.connect(g); g.connect(ctx.destination);
+      o.type = oscType || 'sine';
+      if (freqSchedule) {
+        freqSchedule.forEach(([f, time]) => o.frequency.setValueAtTime(f, t + time));
+      } else {
+        o.frequency.value = freq;
+      }
+      g.gain.setValueAtTime(gainVal || 0.08, t + (startTime || 0));
+      g.gain.exponentialRampToValueAtTime(0.001, t + (stopTime || 0.3));
+      o.start(t + (startTime || 0));
+      o.stop(t + (stopTime || 0.3));
+      return {osc: o, gain: g};
+    }
 
     if (type === 'complete') {
-      // Satisfying Todoist-style "ding" - two harmonious notes
-      osc.type = 'sine';
-      osc.frequency.setValueAtTime(880, ctx.currentTime);
-      osc.frequency.setValueAtTime(1318, ctx.currentTime + 0.08);
-      gain.gain.setValueAtTime(0.12, ctx.currentTime);
-      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.35);
-      osc.start(ctx.currentTime);
-      osc.stop(ctx.currentTime + 0.35);
-      // Add a harmonic overtone
-      const osc2 = ctx.createOscillator();
-      const gain2 = ctx.createGain();
-      osc2.connect(gain2); gain2.connect(ctx.destination);
-      osc2.type = 'sine';
-      osc2.frequency.value = 1760;
-      gain2.gain.setValueAtTime(0.04, ctx.currentTime + 0.05);
-      gain2.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.25);
-      osc2.start(ctx.currentTime + 0.05);
-      osc2.stop(ctx.currentTime + 0.25);
+      // Satisfying major chord ding
+      makeOsc(null, 'sine', 0.12, 0, 0.35, [[880,0],[1318,0.08]]);
+      makeOsc(1760, 'sine', 0.04, 0.05, 0.25);
     } else if (type === 'achievement') {
-      osc.frequency.setValueAtTime(523, ctx.currentTime);
-      osc.frequency.setValueAtTime(659, ctx.currentTime + 0.15);
-      osc.frequency.setValueAtTime(784, ctx.currentTime + 0.3);
-      osc.frequency.setValueAtTime(1047, ctx.currentTime + 0.45);
-      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.7);
-      osc.start(ctx.currentTime);
-      osc.stop(ctx.currentTime + 0.7);
+      // Ascending major scale fanfare
+      makeOsc(null, 'sine', 0.1, 0, 0.7, [[523,0],[659,0.12],[784,0.24],[1047,0.36]]);
+      makeOsc(null, 'triangle', 0.05, 0.05, 0.75, [[659,0.05],[784,0.17],[1047,0.29],[1318,0.41]]);
     } else if (type === 'challenge') {
-      osc.type = 'triangle';
-      osc.frequency.setValueAtTime(392, ctx.currentTime);
-      osc.frequency.setValueAtTime(523, ctx.currentTime + 0.1);
-      osc.frequency.setValueAtTime(659, ctx.currentTime + 0.2);
-      osc.frequency.setValueAtTime(784, ctx.currentTime + 0.3);
-      osc.frequency.setValueAtTime(1047, ctx.currentTime + 0.4);
-      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.6);
-      osc.start(ctx.currentTime);
-      osc.stop(ctx.currentTime + 0.6);
+      makeOsc(null, 'triangle', 0.08, 0, 0.6, [[392,0],[523,0.1],[659,0.2],[784,0.3],[1047,0.4]]);
     } else if (type === 'levelup') {
-      // Fanfare
-      const notes = [523, 659, 784, 1047, 784, 1047];
-      const times = [0, 0.15, 0.3, 0.45, 0.55, 0.7];
-      osc.type = 'triangle';
-      notes.forEach((freq, i) => osc.frequency.setValueAtTime(freq, ctx.currentTime + times[i]));
-      gain.gain.value = 0.12;
-      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 1.0);
-      osc.start(ctx.currentTime);
-      osc.stop(ctx.currentTime + 1.0);
+      // Epic RPG fanfare with layered harmony
+      makeOsc(null, 'triangle', 0.1, 0, 1.2, [[523,0],[659,0.12],[784,0.24],[1047,0.36],[784,0.48],[1047,0.6],[1318,0.72]]);
+      makeOsc(null, 'sine', 0.06, 0.06, 1.1, [[392,0.06],[523,0.18],[659,0.3],[784,0.42],[659,0.54],[784,0.66],[1047,0.78]]);
+      // Shimmer
+      makeOsc(null, 'sine', 0.03, 0.8, 1.4, [[2093,0.8],[2637,0.9],[3136,1.0]]);
     } else if (type === 'undo') {
-      osc.frequency.setValueAtTime(400, ctx.currentTime);
-      osc.frequency.setValueAtTime(300, ctx.currentTime + 0.1);
-      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.2);
-      osc.start(ctx.currentTime);
-      osc.stop(ctx.currentTime + 0.2);
+      makeOsc(null, 'sine', 0.06, 0, 0.2, [[400,0],[300,0.1]]);
+    } else if (type === 'coin') {
+      // Coin collect sound (for purchases/rewards)
+      makeOsc(null, 'square', 0.05, 0, 0.15, [[1200,0],[1600,0.05]]);
+      makeOsc(2400, 'sine', 0.03, 0.08, 0.2);
+    } else if (type === 'equip') {
+      // Equipment equip sound
+      makeOsc(null, 'triangle', 0.06, 0, 0.3, [[300,0],[600,0.05],[900,0.1],[1200,0.15]]);
+    } else if (type === 'boss') {
+      // Boss encounter dramatic
+      makeOsc(null, 'sawtooth', 0.04, 0, 0.8, [[110,0],[130,0.2],[110,0.4],[150,0.5],[200,0.6]]);
+      makeOsc(null, 'triangle', 0.06, 0.3, 1.0, [[220,0.3],[330,0.5],[440,0.7]]);
+    } else if (type === 'click') {
+      // Subtle UI click
+      makeOsc(800, 'sine', 0.03, 0, 0.06);
+    } else if (type === 'streak') {
+      // Streak milestone celebration
+      makeOsc(null, 'sine', 0.08, 0, 0.5, [[659,0],[784,0.1],[1047,0.2],[1318,0.3]]);
+      makeOsc(null, 'triangle', 0.05, 0.15, 0.6, [[1047,0.15],[1318,0.25],[1568,0.35]]);
     }
   } catch(e) {}
 }
@@ -2113,7 +2201,8 @@ function checkBossDefeat() {
     addXP(boss.reward.xp, null, null);
     showAchievementToast({icon:'⚔️', name:`${boss.name} 처치!`, desc:`+${boss.reward.xp} XP · ${boss.reward.title} 칭호 획득`});
     spawnConfetti(60);
-    playSound('levelup');
+    playSound('boss');
+    setTimeout(() => playSound('achievement'), 800);
     saveData();
   }
 }
@@ -2145,7 +2234,7 @@ function claimDailyReward() {
   gameData._loginRewards[todayKey] = true;
   addXP(reward.xp, null, null);
   if (reward.day === 7) gameData.character.skill_points = (gameData.character.skill_points || 0) + 1;
-  playSound('achievement');
+  playSound('coin');
   hapticFeedback('heavy');
   spawnConfetti(30);
   showAchievementToast({icon:reward.reward, name:'일일 보상 획득!', desc:reward.desc});
@@ -2190,7 +2279,7 @@ function buyItem(itemId) {
   }
   // Don't subtract from current XP, just require total_xp threshold
   gameData._inventory.push(itemId);
-  playSound('achievement');
+  playSound('coin');
   hapticFeedback('medium');
   showAchievementToast({icon:item.icon, name:`${item.name} 획득!`, desc:item.desc});
   saveData();
@@ -2203,8 +2292,10 @@ function equipItem(itemId) {
   // Toggle equip
   if (gameData._equipped[item.slot] === itemId) {
     delete gameData._equipped[item.slot];
+    playSound('click');
   } else {
     gameData._equipped[item.slot] = itemId;
+    playSound('equip');
   }
   hapticFeedback('light');
   saveData();
@@ -2648,7 +2739,7 @@ function renderAll() {
   renderXP();
   // Update footer
   const footer = document.getElementById('app-footer');
-  if (footer) footer.textContent = `Routine Game v3.7 · Total ${gameData.character.total_xp} XP · Lv.${gameData.character.level}`;
+  if (footer) footer.textContent = `Routine Game v4.0 · Total ${gameData.character.total_xp} XP · Lv.${gameData.character.level}`;
   // Defer non-critical renders
   requestAnimationFrame(() => {
     renderStreakCalendar();
@@ -3818,6 +3909,48 @@ function escapeHTML(str) {
   return div.innerHTML;
 }
 
+// ===== NOTES PANEL (FLOATING) =====
+function toggleNotesPanel() {
+  const panel = document.getElementById('notes-panel');
+  const overlay = document.getElementById('notes-overlay');
+  const isOpen = panel.classList.contains('open');
+  if (isOpen) {
+    panel.classList.remove('open');
+    overlay.classList.remove('show');
+  } else {
+    panel.classList.add('open');
+    overlay.classList.add('show');
+    renderNotesPanel();
+  }
+}
+
+function addTextNotePanel() {
+  const input = document.getElementById('note-input-panel');
+  const text = input.value.trim();
+  if (!text) return;
+  addNote(text, 'text');
+  input.value = '';
+  renderNotesPanel();
+}
+
+function renderNotesPanel() {
+  const list = document.getElementById('notes-list-panel');
+  if (!list) return;
+  const notes = (gameData.notes && gameData.notes[todayKey]) || [];
+  if (notes.length === 0) {
+    list.innerHTML = '<div style="text-align:center;padding:20px;font-size:12px;color:var(--dim)">오늘 메모가 없습니다</div>';
+    return;
+  }
+  list.innerHTML = notes.slice().reverse().map((n, i) => {
+    const realIdx = notes.length - 1 - i;
+    return `<div class="note-entry">
+      <button class="note-delete" onclick="deleteNote(${realIdx});renderNotesPanel()" title="삭제">✕</button>
+      <div class="note-time">${n.type === 'plaud' ? '🎙️' : n.type === 'voice' ? '🎤' : '✏️'} ${n.time}</div>
+      <div class="note-text">${escapeHTML(n.text)}</div>
+    </div>`;
+  }).join('');
+}
+
 // ===== CALENDAR VIEW =====
 function renderCalendarMain() {
   const container = document.getElementById('calendar-view-main');
@@ -4700,6 +4833,7 @@ function importPlaudSummary(idx) {
 // ===== REPORT =====
 function renderReport() {
   const now = new Date();
+  const todayDay = now.getDay();
   const weekDates = [];
   for (let i = 6; i >= 0; i--) {
     const d = new Date(now);
@@ -4707,13 +4841,26 @@ function renderReport() {
     weekDates.push(d.toISOString().split('T')[0]);
   }
 
+  // Level progress card
+  const ch = gameData.character;
+  const xpNeeded = ch.level * 100;
+  const lvlPct = Math.min(100, Math.round(ch.xp / xpNeeded * 100));
+  const lvlTitle = document.getElementById('rpt-level-title');
+  const lvlFill = document.getElementById('rpt-level-fill');
+  const lvlText = document.getElementById('rpt-level-text');
+  if (lvlTitle) lvlTitle.textContent = `Lv.${ch.level} → Lv.${ch.level + 1}`;
+  if (lvlFill) lvlFill.style.width = lvlPct + '%';
+  if (lvlText) lvlText.textContent = `${ch.xp} / ${xpNeeded} XP (${lvlPct}%)`;
+
   let weekXP = 0;
   let weekCompleted = 0;
   let weekTotal = 0;
   const statGrowth = {};
+  const catStats = {};
 
   const chartContainer = document.getElementById('week-chart');
   let chartHTML = '';
+  const todayStr = now.toISOString().split('T')[0];
 
   weekDates.forEach(dateKey => {
     const hist = gameData.history[dateKey] || {completed:[], xp_earned:0, stats_gained:{}};
@@ -4738,26 +4885,39 @@ function renderReport() {
       }
     }
 
+    // Category breakdown
+    if (hist.completed) {
+      hist.completed.forEach(qId => {
+        for (const [cat, quests] of Object.entries(gameData.quests)) {
+          if (quests.find(q => q.id === qId)) {
+            if (!catStats[cat]) catStats[cat] = {done:0, total:0};
+            catStats[cat].done++;
+          }
+        }
+      });
+    }
+
+    const isToday = dateKey === todayStr;
     const dayLabel = DAYS_KO[new Date(dateKey).getDay()];
-    const barColor = rate >= 90 ? 'var(--green)' : rate >= 50 ? 'var(--gold)' : 'var(--dim)';
+    const barColor = rate >= 90 ? 'var(--green)' : rate >= 50 ? 'var(--gold)' : rate > 0 ? 'var(--accent)' : 'var(--dim)';
     chartHTML += `<div class="week-bar-wrap">
-      <div class="week-pct">${rate}%</div>
-      <div class="week-bar" style="height:${Math.max(rate, 3)}%;background:${barColor}"></div>
-      <div class="week-day">${dayLabel}</div>
+      <div class="week-pct" style="${isToday?'color:var(--accent);font-weight:700':''}">${rate}%</div>
+      <div class="week-bar${isToday?' today-bar':''}" style="height:${Math.max(rate, 4)}%;background:${barColor}"></div>
+      <div class="week-day${isToday?' today-label':''}">${dayLabel}</div>
     </div>`;
   });
 
-  chartContainer.innerHTML = chartHTML;
+  if (chartContainer) chartContainer.innerHTML = chartHTML;
 
   const weekRate = weekTotal > 0 ? Math.round(weekCompleted / weekTotal * 100) : 0;
   document.getElementById('rpt-weekly-rate').textContent = weekRate + '%';
-  document.getElementById('rpt-weekly-xp').textContent = weekXP;
+  document.getElementById('rpt-weekly-xp').textContent = weekXP.toLocaleString();
 
   // Top stat
   const topStat = Object.entries(statGrowth).sort((a,b) => b[1]-a[1])[0];
   if (topStat) {
     const cfg = STAT_CONFIG[topStat[0]];
-    document.getElementById('rpt-top-stat').innerHTML = `${cfg?.icon||''} ${cfg?.name||topStat[0]} +${topStat[1]}`;
+    document.getElementById('rpt-top-stat').innerHTML = `${cfg?.icon||''} +${topStat[1]}`;
   }
 
   // Songs count
@@ -4785,11 +4945,153 @@ function renderReport() {
   const energyEmojis = ['', '😴', '😕', '😐', '😊', '🔥'];
   document.getElementById('rpt-energy-avg').textContent = avgEnergy > 0 ? `${energyEmojis[Math.round(avgEnergy)]} ${avgEnergy.toFixed(1)}` : '-';
 
+  // Category breakdown
+  renderCategoryBreakdown(catStats, weekDates);
+
   // Month heatmap
   renderMonthHeatmap();
 
+  // Radar chart
+  renderStatRadar();
+
   // Stat growth chart
   renderStatGrowthChart();
+}
+
+function renderCategoryBreakdown(catStats, weekDates) {
+  const container = document.getElementById('cat-breakdown');
+  if (!container) return;
+  const CAT_META = {
+    morning: {icon:'☀️', name:'아침 루틴', color:'var(--gold)'},
+    studio: {icon:'🎵', name:'작업실', color:'var(--purple)'},
+    exercise: {icon:'🏋️', name:'운동', color:'var(--green)'},
+    evening_work: {icon:'🌙', name:'야간 작업', color:'var(--cyan)'},
+    home: {icon:'🏠', name:'귀환', color:'var(--accent)'}
+  };
+
+  // Calculate totals per category for the week
+  const catTotals = {};
+  for (const [cat, quests] of Object.entries(gameData.quests)) {
+    let totalPossible = 0;
+    let totalDone = 0;
+    weekDates.forEach(dateKey => {
+      const dayOfWeek = new Date(dateKey).getDay();
+      const isRest = gameData.settings.exercise_rest_days.includes(dayOfWeek);
+      if (cat === 'exercise' && isRest) return;
+      totalPossible += quests.length;
+      const hist = gameData.history[dateKey];
+      if (hist && hist.completed) {
+        hist.completed.forEach(qId => {
+          if (quests.find(q => q.id === qId)) totalDone++;
+        });
+      }
+    });
+    catTotals[cat] = {done: totalDone, total: totalPossible};
+  }
+
+  container.innerHTML = Object.entries(catTotals).map(([cat, data]) => {
+    const meta = CAT_META[cat] || {icon:'📋', name:cat, color:'var(--dim)'};
+    const pct = data.total > 0 ? Math.round(data.done / data.total * 100) : 0;
+    return `<div class="cat-row">
+      <div class="cat-icon">${meta.icon}</div>
+      <div class="cat-info">
+        <div class="cat-name">${meta.name}</div>
+        <div class="cat-bar"><div class="cat-fill" style="width:${pct}%;background:${meta.color}"></div></div>
+      </div>
+      <div class="cat-pct" style="color:${pct >= 80 ? 'var(--green)' : pct >= 40 ? meta.color : 'var(--dim)'}">${pct}%</div>
+    </div>`;
+  }).join('');
+}
+
+function renderStatRadar() {
+  const canvas = document.getElementById('stat-radar-chart');
+  if (!canvas) return;
+  const dpr = window.devicePixelRatio || 1;
+  const size = 300;
+  canvas.width = size * dpr;
+  canvas.height = size * dpr;
+  const ctx = canvas.getContext('2d');
+  ctx.scale(dpr, dpr);
+  ctx.clearRect(0, 0, size, size);
+
+  const stats = gameData.character.stats;
+  const keys = Object.keys(STAT_CONFIG);
+  const n = keys.length;
+  const cx = size / 2, cy = size / 2;
+  const maxR = 110;
+
+  // Find max stat for scaling
+  const maxStat = Math.max(10, ...Object.values(stats));
+
+  // Draw grid rings
+  for (let ring = 1; ring <= 4; ring++) {
+    const r = (ring / 4) * maxR;
+    ctx.beginPath();
+    for (let i = 0; i <= n; i++) {
+      const angle = (Math.PI * 2 / n) * i - Math.PI / 2;
+      const x = cx + Math.cos(angle) * r;
+      const y = cy + Math.sin(angle) * r;
+      i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+    }
+    ctx.closePath();
+    ctx.strokeStyle = 'rgba(0,0,0,.06)';
+    ctx.lineWidth = 1;
+    ctx.stroke();
+  }
+
+  // Draw axes
+  keys.forEach((_, i) => {
+    const angle = (Math.PI * 2 / n) * i - Math.PI / 2;
+    ctx.beginPath();
+    ctx.moveTo(cx, cy);
+    ctx.lineTo(cx + Math.cos(angle) * maxR, cy + Math.sin(angle) * maxR);
+    ctx.strokeStyle = 'rgba(0,0,0,.04)';
+    ctx.lineWidth = 1;
+    ctx.stroke();
+  });
+
+  // Draw data polygon
+  ctx.beginPath();
+  keys.forEach((key, i) => {
+    const val = stats[key] || 1;
+    const r = (val / maxStat) * maxR;
+    const angle = (Math.PI * 2 / n) * i - Math.PI / 2;
+    const x = cx + Math.cos(angle) * r;
+    const y = cy + Math.sin(angle) * r;
+    i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+  });
+  ctx.closePath();
+  ctx.fillStyle = 'rgba(59,130,246,.12)';
+  ctx.fill();
+  ctx.strokeStyle = 'rgba(59,130,246,.6)';
+  ctx.lineWidth = 2;
+  ctx.stroke();
+
+  // Draw data points and labels
+  keys.forEach((key, i) => {
+    const cfg = STAT_CONFIG[key];
+    const val = stats[key] || 1;
+    const r = (val / maxStat) * maxR;
+    const angle = (Math.PI * 2 / n) * i - Math.PI / 2;
+    const x = cx + Math.cos(angle) * r;
+    const y = cy + Math.sin(angle) * r;
+
+    // Point
+    ctx.beginPath();
+    ctx.arc(x, y, 4, 0, Math.PI * 2);
+    ctx.fillStyle = cfg.color || 'var(--accent)';
+    ctx.fill();
+
+    // Label
+    const labelR = maxR + 22;
+    const lx = cx + Math.cos(angle) * labelR;
+    const ly = cy + Math.sin(angle) * labelR;
+    ctx.fillStyle = '#555';
+    ctx.font = '11px -apple-system,BlinkMacSystemFont,sans-serif';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(`${cfg.icon} ${val}`, lx, ly);
+  });
 }
 
 function renderMonthHeatmap() {
