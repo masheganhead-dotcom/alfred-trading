@@ -628,6 +628,15 @@ body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','SF Pro Text'
 .quest-complete-slide{animation:questSlide .4s ease}
 @keyframes questSlide{0%{transform:translateX(0);opacity:1}30%{transform:translateX(20px);opacity:.8}100%{transform:translateX(0);opacity:1}}
 
+/* Time awareness pulse for current quest */
+.now-card.time-active{border-color:rgba(0,230,118,.2)}
+.now-card.time-active::after{content:'';position:absolute;inset:-1px;border-radius:20px;border:1px solid rgba(0,230,118,.15);animation:timePulse 2s ease-in-out infinite}
+@keyframes timePulse{0%,100%{opacity:.3}50%{opacity:.8}}
+
+/* Long press hint */
+.long-press-hint{font-size:10px;color:var(--dim);text-align:center;padding:4px 0;opacity:0;animation:hintFade 3s ease 2s forwards}
+@keyframes hintFade{0%{opacity:0}20%{opacity:.5}80%{opacity:.5}100%{opacity:0}}
+
 /* Header progress mini dots */
 .hdr-progress{display:flex;gap:2px;align-items:center}
 .hdr-dot{width:4px;height:4px;border-radius:50%;background:rgba(255,255,255,.15);transition:background .2s}
@@ -2252,8 +2261,9 @@ function renderNowNext() {
   if (currentQuest) {
     const comboMult = getComboMultiplier();
     const bonusXP = comboMult > 1 ? ` (x${comboMult})` : '';
-    html += `<div class="now-card">
-      <div class="now-label">지금 할 일 <span style="float:right;font-size:10px;color:var(--dim);text-transform:none;letter-spacing:0">${motivations[0]}</span></div>
+    const timeActive = currentQuest.time ? getTimeBlockStatus(currentQuest.time).cls === 'current' : false;
+    html += `<div class="now-card ${timeActive ? 'time-active' : ''}">
+      <div class="now-label">${timeActive ? '🟢 지금 시간!' : '지금 할 일'} <span style="float:right;font-size:10px;color:var(--dim);text-transform:none;letter-spacing:0">${motivations[0]}</span></div>
       <div class="now-quest" onclick="toggleQuest('${currentQuest.id}',event)">
         <div class="now-icon">${currentQuest.icon}</div>
         <div class="now-info">
