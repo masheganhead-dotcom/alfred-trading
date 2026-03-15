@@ -306,6 +306,14 @@ body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','SF Pro Text'
 .time-evening{background:linear-gradient(180deg,#150a1a 0%,#0a0a0f 100%)}
 .time-night{background:linear-gradient(180deg,#050510 0%,#0a0a0f 100%)}
 
+/* XP Breakdown Toast */
+.xp-breakdown{position:fixed;bottom:90px;left:50%;transform:translateX(-50%);z-index:250;background:rgba(21,21,32,.95);border:1px solid rgba(255,215,64,.2);border-radius:14px;padding:12px 18px;min-width:200px;box-shadow:0 8px 32px rgba(0,0,0,.5);pointer-events:none;animation:breakdownSlide .4s cubic-bezier(.68,-.55,.27,1.55)}
+@keyframes breakdownSlide{from{opacity:0;transform:translateX(-50%) translateY(20px)}to{opacity:1;transform:translateX(-50%) translateY(0)}}
+.xp-breakdown.fade-out{animation:breakdownFade .3s ease forwards}
+@keyframes breakdownFade{to{opacity:0;transform:translateX(-50%) translateY(-10px)}}
+.xp-breakdown-row{display:flex;justify-content:space-between;align-items:center;padding:2px 0;font-size:12px}
+.xp-breakdown-row.total{border-top:1px solid rgba(255,255,255,.1);margin-top:4px;padding-top:6px;font-weight:900;font-size:14px;color:var(--gold)}
+
 /* Floating praise text */
 .praise-float{position:fixed;z-index:300;font-size:24px;font-weight:900;pointer-events:none;animation:praiseAnim 1s ease-out forwards;text-shadow:0 2px 8px rgba(0,0,0,.3)}
 @keyframes praiseAnim{0%{opacity:1;transform:translateY(0) scale(.5) rotate(-5deg)}30%{transform:translateY(-20px) scale(1.2) rotate(3deg)}60%{opacity:1;transform:translateY(-40px) scale(1)}100%{opacity:0;transform:translateY(-60px) scale(.8)}}
@@ -1830,11 +1838,13 @@ function toggleQuest(questId, e) {
     todayCompleted.push(questId);
     hapticFeedback('medium');
     const comboMult = addCombo();
+    const streakMult = getStreakMultiplier();
     addXP(Math.round(quest.xp * comboMult), questId, e);
     addStats(quest.stats, e);
     playSound('complete');
     screenFlash('green');
     showPraise(e);
+    showXPBreakdown(quest.xp, comboMult, streakMult);
     // Particle + slide effect
     if (e && e.currentTarget) {
       spawnParticles(e.currentTarget);
@@ -4008,6 +4018,28 @@ function renderEvolutionTimeline() {
       ${reached ? '<span style="font-size:14px;color:var(--green)">✓</span>' : '<span style="font-size:10px;color:var(--dim)">🔒</span>'}
     </div>`;
   }).join('');
+}
+
+// ===== XP BREAKDOWN TOAST =====
+function showXPBreakdown(baseXP, comboMult, streakMult) {
+  const comboXP = Math.round(baseXP * comboMult) - baseXP;
+  const streakXP = Math.round(baseXP * streakMult) - baseXP;
+  const totalXP = baseXP + comboXP + streakXP;
+
+  // Only show breakdown if there are bonuses
+  if (comboXP <= 0 && streakXP <= 0) return;
+
+  const el = document.createElement('div');
+  el.className = 'xp-breakdown';
+  let rows = `<div class="xp-breakdown-row"><span style="color:var(--dim)">기본</span><span>+${baseXP} XP</span></div>`;
+  if (comboXP > 0) rows += `<div class="xp-breakdown-row"><span style="color:var(--duo-yellow)">💥 콤보 x${comboMult}</span><span style="color:var(--duo-yellow)">+${comboXP}</span></div>`;
+  if (streakXP > 0) rows += `<div class="xp-breakdown-row"><span style="color:var(--duo-orange)">🔥 스트릭 x${streakMult}</span><span style="color:var(--duo-orange)">+${streakXP}</span></div>`;
+  rows += `<div class="xp-breakdown-row total"><span>합계</span><span>+${totalXP} XP</span></div>`;
+  el.innerHTML = rows;
+
+  document.body.appendChild(el);
+  setTimeout(() => el.classList.add('fade-out'), 1800);
+  setTimeout(() => el.remove(), 2100);
 }
 
 // ===== STREAK MILESTONES =====
