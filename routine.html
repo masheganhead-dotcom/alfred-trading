@@ -23,20 +23,23 @@
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 :root{
-  --bg:#f5f6fa;--card:#ffffff;--card2:#f0f1f5;
-  --text:#1a1d26;--dim:#8e93a4;--border:rgba(0,0,0,.06);
-  --gold:#e8a500;--purple:#6c5ce7;--blue:#3b82f6;
+  --bg:#f8f9fc;--card:#ffffff;--card2:#f1f2f6;
+  --text:#111827;--dim:#8b92a5;--border:rgba(0,0,0,.05);
+  --gold:#f59e0b;--purple:#7c3aed;--blue:#3b82f6;
   --green:#10b981;--red:#ef4444;--cyan:#06b6d4;
-  --xp-from:#6c5ce7;--xp-to:#3b82f6;
-  --quest-done:rgba(16,185,129,.05);
-  --shadow:0 1px 2px rgba(0,0,0,.03),0 4px 16px rgba(0,0,0,.04);
-  --shadow-lg:0 4px 12px rgba(0,0,0,.06),0 12px 40px rgba(0,0,0,.08);
+  --xp-from:#7c3aed;--xp-to:#3b82f6;
+  --quest-done:rgba(16,185,129,.04);
+  --shadow:0 1px 3px rgba(0,0,0,.02),0 4px 20px rgba(0,0,0,.04);
+  --shadow-lg:0 8px 30px rgba(0,0,0,.08),0 2px 8px rgba(0,0,0,.03);
+  --shadow-glow:0 4px 24px rgba(59,130,246,.12);
   --duo-green:#22c55e;--duo-yellow:#eab308;--duo-red:#ef4444;
   --duo-blue:#3b82f6;--duo-orange:#f97316;
   --accent:#3b82f6;
   --spring:cubic-bezier(.175,.885,.32,1.275);
   --ease-out:cubic-bezier(.16,1,.3,1);
   --ease-spring:cubic-bezier(.34,1.56,.64,1);
+  --glass:rgba(255,255,255,.7);
+  --glass-border:rgba(255,255,255,.4);
 }
 body{font-family:'Inter',-apple-system,BlinkMacSystemFont,'SF Pro Display',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;min-height:100dvh;-webkit-tap-highlight-color:transparent;padding-bottom:calc(80px + env(safe-area-inset-bottom));padding-top:env(safe-area-inset-top);overscroll-behavior-y:contain;-webkit-overflow-scrolling:touch;-webkit-font-smoothing:antialiased;letter-spacing:-.01em}
 @supports(padding-top:env(safe-area-inset-top)){.hdr{padding-top:calc(14px + env(safe-area-inset-top))}}
@@ -97,7 +100,7 @@ body{font-family:'Inter',-apple-system,BlinkMacSystemFont,'SF Pro Display',sans-
 .alarm-snooze:active{color:var(--accent)}
 
 /* Header */
-.hdr{display:flex;align-items:center;justify-content:space-between;padding:14px 20px;position:sticky;top:0;background:rgba(245,246,250,.82);backdrop-filter:blur(24px) saturate(1.8);-webkit-backdrop-filter:blur(24px) saturate(1.8);z-index:100;border-bottom:1px solid transparent}
+.hdr{display:flex;align-items:center;justify-content:space-between;padding:14px 20px;position:sticky;top:0;background:rgba(248,249,252,.85);backdrop-filter:blur(28px) saturate(1.8);-webkit-backdrop-filter:blur(28px) saturate(1.8);z-index:100;border-bottom:1px solid transparent}
 .hdr-left{display:flex;align-items:center;gap:10px}
 .hdr-logo{font-size:20px;transition:transform .3s var(--spring)}
 .hdr-logo:active{transform:rotate(20deg) scale(1.2)}
@@ -741,91 +744,184 @@ body{font-family:'Inter',-apple-system,BlinkMacSystemFont,'SF Pro Display',sans-
 .hdr-dot.current{background:var(--accent)}
 
 /* ===== MINIMAL TIMELINE VIEW ===== */
-.tl-greeting{font-size:26px;font-weight:900;letter-spacing:-.8px;color:var(--text);margin-bottom:2px;line-height:1.2}
-.tl-greeting-sub{font-size:13px;color:var(--dim);margin-bottom:18px;font-weight:500}
-.tl-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;padding:0 2px}
-.tl-date{font-size:15px;font-weight:700;letter-spacing:-.3px;color:var(--dim)}
+.tl-greeting{font-size:28px;font-weight:900;letter-spacing:-1px;color:var(--text);margin-bottom:2px;line-height:1.15}
+.tl-greeting-sub{font-size:13px;color:var(--dim);margin-bottom:20px;font-weight:500}
+.tl-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;padding:0 2px}
+.tl-date{font-size:14px;font-weight:600;letter-spacing:-.2px;color:var(--dim)}
 .tl-date span{font-weight:500;color:var(--dim);font-size:13px;margin-left:4px}
-.tl-progress{font-size:13px;font-weight:700;color:var(--dim)}
-.tl-progress b{color:var(--accent);font-size:15px}
-.tl-bar{height:6px;background:var(--card2);border-radius:3px;margin-bottom:20px;overflow:hidden}
-.tl-bar-fill{height:100%;background:linear-gradient(90deg,var(--accent),var(--purple));border-radius:3px;transition:width .6s var(--ease-out)}
+.tl-progress{font-size:13px;font-weight:700;color:var(--dim);display:flex;align-items:center;gap:6px}
+.tl-progress b{color:var(--accent);font-size:16px}
+.tl-pct{font-size:11px;color:var(--accent);font-weight:700}
+.tl-bar{height:5px;background:var(--card2);border-radius:3px;margin-bottom:20px;overflow:hidden;position:relative}
+.tl-bar-fill{height:100%;background:linear-gradient(90deg,var(--accent),var(--purple));border-radius:3px;transition:width .8s var(--ease-out);position:relative}
+.tl-bar-fill::after{content:'';position:absolute;right:0;top:0;width:20px;height:100%;background:linear-gradient(90deg,transparent,rgba(255,255,255,.4));border-radius:3px}
+
+/* Daily challenge inline */
+.tl-challenge{background:linear-gradient(135deg,rgba(124,58,237,.06),rgba(59,130,246,.06));border:1px solid rgba(124,58,237,.1);border-radius:16px;padding:14px 16px;margin-bottom:16px;display:flex;align-items:center;gap:12px;animation:fadeInUp .4s var(--ease-out) .1s both}
+.tl-challenge-icon{font-size:24px;width:44px;height:44px;background:rgba(124,58,237,.08);border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.tl-challenge-info{flex:1;min-width:0}
+.tl-challenge-label{font-size:10px;font-weight:700;color:var(--purple);text-transform:uppercase;letter-spacing:.8px;margin-bottom:2px}
+.tl-challenge-task{font-size:13px;font-weight:600;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tl-challenge-reward{font-size:11px;font-weight:700;color:var(--accent)}
+
+/* Weekly boss preview */
+.tl-boss{background:linear-gradient(135deg,rgba(239,68,68,.04),rgba(249,115,22,.04));border:1px solid rgba(239,68,68,.08);border-radius:16px;padding:14px 16px;margin-bottom:16px;display:flex;align-items:center;gap:12px;animation:fadeInUp .4s var(--ease-out) .15s both}
+.tl-boss-icon{font-size:28px;animation:bossBreathe 2s ease-in-out infinite}
+@keyframes bossBreathe{0%,100%{transform:scale(1)}50%{transform:scale(1.1)}}
+.tl-boss-info{flex:1}
+.tl-boss-label{font-size:10px;font-weight:700;color:var(--red);text-transform:uppercase;letter-spacing:.8px;margin-bottom:2px}
+.tl-boss-name{font-size:13px;font-weight:700;color:var(--text)}
+.tl-boss-hp{height:6px;background:var(--card2);border-radius:3px;margin-top:6px;overflow:hidden}
+.tl-boss-hp-fill{height:100%;background:linear-gradient(90deg,var(--red),var(--duo-orange));border-radius:3px;transition:width .8s var(--ease-out)}
+.tl-boss-hp-text{font-size:10px;color:var(--dim);margin-top:3px;text-align:right}
 
 /* Timeline item */
-.tl-item{display:flex;gap:14px;margin-bottom:4px;position:relative;padding:12px 14px;border-radius:16px;cursor:pointer;transition:all .25s var(--ease-out);-webkit-user-select:none;user-select:none}
-.tl-item:active{transform:scale(.97);background:rgba(0,0,0,.02)}
-.tl-item.done{opacity:.45}
-.tl-item.done.just-done{animation:tlDoneSlide .5s var(--ease-out)}
-@keyframes tlDoneSlide{0%{transform:scale(1);opacity:1}30%{transform:scale(.98) translateX(6px);opacity:.8}100%{transform:scale(1) translateX(0);opacity:.45}}
-.tl-item.past:not(.done):not(.now){opacity:.6}
-.tl-item.past:not(.done) .tl-time-text{color:var(--red);opacity:.7}
-.tl-item.now{background:var(--card);box-shadow:var(--shadow),0 0 0 1px rgba(59,130,246,.08);border-radius:20px;padding:16px;margin:4px -2px 8px;opacity:1}
-.tl-item.now .tl-name{font-size:16px}
-.tl-item.now::after{content:'';position:absolute;inset:-1px;border-radius:21px;border:1.5px solid rgba(59,130,246,.1);pointer-events:none;animation:tlNowPulse 3s ease-in-out infinite}
-@keyframes tlNowPulse{0%,100%{opacity:.3;border-color:rgba(59,130,246,.1)}50%{opacity:.8;border-color:rgba(59,130,246,.2)}}
+.tl-item{display:flex;gap:14px;margin-bottom:2px;position:relative;padding:12px 14px;border-radius:16px;cursor:pointer;transition:all .25s var(--ease-out);-webkit-user-select:none;user-select:none}
+.tl-item:active{transform:scale(.97);background:rgba(0,0,0,.015)}
+.tl-item.done{opacity:.4}
+.tl-item.done.just-done{animation:tlDoneSlide .6s var(--ease-out)}
+@keyframes tlDoneSlide{0%{transform:scale(1);opacity:1}20%{transform:scale(1.02)}40%{transform:scale(.97) translateX(4px);opacity:.6}100%{transform:scale(1) translateX(0);opacity:.4}}
+.tl-item.past:not(.done):not(.now){opacity:.55}
+.tl-item.past:not(.done) .tl-dot{background:var(--red);border-color:var(--red);opacity:.5;width:7px;height:7px}
+.tl-item.now{background:var(--card);box-shadow:var(--shadow-glow);border-radius:20px;padding:16px 18px;margin:6px -4px 10px;opacity:1}
+.tl-item.now .tl-name{font-size:16px;font-weight:700}
+.tl-item.now::before{content:'NOW';position:absolute;top:8px;right:52px;font-size:9px;font-weight:800;color:var(--accent);letter-spacing:1px;opacity:.6}
 
 /* Time column */
-.tl-time{width:44px;flex-shrink:0;text-align:right;padding-top:1px}
-.tl-time-text{font-size:12px;font-weight:700;color:var(--dim);font-family:'SF Mono','JetBrains Mono',monospace;line-height:1.4}
-.tl-item.now .tl-time-text{color:var(--accent);font-weight:800}
-.tl-item.done .tl-time-text{color:var(--dim);opacity:.5}
-.tl-time-end{font-size:10px;color:var(--dim);opacity:.4;font-family:'SF Mono',monospace}
+.tl-time{width:44px;flex-shrink:0;text-align:right;padding-top:2px}
+.tl-time-text{font-size:11px;font-weight:700;color:var(--dim);font-family:'SF Mono','JetBrains Mono',monospace;line-height:1.4;letter-spacing:-.3px}
+.tl-item.now .tl-time-text{color:var(--accent);font-weight:800;font-size:12px}
+.tl-item.done .tl-time-text{color:var(--dim);opacity:.4}
+.tl-time-end{font-size:9px;color:var(--dim);opacity:.35;font-family:'SF Mono',monospace}
+.tl-time-remain{font-size:9px;color:var(--accent);font-weight:600;margin-top:1px}
 
 /* Dot timeline */
 .tl-dot-col{display:flex;flex-direction:column;align-items:center;width:16px;flex-shrink:0;padding-top:5px}
 .tl-dot{width:10px;height:10px;border-radius:50%;background:var(--card2);border:2px solid var(--card2);flex-shrink:0;transition:all .3s var(--spring);position:relative;z-index:1}
-.tl-item.now .tl-dot{width:14px;height:14px;background:var(--accent);border-color:var(--accent);box-shadow:0 0 0 4px rgba(59,130,246,.12)}
+.tl-item.now .tl-dot{width:14px;height:14px;background:var(--accent);border-color:var(--accent);box-shadow:0 0 0 5px rgba(59,130,246,.1);animation:tlDotPulse 2s ease-in-out infinite}
+@keyframes tlDotPulse{0%,100%{box-shadow:0 0 0 5px rgba(59,130,246,.1)}50%{box-shadow:0 0 0 8px rgba(59,130,246,.06)}}
 .tl-item.done .tl-dot{background:var(--green);border-color:var(--green);width:8px;height:8px}
-.tl-line{width:2px;flex:1;background:var(--card2);margin:2px 0;min-height:8px}
-.tl-item.done .tl-line{background:rgba(16,185,129,.3)}
+.tl-line{width:2px;flex:1;background:var(--card2);margin:2px 0;min-height:6px}
+.tl-item.done .tl-line{background:rgba(16,185,129,.25)}
 
 /* Content */
 .tl-content{flex:1;min-width:0}
 .tl-name{font-size:14px;font-weight:600;color:var(--text);display:flex;align-items:center;gap:6px;line-height:1.3}
 .tl-item.done .tl-name{text-decoration:line-through;color:var(--dim)}
-.tl-desc{font-size:12px;color:var(--dim);margin-top:3px;line-height:1.4;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tl-desc{font-size:12px;color:var(--dim);margin-top:4px;line-height:1.5;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .tl-item.now .tl-desc{white-space:normal}
-.tl-start{font-size:11px;color:var(--accent);margin-top:5px;font-weight:600;display:flex;align-items:center;gap:4px}
-.tl-xp{font-size:11px;color:var(--dim);font-weight:600;margin-top:4px}
-.tl-item.now .tl-xp{color:var(--accent)}
+.tl-start{font-size:11px;color:var(--accent);margin-top:6px;font-weight:600;display:flex;align-items:center;gap:4px;background:rgba(59,130,246,.06);padding:4px 10px;border-radius:8px;width:fit-content}
+.tl-xp{display:inline-flex;align-items:center;gap:4px;font-size:11px;color:var(--purple);font-weight:700;margin-top:6px;background:rgba(124,58,237,.06);padding:3px 10px;border-radius:8px}
+.tl-stats-preview{display:flex;gap:6px;margin-top:6px;flex-wrap:wrap}
+.tl-stat-chip{font-size:10px;color:var(--dim);font-weight:600;display:flex;align-items:center;gap:2px}
 
 /* Right side */
 .tl-right{display:flex;align-items:center;flex-shrink:0}
-.tl-check{width:26px;height:26px;border-radius:50%;border:2.5px solid rgba(0,0,0,.08);display:flex;align-items:center;justify-content:center;font-size:12px;transition:all .3s var(--spring);color:transparent}
-.tl-item.done .tl-check{background:var(--green);border-color:var(--green);color:#fff;box-shadow:0 2px 8px rgba(16,185,129,.2)}
-.tl-item.now .tl-check{border-color:rgba(59,130,246,.25);width:32px;height:32px;border-width:2.5px}
-.tl-item.now .tl-check:active{transform:scale(.85);background:rgba(59,130,246,.05)}
+.tl-check{width:26px;height:26px;border-radius:50%;border:2.5px solid rgba(0,0,0,.07);display:flex;align-items:center;justify-content:center;font-size:12px;transition:all .3s var(--spring);color:transparent}
+.tl-item.done .tl-check{background:var(--green);border-color:var(--green);color:#fff;box-shadow:0 2px 10px rgba(16,185,129,.25)}
+.tl-item.now .tl-check{border-color:rgba(59,130,246,.3);width:34px;height:34px;border-width:2.5px;background:rgba(59,130,246,.03)}
+.tl-item.now .tl-check:active{transform:scale(.8);background:rgba(59,130,246,.1)}
 
 /* Divider between time blocks */
-.tl-divider{display:flex;align-items:center;gap:10px;margin:14px 0 10px;padding:0 2px}
+.tl-divider{display:flex;align-items:center;gap:10px;margin:16px 0 10px;padding:0 2px}
 .tl-divider-line{flex:1;height:1px;background:var(--border)}
-.tl-divider-text{font-size:10px;font-weight:700;color:var(--dim);text-transform:uppercase;letter-spacing:.8px}
+.tl-divider-text{font-size:10px;font-weight:700;color:var(--dim);text-transform:uppercase;letter-spacing:.8px;white-space:nowrap}
 
 /* All done state */
 .tl-alldone{text-align:center;padding:48px 20px;animation:fadeInUp .5s var(--ease-out)}
-.tl-alldone-emoji{font-size:64px;margin-bottom:16px;animation:charFloat 3s ease-in-out infinite}
-.tl-alldone-title{font-size:22px;font-weight:900;color:var(--text);margin-bottom:6px;letter-spacing:-.5px}
-.tl-alldone-sub{font-size:13px;color:var(--dim)}
-.tl-alldone-stats{display:flex;gap:24px;justify-content:center;margin-top:24px}
-.tl-alldone-stat{text-align:center}
+.tl-alldone-emoji{font-size:72px;margin-bottom:16px;animation:charFloat 3s ease-in-out infinite;filter:drop-shadow(0 4px 12px rgba(0,0,0,.1))}
+.tl-alldone-title{font-size:24px;font-weight:900;color:var(--text);margin-bottom:6px;letter-spacing:-.6px}
+.tl-alldone-sub{font-size:14px;color:var(--dim)}
+.tl-alldone-stats{display:flex;gap:0;justify-content:center;margin-top:28px;background:var(--card);border-radius:20px;padding:20px;box-shadow:var(--shadow)}
+.tl-alldone-stat{text-align:center;flex:1;position:relative}
+.tl-alldone-stat:not(:last-child)::after{content:'';position:absolute;right:0;top:4px;bottom:4px;width:1px;background:var(--border)}
 .tl-alldone-val{font-size:28px;font-weight:900}
-.tl-alldone-label{font-size:10px;color:var(--dim);margin-top:2px;font-weight:500}
+.tl-alldone-label{font-size:10px;color:var(--dim);margin-top:4px;font-weight:500}
 
 /* Mini profile bar at bottom of timeline */
-.tl-profile{display:flex;align-items:center;gap:12px;background:var(--card);border-radius:18px;padding:14px 18px;margin-top:12px;box-shadow:var(--shadow);cursor:pointer;transition:transform .2s var(--ease-out)}
-.tl-profile:active{transform:scale(.98)}
-.tl-profile-avatar{font-size:28px}
+.tl-profile{display:flex;align-items:center;gap:12px;background:var(--card);border-radius:20px;padding:16px 18px;margin-top:16px;box-shadow:var(--shadow);cursor:pointer;transition:all .2s var(--ease-out);position:relative;overflow:hidden}
+.tl-profile::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--accent),var(--purple));opacity:.3}
+.tl-profile:active{transform:scale(.98);box-shadow:var(--shadow-lg)}
+.tl-profile-avatar{font-size:32px;filter:drop-shadow(0 2px 4px rgba(0,0,0,.1))}
 .tl-profile-info{flex:1}
-.tl-profile-name{font-size:13px;font-weight:700;color:var(--text)}
-.tl-profile-level{font-size:11px;color:var(--dim)}
+.tl-profile-name{font-size:14px;font-weight:700;color:var(--text);letter-spacing:-.2px}
+.tl-profile-level{font-size:11px;color:var(--dim);margin-top:1px}
 .tl-profile-xp{flex-shrink:0;text-align:right}
-.tl-profile-xp-bar{width:60px;height:4px;background:var(--card2);border-radius:2px;overflow:hidden}
-.tl-profile-xp-fill{height:100%;background:linear-gradient(90deg,var(--accent),var(--purple));border-radius:2px;transition:width .6s var(--ease-out)}
+.tl-profile-xp-bar{width:64px;height:5px;background:var(--card2);border-radius:3px;overflow:hidden}
+.tl-profile-xp-fill{height:100%;background:linear-gradient(90deg,var(--accent),var(--purple));border-radius:3px;transition:width .6s var(--ease-out)}
 .tl-profile-xp-text{font-size:10px;color:var(--dim);margin-top:2px}
-.tl-streak{font-size:12px;font-weight:700;color:var(--text);display:flex;align-items:center;gap:3px}
+.tl-streak{font-size:13px;font-weight:800;color:var(--gold);display:flex;align-items:center;gap:3px}
 
-/* Swipe hint on current quest */
-.tl-swipe-hint{text-align:center;font-size:10px;color:var(--dim);padding:4px 0 8px;opacity:0;animation:hintFade 4s ease 3s forwards}
+/* Inventory preview on profile */
+.tl-equip{display:flex;gap:4px;margin-top:6px}
+.tl-equip-slot{width:24px;height:24px;border-radius:6px;background:var(--card2);display:flex;align-items:center;justify-content:center;font-size:12px;border:1px solid var(--border)}
+.tl-equip-slot.equipped{border-color:rgba(124,58,237,.2);background:rgba(124,58,237,.05)}
+
+/* Daily login reward */
+.tl-daily-reward{background:linear-gradient(135deg,rgba(245,158,11,.06),rgba(234,179,8,.04));border:1px solid rgba(245,158,11,.12);border-radius:16px;padding:14px 16px;margin-bottom:16px;display:flex;align-items:center;gap:12px;cursor:pointer;transition:all .2s var(--ease-out);animation:fadeInUp .4s var(--ease-out) .2s both}
+.tl-daily-reward:active{transform:scale(.98)}
+.tl-daily-reward-icon{font-size:28px;animation:rewardBounce 1s var(--spring) infinite}
+@keyframes rewardBounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-4px)}}
+.tl-daily-reward-info{flex:1}
+.tl-daily-reward-title{font-size:13px;font-weight:700;color:var(--gold)}
+.tl-daily-reward-sub{font-size:11px;color:var(--dim)}
+.tl-daily-reward-claim{padding:8px 16px;background:var(--gold);color:#fff;border:none;border-radius:10px;font-size:12px;font-weight:700;cursor:pointer;transition:transform .15s}
+.tl-daily-reward-claim:active{transform:scale(.9)}
+
+/* ===== SHOP & INVENTORY ===== */
+.shop-profile{background:linear-gradient(135deg,rgba(59,130,246,.06),rgba(124,58,237,.06));border-radius:24px;padding:24px;margin-bottom:16px;text-align:center;position:relative;overflow:hidden;box-shadow:var(--shadow)}
+.shop-profile::before{content:'';position:absolute;top:0;left:0;right:0;height:80px;background:linear-gradient(135deg,rgba(59,130,246,.08),rgba(124,58,237,.08))}
+.shop-char{font-size:64px;position:relative;z-index:1;margin-bottom:8px;filter:drop-shadow(0 4px 12px rgba(0,0,0,.1))}
+.shop-name{font-size:18px;font-weight:800;color:var(--text);position:relative;z-index:1;letter-spacing:-.3px}
+.shop-title{font-size:12px;color:var(--dim);margin-top:2px;position:relative;z-index:1}
+.shop-level-row{display:flex;align-items:center;justify-content:center;gap:16px;margin-top:12px;position:relative;z-index:1}
+.shop-level-badge{padding:5px 14px;border-radius:20px;font-size:12px;font-weight:700;background:rgba(59,130,246,.08);color:var(--accent)}
+.shop-xp-badge{padding:5px 14px;border-radius:20px;font-size:12px;font-weight:700;background:rgba(245,158,11,.08);color:var(--gold)}
+.shop-streak-badge{padding:5px 14px;border-radius:20px;font-size:12px;font-weight:700;background:rgba(239,68,68,.08);color:var(--red)}
+.shop-section{background:var(--card);border-radius:20px;padding:20px;margin-bottom:14px;box-shadow:var(--shadow)}
+
+/* Equipment grid */
+.equip-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+.equip-slot{background:var(--card2);border-radius:16px;padding:14px 8px;text-align:center;position:relative;border:2px dashed rgba(0,0,0,.06);transition:all .2s}
+.equip-slot.filled{border-style:solid;border-color:rgba(124,58,237,.2);background:rgba(124,58,237,.03)}
+.equip-slot-icon{font-size:28px;margin-bottom:4px}
+.equip-slot-label{font-size:10px;color:var(--dim);font-weight:600}
+.equip-slot-name{font-size:9px;color:var(--purple);font-weight:700;margin-top:2px}
+
+/* Shop stats */
+.shop-stat-row{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--border)}
+.shop-stat-row:last-child{border-bottom:none}
+.shop-stat-icon{font-size:20px;width:32px;text-align:center}
+.shop-stat-info{flex:1}
+.shop-stat-name{font-size:12px;font-weight:600;color:var(--text)}
+.shop-stat-bar{height:6px;background:var(--card2);border-radius:3px;overflow:hidden;margin-top:4px}
+.shop-stat-fill{height:100%;border-radius:3px;transition:width .6s var(--ease-out)}
+.shop-stat-val{font-size:14px;font-weight:800;min-width:30px;text-align:right}
+
+/* Shop items */
+.shop-items{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.shop-item{background:var(--card2);border-radius:16px;padding:14px;text-align:center;cursor:pointer;transition:all .2s var(--ease-out);border:1px solid transparent;position:relative}
+.shop-item:active{transform:scale(.96)}
+.shop-item.owned{border-color:rgba(16,185,129,.2);background:rgba(16,185,129,.03)}
+.shop-item.equipped{border-color:rgba(124,58,237,.25);background:rgba(124,58,237,.04)}
+.shop-item.locked{opacity:.5}
+.shop-item-icon{font-size:32px;margin-bottom:6px}
+.shop-item-name{font-size:12px;font-weight:700;color:var(--text)}
+.shop-item-desc{font-size:10px;color:var(--dim);margin-top:2px;line-height:1.3}
+.shop-item-cost{font-size:11px;font-weight:700;color:var(--gold);margin-top:6px}
+.shop-item-owned{font-size:10px;color:var(--green);font-weight:700;margin-top:6px}
+.shop-item-equipped{font-size:10px;color:var(--purple);font-weight:700;margin-top:6px}
+
+/* Boss detail */
+.boss-card{background:linear-gradient(135deg,rgba(239,68,68,.04),rgba(249,115,22,.04));border:1px solid rgba(239,68,68,.08);border-radius:20px;padding:24px;text-align:center}
+.boss-emoji{font-size:56px;margin-bottom:8px;animation:bossBreathe 2s ease-in-out infinite}
+.boss-name{font-size:18px;font-weight:800;color:var(--text);letter-spacing:-.3px}
+.boss-desc{font-size:12px;color:var(--dim);margin-top:4px}
+.boss-hp-bar{height:10px;background:var(--card2);border-radius:5px;margin:16px 0 8px;overflow:hidden}
+.boss-hp-fill{height:100%;background:linear-gradient(90deg,var(--green),var(--duo-yellow),var(--red));border-radius:5px;transition:width 1s var(--ease-out)}
+.boss-hp-text{font-size:13px;font-weight:700;color:var(--text)}
+.boss-reward{font-size:12px;color:var(--gold);margin-top:8px;font-weight:600}
+.boss-defeated{font-size:16px;color:var(--green);font-weight:800;margin-top:12px}
 </style>
 </head>
 <body>
@@ -882,9 +978,9 @@ body{font-family:'Inter',-apple-system,BlinkMacSystemFont,'SF Pro Display',sans-
   <!-- Tab Navigation -->
   <div class="tab-nav">
     <button class="tab-btn active" onclick="switchTab('quests',this)"><span class="tab-icon">⚔️</span>루틴</button>
+    <button class="tab-btn" onclick="switchTab('shop',this)"><span class="tab-icon">🏪</span>상점</button>
     <button class="tab-btn" onclick="switchTab('focus',this)"><span class="tab-icon">🎯</span>집중</button>
     <button class="tab-btn" onclick="switchTab('music',this)"><span class="tab-icon">🎵</span>작업</button>
-    <button class="tab-btn" onclick="switchTab('notes',this)"><span class="tab-icon">📝</span>노트</button>
     <button class="tab-btn" onclick="switchTab('report',this)"><span class="tab-icon">🏆</span>리포트</button>
   </div>
 
@@ -918,6 +1014,37 @@ body{font-family:'Inter',-apple-system,BlinkMacSystemFont,'SF Pro Display',sans-
       <div id="streak-count"></div>
       <div id="streak-freeze-display"></div>
       <div id="streak-calendar"></div>
+    </div>
+  </div>
+
+  <!-- Tab: Shop & Inventory -->
+  <div class="tab-content" id="tab-shop">
+    <!-- Character Profile Card -->
+    <div class="shop-profile" id="shop-profile"></div>
+    <!-- Equipment Slots -->
+    <div class="shop-section">
+      <div class="section-title">🛡️ 장착 장비</div>
+      <div class="equip-grid" id="equip-grid"></div>
+    </div>
+    <!-- Stats Overview -->
+    <div class="shop-section">
+      <div class="section-title">📊 능력치</div>
+      <div id="shop-stats"></div>
+    </div>
+    <!-- Skill Tree -->
+    <div class="shop-section">
+      <div class="section-title">⚡ 스킬</div>
+      <div class="skills-grid" id="shop-skills"></div>
+    </div>
+    <!-- Shop Items -->
+    <div class="shop-section">
+      <div class="section-title">🏪 아이템 상점</div>
+      <div class="shop-items" id="shop-items"></div>
+    </div>
+    <!-- Weekly Boss Detail -->
+    <div class="shop-section">
+      <div class="section-title">⚔️ 주간 보스</div>
+      <div id="boss-detail"></div>
     </div>
   </div>
 
@@ -1947,6 +2074,155 @@ function getLeague(level) {
   return {name:'브론즈', class:'league-bronze', icon:'🥉'};
 }
 
+// ===== WEEKLY BOSS SYSTEM =====
+const WEEKLY_BOSSES = [
+  {name:'게으름의 슬라임', emoji:'🫠', hp:50, desc:'이번 주 50개 퀘스트를 처치하세요', reward:{xp:200,title:'슬라임 슬레이어'}},
+  {name:'미루기 드래곤', emoji:'🐉', hp:60, desc:'이번 주 60개 퀘스트를 처치하세요', reward:{xp:300,title:'드래곤 헌터'}},
+  {name:'산만함의 고블린', emoji:'👺', hp:40, desc:'이번 주 40개 퀘스트를 처치하세요', reward:{xp:150,title:'집중의 달인'}},
+  {name:'완벽주의 골렘', emoji:'🗿', hp:55, desc:'이번 주 55개 퀘스트를 처치하세요', reward:{xp:250,title:'실행의 전사'}},
+  {name:'불면의 밤유령', emoji:'👻', hp:45, desc:'이번 주 45개 퀘스트를 처치하세요', reward:{xp:180,title:'밤의 지배자'}},
+  {name:'의지박약 세이렌', emoji:'🧜', hp:65, desc:'이번 주 65개 퀘스트를 처치하세요', reward:{xp:350,title:'철의 의지'}},
+];
+
+function getWeeklyBoss() {
+  const now = new Date();
+  const weekNum = Math.ceil(((now - new Date(now.getFullYear(),0,1)) / 86400000 + new Date(now.getFullYear(),0,1).getDay() + 1) / 7);
+  return WEEKLY_BOSSES[weekNum % WEEKLY_BOSSES.length];
+}
+
+function getWeeklyBossProgress() {
+  const now = new Date();
+  const weekStart = new Date(now);
+  weekStart.setDate(weekStart.getDate() - weekStart.getDay());
+  weekStart.setHours(0,0,0,0);
+  let totalCompleted = 0;
+  for (let d = new Date(weekStart); d <= now; d.setDate(d.getDate() + 1)) {
+    const key = d.toISOString().split('T')[0];
+    totalCompleted += (gameData.history[key]?.completed?.length || 0);
+  }
+  return totalCompleted;
+}
+
+function checkBossDefeat() {
+  const boss = getWeeklyBoss();
+  const progress = getWeeklyBossProgress();
+  const weekKey = getWeekKey();
+  if (progress >= boss.hp && !gameData._bossDefeated?.[weekKey]) {
+    if (!gameData._bossDefeated) gameData._bossDefeated = {};
+    gameData._bossDefeated[weekKey] = true;
+    addXP(boss.reward.xp, null, null);
+    showAchievementToast({icon:'⚔️', name:`${boss.name} 처치!`, desc:`+${boss.reward.xp} XP · ${boss.reward.title} 칭호 획득`});
+    spawnConfetti(60);
+    playSound('levelup');
+    saveData();
+  }
+}
+
+// ===== DAILY LOGIN REWARD =====
+const LOGIN_REWARDS = [
+  {day:1, reward:'🎁', xp:20, desc:'+20 XP'},
+  {day:2, reward:'💎', xp:30, desc:'+30 XP'},
+  {day:3, reward:'🎵', xp:40, desc:'+40 XP'},
+  {day:4, reward:'⚡', xp:50, desc:'+50 XP'},
+  {day:5, reward:'🏆', xp:75, desc:'+75 XP'},
+  {day:6, reward:'💰', xp:100, desc:'+100 XP'},
+  {day:7, reward:'👑', xp:150, desc:'+150 XP + SP'},
+];
+
+function getDailyLoginReward() {
+  if (!gameData._loginRewards) gameData._loginRewards = {};
+  const claimed = gameData._loginRewards[todayKey];
+  if (claimed) return null;
+  const streak = gameData.character.streak || 0;
+  const dayIdx = Math.min(streak, 6);
+  return LOGIN_REWARDS[dayIdx];
+}
+
+function claimDailyReward() {
+  const reward = getDailyLoginReward();
+  if (!reward) return;
+  if (!gameData._loginRewards) gameData._loginRewards = {};
+  gameData._loginRewards[todayKey] = true;
+  addXP(reward.xp, null, null);
+  if (reward.day === 7) gameData.character.skill_points = (gameData.character.skill_points || 0) + 1;
+  playSound('achievement');
+  hapticFeedback('heavy');
+  spawnConfetti(30);
+  showAchievementToast({icon:reward.reward, name:'일일 보상 획득!', desc:reward.desc});
+  saveData();
+  renderNowNext();
+}
+
+// ===== EQUIPMENT SYSTEM =====
+const EQUIPMENT_ITEMS = [
+  {id:'pen_basic', name:'기본 펜', slot:'weapon', icon:'✏️', desc:'글쓰기 XP +5%', bonus:{stat:'int',mult:1.05}, cost:100},
+  {id:'headphone', name:'스튜디오 헤드폰', slot:'weapon', icon:'🎧', desc:'창작 XP +10%', bonus:{stat:'cre',mult:1.10}, cost:200},
+  {id:'coffee', name:'아메리카노', slot:'accessory', icon:'☕', desc:'아침 퀘스트 XP +10%', bonus:{cat:'morning',mult:1.10}, cost:50},
+  {id:'sneakers', name:'러닝화', slot:'accessory', icon:'👟', desc:'운동 XP +10%', bonus:{cat:'exercise',mult:1.10}, cost:150},
+  {id:'notebook', name:'몰스킨 노트', slot:'weapon', icon:'📔', desc:'사업 XP +10%', bonus:{stat:'biz',mult:1.10}, cost:120},
+  {id:'hoodie', name:'집중 후드티', slot:'armor', icon:'🧥', desc:'전체 XP +5%', bonus:{all:true,mult:1.05}, cost:300},
+  {id:'ring', name:'루틴의 반지', slot:'accessory', icon:'💍', desc:'스트릭 보너스 +10%', bonus:{streak:true,mult:1.10}, cost:500},
+  {id:'crown', name:'황금 왕관', slot:'helmet', icon:'👑', desc:'전체 XP +15%', bonus:{all:true,mult:1.15}, cost:1000},
+  {id:'mic', name:'골드 마이크', slot:'weapon', icon:'🎤', desc:'매력 XP +15%', bonus:{stat:'chr',mult:1.15}, cost:400},
+  {id:'shield', name:'루틴 실드', slot:'armor', icon:'🛡️', desc:'스트릭 프리즈 +1', bonus:{freeze:1}, cost:250},
+];
+
+function getEquippedItems() {
+  return gameData._equipped || {};
+}
+
+function getOwnedItems() {
+  return gameData._inventory || [];
+}
+
+function buyItem(itemId) {
+  const item = EQUIPMENT_ITEMS.find(i => i.id === itemId);
+  if (!item) return;
+  const gold = gameData.character.total_xp || 0; // XP doubles as currency
+  if (gold < item.cost) {
+    showAchievementToast({icon:'❌', name:'XP 부족!', desc:`${item.cost} XP 필요`});
+    return;
+  }
+  if (!gameData._inventory) gameData._inventory = [];
+  if (gameData._inventory.includes(itemId)) {
+    showAchievementToast({icon:'❌', name:'이미 보유 중!', desc:''});
+    return;
+  }
+  // Don't subtract from current XP, just require total_xp threshold
+  gameData._inventory.push(itemId);
+  playSound('achievement');
+  hapticFeedback('medium');
+  showAchievementToast({icon:item.icon, name:`${item.name} 획득!`, desc:item.desc});
+  saveData();
+}
+
+function equipItem(itemId) {
+  const item = EQUIPMENT_ITEMS.find(i => i.id === itemId);
+  if (!item) return;
+  if (!gameData._equipped) gameData._equipped = {};
+  // Toggle equip
+  if (gameData._equipped[item.slot] === itemId) {
+    delete gameData._equipped[item.slot];
+  } else {
+    gameData._equipped[item.slot] = itemId;
+  }
+  hapticFeedback('light');
+  saveData();
+}
+
+function getEquipmentBonusMult(quest) {
+  const equipped = gameData._equipped || {};
+  let mult = 1;
+  for (const itemId of Object.values(equipped)) {
+    const item = EQUIPMENT_ITEMS.find(i => i.id === itemId);
+    if (!item || !item.bonus) continue;
+    if (item.bonus.all) mult *= item.bonus.mult;
+    if (item.bonus.cat && item.bonus.cat === quest?.category) mult *= item.bonus.mult;
+    if (item.bonus.stat && quest?.stats?.[item.bonus.stat]) mult *= item.bonus.mult;
+  }
+  return mult;
+}
+
 // ===== STATE =====
 let gameData = null;
 let todayKey = '';
@@ -2197,7 +2473,8 @@ function toggleQuest(questId, e) {
     hapticFeedback('medium');
     const comboMult = addCombo();
     const streakMult = getStreakMultiplier();
-    const actualXP = addXP(Math.round(quest.xp * comboMult), questId, e);
+    const equipMult = getEquipmentBonusMult(quest);
+    const actualXP = addXP(Math.round(quest.xp * comboMult * equipMult), questId, e);
     // Store actual XP awarded for accurate undo
     if (!gameData.history[todayKey]._xpAwarded) gameData.history[todayKey]._xpAwarded = {};
     gameData.history[todayKey]._xpAwarded[questId] = actualXP;
@@ -2251,6 +2528,7 @@ function toggleQuest(questId, e) {
   checkStreakMilestone();
   checkAllClear();
   checkAchievements();
+  checkBossDefeat();
   saveData();
   renderAll();
 }
@@ -2653,14 +2931,74 @@ function renderNowNext() {
     }
   }
 
+  // Daily reward check
+  const dailyReward = getDailyLoginReward();
+  // Boss info
+  const boss = getWeeklyBoss();
+  const bossProgress = getWeeklyBossProgress();
+  const bossDefeated = gameData._bossDefeated?.[getWeekKey()];
+  const bossHpPct = Math.min(100, (bossProgress / boss.hp) * 100);
+  // Daily challenge
+  const challenge = getDailyChallenge();
+  const challengeDone = gameData.history[todayKey]?._challengeDone;
+  // Check daily challenge completion inline
+  if (!challengeDone) {
+    try {
+      if (challenge.check(gameData, todayCompleted, todayKey)) {
+        gameData.history[todayKey]._challengeDone = true;
+        addXP(challenge.reward, null, null);
+        playSound('challenge');
+        showAchievementToast({icon:'🏆',name:'데일리 챌린지 클리어!',desc:`+${challenge.reward} XP`});
+        saveData();
+      }
+    } catch(e) {}
+  }
+
   let html = `
     <div class="tl-greeting">${greeting.text}</div>
     <div class="tl-greeting-sub">${greeting.sub}</div>
     <div class="tl-header">
       <div class="tl-date">${dateStr} <span>${dayStr}</span></div>
-      <div class="tl-progress"><b>${completedCount}</b>/${totalQuests}</div>
+      <div class="tl-progress"><b>${completedCount}</b>/${totalQuests} <span class="tl-pct">${pct}%</span></div>
     </div>
     <div class="tl-bar"><div class="tl-bar-fill" style="width:${pct}%"></div></div>`;
+
+  // Daily login reward
+  if (dailyReward) {
+    html += `<div class="tl-daily-reward" onclick="claimDailyReward()">
+      <div class="tl-daily-reward-icon">${dailyReward.reward}</div>
+      <div class="tl-daily-reward-info">
+        <div class="tl-daily-reward-title">일일 보상 대기 중!</div>
+        <div class="tl-daily-reward-sub">Day ${dailyReward.day} · ${dailyReward.desc}</div>
+      </div>
+      <button class="tl-daily-reward-claim">받기</button>
+    </div>`;
+  }
+
+  // Weekly boss (if not defeated)
+  if (!bossDefeated) {
+    html += `<div class="tl-boss">
+      <div class="tl-boss-icon">${boss.emoji}</div>
+      <div class="tl-boss-info">
+        <div class="tl-boss-label">주간 보스</div>
+        <div class="tl-boss-name">${boss.name}</div>
+        <div class="tl-boss-hp"><div class="tl-boss-hp-fill" style="width:${100 - bossHpPct}%"></div></div>
+        <div class="tl-boss-hp-text">${bossProgress}/${boss.hp} 퀘스트</div>
+      </div>
+    </div>`;
+  }
+
+  // Daily challenge
+  if (!challengeDone) {
+    html += `<div class="tl-challenge">
+      <div class="tl-challenge-icon">⚡</div>
+      <div class="tl-challenge-info">
+        <div class="tl-challenge-label">오늘의 챌린지</div>
+        <div class="tl-challenge-task">${challenge.task}</div>
+      </div>
+      <div class="tl-challenge-reward">+${challenge.reward} XP</div>
+    </div>`;
+  }
 
   // Render timeline items
   let lastCat = '';
@@ -2686,10 +3024,29 @@ function renderNowNext() {
     const timeEnd = q.time ? q.time.split('-')[1] || '' : '';
     const isLast = i === sorted.length - 1;
 
+    // Time remaining for current quest
+    let timeRemain = '';
+    if (isCurrent && q.endMins < 9999) {
+      const remain = q.endMins - nowMins;
+      if (remain > 0 && remain < 120) {
+        timeRemain = `${remain}분 남음`;
+      }
+    }
+
+    // Stat chips for current quest
+    let statChips = '';
+    if (isCurrent && q.stats) {
+      statChips = Object.entries(q.stats).map(([k,v]) => {
+        const cfg = STAT_CONFIG[k];
+        return cfg ? `<span class="tl-stat-chip" style="color:${cfg.color}">${cfg.icon}+${v}</span>` : '';
+      }).join('');
+    }
+
     html += `<div class="tl-item ${done?'done':''} ${isCurrent?'now':''} ${isPast?'past':''}" onclick="toggleQuest('${q.id}',event)" data-qid="${q.id}" style="animation:fadeInUp .3s var(--ease-out) ${i*0.025}s both">
       <div class="tl-time">
         <div class="tl-time-text">${timeStart}</div>
         ${timeEnd ? `<div class="tl-time-end">${timeEnd}</div>` : ''}
+        ${timeRemain ? `<div class="tl-time-remain">${timeRemain}</div>` : ''}
       </div>
       <div class="tl-dot-col">
         <div class="tl-dot"></div>
@@ -2697,9 +3054,10 @@ function renderNowNext() {
       </div>
       <div class="tl-content">
         <div class="tl-name">${q.icon} ${escapeHTML(q.name)}</div>
-        ${isCurrent && q.start ? `<div class="tl-start">⚡ ${escapeHTML(q.start)}</div>` : ''}
+        ${isCurrent && q.start ? `<div class="tl-start">🎯 ${escapeHTML(q.start)}</div>` : ''}
         ${isCurrent ? `<div class="tl-desc">${escapeHTML(q.desc)}</div>` : ''}
-        ${isCurrent ? `<div class="tl-xp">+${q.xp} XP</div>` : ''}
+        ${isCurrent ? `<div class="tl-xp">✨ +${q.xp} XP</div>` : ''}
+        ${statChips ? `<div class="tl-stats-preview">${statChips}</div>` : ''}
       </div>
       <div class="tl-right">
         <div class="tl-check">${done ? '✓' : ''}</div>
@@ -2712,11 +3070,20 @@ function renderNowNext() {
   const needed = xpForLevel(gameData.character.level);
   const xpPct = Math.min(100, (gameData.character.xp / needed) * 100);
   const todayXP = gameData.history[todayKey]?.xp_earned || 0;
-  html += `<div class="tl-profile" onclick="switchTab('report',document.querySelectorAll('.tab-btn')[5])">
+  const equipped = gameData._equipped || {};
+  const equipSlots = ['weapon','armor','helmet','accessory'];
+  let equipHTML = equipSlots.map(slot => {
+    const itemId = equipped[slot];
+    const item = itemId ? EQUIPMENT_ITEMS.find(i => i.id === itemId) : null;
+    return `<div class="tl-equip-slot ${item ? 'equipped' : ''}">${item ? item.icon : ''}</div>`;
+  }).join('');
+
+  html += `<div class="tl-profile" onclick="switchTab('report',document.querySelectorAll('.tab-btn')[4])">
     <div class="tl-profile-avatar">${stage.emoji}</div>
     <div class="tl-profile-info">
       <div class="tl-profile-name">Lv.${gameData.character.level} ${stage.title}</div>
       <div class="tl-profile-level">${todayXP > 0 ? `오늘 +${todayXP} XP · ` : ''}${gameData.character.xp}/${needed} XP</div>
+      <div class="tl-equip">${equipHTML}</div>
     </div>
     ${gameData.character.streak > 0 ? `<div class="tl-streak">🔥 ${gameData.character.streak}</div>` : ''}
     <div class="tl-profile-xp">
@@ -3108,10 +3475,135 @@ function switchTab(tabId, btn) {
   btn.classList.add('active');
   hapticFeedback('light');
   if (tabId === 'quests') renderNowNext();
+  if (tabId === 'shop') renderShop();
   if (tabId === 'report') { renderReport(); loadWeeklyReview(); renderAchievementsGrid(); renderEvolutionTimeline(); renderCalendarMain(); }
   if (tabId === 'music') renderSongs();
   if (tabId === 'notes') { renderNotes(); if (gameData.settings?.plaud_token && !plaudCache) fetchPlaudRecordings(); }
   if (tabId === 'focus') renderFocusStats();
+}
+
+// ===== SHOP & INVENTORY RENDERING =====
+function renderShop() {
+  renderShopProfile();
+  renderEquipGrid();
+  renderShopStats();
+  renderShopSkills();
+  renderShopItems();
+  renderBossDetail();
+}
+
+function renderShopProfile() {
+  const el = document.getElementById('shop-profile');
+  if (!el) return;
+  const c = gameData.character;
+  const stage = getCharacterStage(c.level);
+  const league = getLeague(c.level);
+  el.innerHTML = `
+    <div class="shop-char ${stage.anim ? `anim-${stage.anim}` : ''}" style="display:inline-block">${stage.emoji}</div>
+    <div class="shop-name">${c.name || 'Alfred'}</div>
+    <div class="shop-title">${stage.title} · ${stage.desc}</div>
+    <div class="shop-level-row">
+      <span class="shop-level-badge">${league.icon} Lv.${c.level}</span>
+      <span class="shop-xp-badge">💰 ${c.total_xp} XP</span>
+      ${c.streak > 0 ? `<span class="shop-streak-badge">🔥 ${c.streak}일</span>` : ''}
+    </div>`;
+}
+
+function renderEquipGrid() {
+  const el = document.getElementById('equip-grid');
+  if (!el) return;
+  const equipped = gameData._equipped || {};
+  const slots = [
+    {key:'weapon', label:'무기', emptyIcon:'⚔️'},
+    {key:'armor', label:'갑옷', emptyIcon:'🛡️'},
+    {key:'helmet', label:'투구', emptyIcon:'👑'},
+    {key:'accessory', label:'액세서리', emptyIcon:'💍'}
+  ];
+  el.innerHTML = slots.map(slot => {
+    const itemId = equipped[slot.key];
+    const item = itemId ? EQUIPMENT_ITEMS.find(i => i.id === itemId) : null;
+    return `<div class="equip-slot ${item ? 'filled' : ''}" ${item ? `onclick="equipItem('${itemId}')"` : ''}>
+      <div class="equip-slot-icon">${item ? item.icon : slot.emptyIcon}</div>
+      <div class="equip-slot-label">${slot.label}</div>
+      ${item ? `<div class="equip-slot-name">${item.name}</div>` : ''}
+    </div>`;
+  }).join('');
+}
+
+function renderShopStats() {
+  const el = document.getElementById('shop-stats');
+  if (!el) return;
+  const stats = gameData.character.stats;
+  const maxStat = Math.max(...Object.values(stats), 10);
+  el.innerHTML = Object.entries(STAT_CONFIG).map(([key, cfg]) => {
+    const val = stats[key] || 1;
+    const pct = Math.min(100, (val / maxStat) * 100);
+    return `<div class="shop-stat-row">
+      <div class="shop-stat-icon">${cfg.icon}</div>
+      <div class="shop-stat-info">
+        <div class="shop-stat-name">${cfg.name}</div>
+        <div class="shop-stat-bar"><div class="shop-stat-fill" style="width:${pct}%;background:${cfg.color}"></div></div>
+      </div>
+      <div class="shop-stat-val" style="color:${cfg.color}">${val}</div>
+    </div>`;
+  }).join('');
+}
+
+function renderShopSkills() {
+  const el = document.getElementById('shop-skills');
+  if (!el) return;
+  const skills = gameData.character.skills || [];
+  el.innerHTML = skills.map(skill => {
+    const isUnlocked = skill.unlocked;
+    const reqText = Object.entries(skill.req).map(([k,v]) => `${STAT_CONFIG[k]?.icon || k} ${v}`).join(' ');
+    return `<div class="skill-card ${isUnlocked ? 'unlocked' : 'locked'}">
+      ${!isUnlocked ? '<div class="skill-lock">🔒</div>' : ''}
+      <div class="skill-icon">${skill.icon}</div>
+      <div class="skill-name">${skill.name}</div>
+      <div class="skill-desc">${skill.desc}</div>
+      ${isUnlocked ? `<div class="skill-lvl">Lv.${skill.level}/${skill.max_level}</div>` : `<div class="skill-req">${reqText}</div>`}
+    </div>`;
+  }).join('');
+}
+
+function renderShopItems() {
+  const el = document.getElementById('shop-items');
+  if (!el) return;
+  const owned = gameData._inventory || [];
+  const equipped = gameData._equipped || {};
+  const equippedIds = Object.values(equipped);
+  el.innerHTML = EQUIPMENT_ITEMS.map(item => {
+    const isOwned = owned.includes(item.id);
+    const isEquipped = equippedIds.includes(item.id);
+    const canBuy = gameData.character.total_xp >= item.cost;
+    return `<div class="shop-item ${isOwned ? 'owned' : ''} ${isEquipped ? 'equipped' : ''} ${!isOwned && !canBuy ? 'locked' : ''}"
+      onclick="${isOwned ? `equipItem('${item.id}');renderShop()` : `buyItem('${item.id}');renderShop()`}">
+      <div class="shop-item-icon">${item.icon}</div>
+      <div class="shop-item-name">${item.name}</div>
+      <div class="shop-item-desc">${item.desc}</div>
+      ${isEquipped ? '<div class="shop-item-equipped">장착 중</div>' :
+        isOwned ? '<div class="shop-item-owned">✓ 보유</div>' :
+        `<div class="shop-item-cost">${canBuy ? '' : '🔒 '}${item.cost} XP</div>`}
+    </div>`;
+  }).join('');
+}
+
+function renderBossDetail() {
+  const el = document.getElementById('boss-detail');
+  if (!el) return;
+  const boss = getWeeklyBoss();
+  const progress = getWeeklyBossProgress();
+  const defeated = gameData._bossDefeated?.[getWeekKey()];
+  const hpPct = Math.min(100, (progress / boss.hp) * 100);
+  el.innerHTML = `<div class="boss-card">
+    <div class="boss-emoji">${boss.emoji}</div>
+    <div class="boss-name">${boss.name}</div>
+    <div class="boss-desc">${boss.desc}</div>
+    <div class="boss-hp-bar"><div class="boss-hp-fill" style="width:${hpPct}%"></div></div>
+    <div class="boss-hp-text">${progress} / ${boss.hp} 퀘스트</div>
+    <div class="boss-reward">🏆 처치 보상: +${boss.reward.xp} XP · ${boss.reward.title}</div>
+    ${defeated ? '<div class="boss-defeated">✅ 이번 주 보스 처치 완료!</div>' : ''}
+  </div>`;
 }
 
 // ===== MUSIC TRACKER =====
