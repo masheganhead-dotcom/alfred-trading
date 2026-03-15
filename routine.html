@@ -751,7 +751,82 @@ body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display',sans-serif;ba
   </div>
 </div>
 
-<script>
+<script type="module">
+// ===== CAPACITOR NATIVE BRIDGE =====
+let Capacitor = null;
+let NativeHaptics = null;
+let NativeStatusBar = null;
+let NativeNotifications = null;
+let isNativeApp = false;
+
+async function initCapacitor() {
+  try {
+    const cap = await import('https://unpkg.com/@aspect/capacitor-core@latest/dist/index.js').catch(() => null);
+    if (window.Capacitor && window.Capacitor.isNativePlatform()) {
+      isNativeApp = true;
+      console.log('[Capacitor] Native app detected');
+
+      // Import plugins
+      try {
+        const { Haptics } = await import('@capacitor/haptics');
+        NativeHaptics = Haptics;
+      } catch(e) {}
+      try {
+        const { StatusBar, Style } = await import('@capacitor/status-bar');
+        NativeStatusBar = StatusBar;
+        StatusBar.setStyle({ style: Style.Dark });
+        StatusBar.setBackgroundColor({ color: '#0a0a0f' });
+      } catch(e) {}
+      try {
+        const { LocalNotifications } = await import('@capacitor/local-notifications');
+        NativeNotifications = LocalNotifications;
+        await LocalNotifications.requestPermissions();
+        scheduleRoutineNotifications();
+      } catch(e) {}
+    }
+  } catch(e) {
+    console.log('[Capacitor] Running as web app');
+  }
+}
+
+function hapticFeedback(type = 'light') {
+  if (NativeHaptics) {
+    NativeHaptics.impact({ style: type === 'heavy' ? 'Heavy' : type === 'medium' ? 'Medium' : 'Light' });
+  }
+}
+
+async function scheduleRoutineNotifications() {
+  if (!NativeNotifications) return;
+  await NativeNotifications.cancel({ notifications: await NativeNotifications.getPending().then(r => r.notifications) }).catch(() => {});
+
+  const quests = gameData?.quests || getDefaultData().quests;
+  const notifications = [];
+  let id = 1;
+
+  const allQuests = Object.values(quests).flat();
+  for (const q of allQuests) {
+    if (!q.time) continue;
+    const [startTime] = q.time.split('-');
+    const [hours, minutes] = startTime.split(':').map(Number);
+
+    notifications.push({
+      id: id++,
+      title: `${q.icon} ${q.name}`,
+      body: q.start ? `🎯 ${q.start}` : q.desc,
+      schedule: {
+        on: { hour: hours, minute: Math.max(0, minutes - 2) },
+        repeats: true
+      },
+      sound: 'default'
+    });
+  }
+
+  await NativeNotifications.schedule({ notifications });
+  console.log(`[Notifications] Scheduled ${notifications.length} daily reminders`);
+}
+
+initCapacitor();
+
 // ===== FIREBASE CONFIG =====
 // TODO: Firebase 콘솔에서 프로젝트 생성 후 아래 값을 채워주세요
 // 설정 방법은 페이지 하단 가이드 참고
@@ -1061,6 +1136,7 @@ function toggleQuest(questId, e) {
   if (idx === -1) {
     // Complete quest
     todayCompleted.push(questId);
+    hapticFeedback('medium');
     addXP(quest.xp, questId, e);
     addStats(quest.stats, e);
   } else {

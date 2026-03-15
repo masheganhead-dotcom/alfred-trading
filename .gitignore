@@ -8,5 +8,12 @@ bot/logs/
 bot/*.pyc
 bot/__pycache__/
 *.env
-node_modules/
 .env
+node_modules/
+www/
+ios/
+android/
+.capacitor/
+*.xcworkspace
+*.xcodeproj
+Pods/
