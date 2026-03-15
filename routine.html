@@ -6,9 +6,12 @@
 <title>Routine Game - Daily Routine</title>
 <link rel="manifest" href="manifest.json">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="Routine Game">
 <meta name="theme-color" content="#f5f6fa">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 <meta name="mobile-web-app-capable" content="yes">
 <link rel="apple-touch-icon" href="icon-180.png">
 <link rel="apple-touch-icon" sizes="180x180" href="icon-180.png">
@@ -25,26 +28,85 @@
   --gold:#e8a500;--purple:#6c5ce7;--blue:#3b82f6;
   --green:#10b981;--red:#ef4444;--cyan:#06b6d4;
   --xp-from:#6c5ce7;--xp-to:#3b82f6;
-  --quest-done:rgba(16,185,129,.06);
-  --shadow:0 1px 3px rgba(0,0,0,.04),0 4px 16px rgba(0,0,0,.04);
-  --shadow-lg:0 2px 8px rgba(0,0,0,.06),0 8px 32px rgba(0,0,0,.06);
+  --quest-done:rgba(16,185,129,.05);
+  --shadow:0 1px 2px rgba(0,0,0,.03),0 4px 16px rgba(0,0,0,.04);
+  --shadow-lg:0 4px 12px rgba(0,0,0,.06),0 12px 40px rgba(0,0,0,.08);
   --duo-green:#22c55e;--duo-yellow:#eab308;--duo-red:#ef4444;
   --duo-blue:#3b82f6;--duo-orange:#f97316;
   --accent:#3b82f6;
+  --spring:cubic-bezier(.175,.885,.32,1.275);
+  --ease-out:cubic-bezier(.16,1,.3,1);
+  --ease-spring:cubic-bezier(.34,1.56,.64,1);
 }
-body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','SF Pro Text','Inter',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;min-height:100dvh;-webkit-tap-highlight-color:transparent;padding-bottom:calc(76px + env(safe-area-inset-bottom));padding-top:env(safe-area-inset-top);overscroll-behavior-y:contain;-webkit-overflow-scrolling:touch;-webkit-font-smoothing:antialiased}
+body{font-family:'Inter',-apple-system,BlinkMacSystemFont,'SF Pro Display',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;min-height:100dvh;-webkit-tap-highlight-color:transparent;padding-bottom:calc(80px + env(safe-area-inset-bottom));padding-top:env(safe-area-inset-top);overscroll-behavior-y:contain;-webkit-overflow-scrolling:touch;-webkit-font-smoothing:antialiased;letter-spacing:-.01em}
 @supports(padding-top:env(safe-area-inset-top)){.hdr{padding-top:calc(14px + env(safe-area-inset-top))}}
-.mono{font-family:'SF Mono',Menlo,monospace}
+.mono{font-family:'SF Mono','JetBrains Mono',Menlo,monospace}
+
+/* === GLOBAL MICRO-INTERACTIONS === */
+@keyframes fadeInUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+@keyframes scaleIn{from{opacity:0;transform:scale(.9)}to{opacity:1;transform:scale(1)}}
+@keyframes slideInRight{from{opacity:0;transform:translateX(20px)}to{opacity:1;transform:translateX(0)}}
+@keyframes shimmer{0%{background-position:-200% 0}100%{background-position:200% 0}}
+@keyframes springPop{0%{transform:scale(0)}50%{transform:scale(1.15)}75%{transform:scale(.95)}100%{transform:scale(1)}}
+@keyframes ripple{to{transform:scale(4);opacity:0}}
+@keyframes breathe{0%,100%{transform:scale(1)}50%{transform:scale(1.02)}}
+
+/* Skeleton loading */
+.skeleton{background:linear-gradient(90deg,var(--card2) 25%,rgba(0,0,0,.04) 50%,var(--card2) 75%);background-size:200% 100%;animation:shimmer 1.5s ease-in-out infinite;border-radius:8px}
+
+/* Ripple effect */
+.ripple{position:relative;overflow:hidden}
+.ripple::after{content:'';position:absolute;width:100%;padding-bottom:100%;border-radius:50%;background:rgba(0,0,0,.04);transform:scale(0);opacity:1;pointer-events:none;top:50%;left:50%;margin-top:-50%;margin-left:-50%}
+.ripple:active::after{animation:ripple .5s ease-out}
+
+/* Staggered animation helper */
+.stagger-1{animation-delay:.05s}.stagger-2{animation-delay:.1s}.stagger-3{animation-delay:.15s}
+.stagger-4{animation-delay:.2s}.stagger-5{animation-delay:.25s}.stagger-6{animation-delay:.3s}
+
+/* Pull to refresh indicator */
+.ptr-indicator{position:fixed;top:-60px;left:50%;transform:translateX(-50%);z-index:200;width:40px;height:40px;border-radius:50%;background:var(--card);box-shadow:var(--shadow-lg);display:flex;align-items:center;justify-content:center;transition:top .3s var(--ease-out);font-size:18px}
+.ptr-indicator.pulling{top:20px}
+.ptr-indicator.refreshing{top:20px;animation:breathe 1s ease-in-out infinite}
+.ptr-indicator .ptr-spinner{width:20px;height:20px;border:2px solid var(--card2);border-top-color:var(--accent);border-radius:50%;animation:spin .6s linear infinite}
+
+/* Scroll-based header shrink */
+.hdr{transition:padding .3s ease,box-shadow .3s ease}
+.hdr.scrolled{padding-top:8px;padding-bottom:8px;box-shadow:0 2px 20px rgba(0,0,0,.06)}
+
+/* Animated counter */
+.anim-counter{display:inline-block;transition:transform .3s var(--spring)}
+.anim-counter.bump{transform:scale(1.3)}
+
+/* Alarm notification overlay */
+.alarm-overlay{position:fixed;inset:0;z-index:1000;background:rgba(0,0,0,.5);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);display:flex;flex-direction:column;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .3s}
+.alarm-overlay.show{opacity:1;pointer-events:auto}
+.alarm-card{background:var(--card);border-radius:28px;padding:32px 28px;text-align:center;max-width:320px;width:calc(100% - 48px);box-shadow:0 20px 60px rgba(0,0,0,.2);animation:alarmBounce .6s var(--spring)}
+@keyframes alarmBounce{0%{transform:scale(.5) translateY(40px);opacity:0}100%{transform:scale(1) translateY(0);opacity:1}}
+.alarm-icon{font-size:56px;margin-bottom:16px;animation:alarmShake 1s ease-in-out infinite}
+@keyframes alarmShake{0%,100%{transform:rotate(0)}10%{transform:rotate(15deg)}20%{transform:rotate(-15deg)}30%{transform:rotate(10deg)}40%{transform:rotate(-10deg)}50%{transform:rotate(5deg)}60%{transform:rotate(0)}}
+.alarm-title{font-size:20px;font-weight:800;margin-bottom:6px;letter-spacing:-.3px}
+.alarm-body{font-size:14px;color:var(--dim);line-height:1.5;margin-bottom:6px}
+.alarm-time{font-size:13px;color:var(--accent);font-weight:600;margin-bottom:20px;font-family:'SF Mono',monospace}
+.alarm-btns{display:flex;gap:10px}
+.alarm-btn{flex:1;padding:14px;border-radius:14px;border:none;font-size:15px;font-weight:700;cursor:pointer;transition:transform .15s var(--spring)}
+.alarm-btn:active{transform:scale(.95)}
+.alarm-btn.primary{background:var(--accent);color:#fff}
+.alarm-btn.dismiss{background:var(--card2);color:var(--dim)}
+.alarm-snooze{font-size:12px;color:var(--dim);margin-top:12px;cursor:pointer}
+.alarm-snooze:active{color:var(--accent)}
 
 /* Header */
-.hdr{display:flex;align-items:center;justify-content:space-between;padding:14px 20px;position:sticky;top:0;background:rgba(245,246,250,.88);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);z-index:100;border-bottom:1px solid var(--border)}
+.hdr{display:flex;align-items:center;justify-content:space-between;padding:14px 20px;position:sticky;top:0;background:rgba(245,246,250,.82);backdrop-filter:blur(24px) saturate(1.8);-webkit-backdrop-filter:blur(24px) saturate(1.8);z-index:100;border-bottom:1px solid transparent}
 .hdr-left{display:flex;align-items:center;gap:10px}
-.hdr-logo{font-size:20px}
+.hdr-logo{font-size:20px;transition:transform .3s var(--spring)}
+.hdr-logo:active{transform:rotate(20deg) scale(1.2)}
 .hdr-title{font-size:18px;font-weight:800;letter-spacing:-.5px;color:var(--text)}
 .hdr-right{display:flex;align-items:center;gap:8px}
-.hdr-level{font-size:12px;font-weight:700;color:var(--accent);background:rgba(59,130,246,.08);padding:4px 12px;border-radius:20px}
-.hdr-link{font-size:11px;color:var(--dim);text-decoration:none;padding:6px 12px;border-radius:20px;background:var(--card);border:1px solid var(--border)}
-.hdr-link:active{opacity:.7}
+.hdr-level{font-size:12px;font-weight:700;color:var(--accent);background:rgba(59,130,246,.08);padding:5px 14px;border-radius:20px;transition:all .2s var(--spring)}
+.hdr-level:active{transform:scale(.9)}
+.hdr-link{font-size:11px;color:var(--dim);text-decoration:none;padding:6px 12px;border-radius:20px;background:var(--card);border:1px solid var(--border);transition:all .15s}
+.hdr-link:active{transform:scale(.95);opacity:.8}
 
 .container{max-width:480px;margin:0 auto;padding:20px 16px 0}
 
@@ -87,12 +149,15 @@ body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','SF Pro Text'
 .quest-chevron.open{transform:rotate(180deg)}
 .quest-list{padding:0 16px 16px}
 .quest-list.collapsed{display:none}
-.quest-item{display:flex;align-items:center;gap:14px;padding:14px 12px;border-radius:14px;cursor:pointer;transition:all .25s cubic-bezier(.4,0,.2,1);position:relative;user-select:none;border-left:3px solid transparent}
+.quest-item{display:flex;align-items:center;gap:14px;padding:14px 12px;border-radius:14px;cursor:pointer;transition:all .3s var(--ease-out);position:relative;user-select:none;border-left:3px solid transparent;overflow:hidden}
 .quest-item:hover{background:rgba(0,0,0,.02)}
-.quest-item:active{transform:scale(.98)}
+.quest-item:active{transform:scale(.97);transition-duration:.1s}
 .quest-item.done{background:var(--quest-done);opacity:.8}
-.quest-check{width:24px;height:24px;border:2px solid var(--border);border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .2s;font-size:13px;background:var(--card2)}
-.quest-item.done .quest-check{background:var(--duo-green);border-color:var(--duo-green);color:#fff;box-shadow:0 2px 8px rgba(34,197,94,.2)}
+.quest-item.completing{animation:questComplete .5s var(--spring)}
+@keyframes questComplete{0%{transform:scale(1)}20%{transform:scale(.95) translateX(4px)}50%{transform:scale(1.02)}100%{transform:scale(1)}}
+.quest-check{width:26px;height:26px;border:2.5px solid rgba(0,0,0,.1);border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .3s var(--spring);font-size:13px;background:transparent}
+.quest-item.done .quest-check{background:var(--duo-green);border-color:var(--duo-green);color:#fff;box-shadow:0 3px 12px rgba(34,197,94,.25);animation:checkPop .4s var(--spring)}
+@keyframes checkPop{0%{transform:scale(0) rotate(-45deg)}60%{transform:scale(1.2) rotate(10deg)}100%{transform:scale(1) rotate(0)}}
 .quest-info{flex:1;min-width:0}
 .quest-name{font-size:14px;font-weight:600;display:flex;align-items:center;gap:6px;color:var(--text)}
 .quest-item.done .quest-name{text-decoration:line-through;opacity:.5}
@@ -128,9 +193,10 @@ body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','SF Pro Text'
 @keyframes flashPulse{0%{opacity:1;transform:scale(.8)}50%{opacity:.8}100%{opacity:0;transform:scale(1.5)}}
 .levelup-content{text-align:center;animation:levelUpBounce .8s cubic-bezier(.68,-.55,.27,1.55)}
 @keyframes levelUpBounce{0%{transform:scale(0) rotate(-10deg);opacity:0}60%{transform:scale(1.1) rotate(2deg)}100%{transform:scale(1) rotate(0);opacity:1}}
-.levelup-text{font-size:48px;font-weight:900;background:linear-gradient(135deg,var(--accent),var(--purple));-webkit-background-clip:text;-webkit-text-fill-color:transparent;text-shadow:none;letter-spacing:-2px}
+.levelup-text{font-size:52px;font-weight:900;background:linear-gradient(135deg,var(--accent),var(--purple),var(--accent));background-size:200% 100%;-webkit-background-clip:text;-webkit-text-fill-color:transparent;text-shadow:none;letter-spacing:-2px;animation:levelUpShine 2s linear infinite}
+@keyframes levelUpShine{0%{background-position:200% 0}100%{background-position:-200% 0}}
 .levelup-sub{font-size:18px;color:var(--text);margin-top:12px;font-weight:700}
-.levelup-sp{font-size:14px;color:var(--purple);margin-top:6px;font-weight:600}
+.levelup-sp{font-size:14px;color:var(--purple);margin-top:6px;font-weight:600;opacity:.8}
 .levelup-confetti{position:absolute;top:0;left:0;right:0;bottom:0;pointer-events:none;overflow:hidden}
 .confetti-piece{position:absolute;width:8px;height:8px;border-radius:2px;animation:confettiFall 2s ease-out forwards}
 @keyframes confettiFall{0%{transform:translateY(-100px) rotate(0deg);opacity:1}100%{transform:translateY(100vh) rotate(720deg);opacity:0}}
@@ -144,7 +210,8 @@ body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','SF Pro Text'
 @keyframes statFloat{0%{opacity:1;transform:translateY(0)}100%{opacity:0;transform:translateY(-30px)}}
 
 /* ===== CHARACTER SECTION ===== */
-.char-section{text-align:center;padding:24px 0 16px;position:relative;background:var(--card);border-radius:24px;margin-bottom:16px;box-shadow:var(--shadow)}
+.char-section{text-align:center;padding:28px 0 20px;position:relative;background:var(--card);border-radius:28px;margin-bottom:16px;box-shadow:var(--shadow);overflow:hidden}
+.char-section::before{content:'';position:absolute;top:0;left:0;right:0;height:120px;background:linear-gradient(135deg,rgba(59,130,246,.04),rgba(108,92,231,.04));pointer-events:none}
 .char-avatar-wrap{position:relative;display:inline-block;margin-bottom:8px}
 .char-avatar{font-size:64px;line-height:1;display:block;cursor:pointer;transition:transform .2s}
 .char-avatar:active{transform:scale(1.2) rotate(10deg) !important;animation:none !important}
@@ -196,8 +263,8 @@ body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','SF Pro Text'
 @keyframes comboPulse{0%{transform:scale(1.3)}100%{transform:scale(1)}}
 
 /* Achievement Toast */
-.achievement-toast{position:fixed;top:-80px;left:50%;transform:translateX(-50%);z-index:500;background:var(--card);border:1px solid var(--border);border-radius:16px;padding:14px 24px;display:flex;align-items:center;gap:14px;box-shadow:var(--shadow-lg);transition:top .5s cubic-bezier(.68,-.55,.27,1.55);max-width:360px;width:calc(100% - 32px)}
-.achievement-toast.show{top:90px}
+.achievement-toast{position:fixed;top:0;left:50%;transform:translateX(-50%) translateY(-120%);z-index:500;background:var(--card);border:1px solid var(--border);border-radius:20px;padding:16px 24px;display:flex;align-items:center;gap:14px;box-shadow:0 8px 40px rgba(0,0,0,.12);transition:transform .5s var(--spring);max-width:360px;width:calc(100% - 32px)}
+.achievement-toast.show{transform:translateX(-50%) translateY(90px)}
 .achievement-icon{font-size:36px;flex-shrink:0}
 .achievement-info{flex:1}
 .achievement-label{font-size:10px;text-transform:uppercase;letter-spacing:1px;color:var(--accent);font-weight:700;margin-bottom:2px}
@@ -260,8 +327,9 @@ body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','SF Pro Text'
 .footer{text-align:center;padding:20px;font-size:11px;color:var(--dim);opacity:.4}
 
 /* Now / Next View */
-.now-card{background:var(--card);border-radius:20px;padding:20px;margin-bottom:12px;box-shadow:var(--shadow);position:relative;overflow:hidden;transition:transform .2s,border-color .3s;border:1px solid transparent}
+.now-card{background:var(--card);border-radius:24px;padding:22px;margin-bottom:14px;box-shadow:var(--shadow);position:relative;overflow:hidden;transition:all .3s var(--ease-out);border:1px solid transparent;animation:fadeInUp .5s var(--ease-out) both}
 .now-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--accent),var(--purple))}
+.now-card:active{transform:scale(.98);box-shadow:var(--shadow-lg)}
 .now-card.completed-card::before{background:var(--green)}
 .now-label{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--accent);margin-bottom:14px}
 .now-label.done{color:var(--green)}
@@ -353,14 +421,16 @@ body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','SF Pro Text'
 .date-day{font-size:11px;color:var(--accent);margin-top:2px;font-weight:600}
 
 /* Tab Navigation - Clean Bottom Bar */
-.tab-nav{position:fixed;bottom:0;left:0;right:0;display:flex;justify-content:space-around;background:rgba(255,255,255,.92);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-top:1px solid rgba(0,0,0,.06);padding:8px 4px calc(8px + env(safe-area-inset-bottom));z-index:100}
-.tab-btn{font-size:10px;padding:6px 2px;border-radius:0;border:none;background:none;color:var(--dim);cursor:pointer;white-space:nowrap;font-weight:600;display:flex;flex-direction:column;align-items:center;gap:3px;flex:1;transition:color .2s}
-.tab-btn.active{color:var(--accent)}
-.tab-btn:active{opacity:.7}
+.tab-nav{position:fixed;bottom:0;left:0;right:0;display:flex;justify-content:space-around;background:rgba(255,255,255,.88);backdrop-filter:blur(24px) saturate(1.8);-webkit-backdrop-filter:blur(24px) saturate(1.8);border-top:1px solid rgba(0,0,0,.04);padding:6px 4px calc(6px + env(safe-area-inset-bottom));z-index:100}
+.tab-btn{font-size:10px;padding:6px 2px;border-radius:12px;border:none;background:none;color:var(--dim);cursor:pointer;white-space:nowrap;font-weight:600;display:flex;flex-direction:column;align-items:center;gap:3px;flex:1;transition:all .25s var(--ease-out);position:relative}
+.tab-btn.active{color:var(--accent);font-weight:700}
+.tab-btn.active::before{content:'';position:absolute;top:-6px;width:20px;height:3px;border-radius:2px;background:var(--accent);animation:tabDot .3s var(--spring)}
+@keyframes tabDot{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+.tab-btn:active{transform:scale(.85);transition-duration:.1s}
 .tab-content{display:none}
 .tab-content.active{display:block}
-.tab-content.tab-entering{animation:tabFadeIn .3s ease}
-@keyframes tabFadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+.tab-content.tab-entering{animation:tabSlideIn .35s var(--ease-out)}
+@keyframes tabSlideIn{from{opacity:0;transform:translateY(12px) scale(.98)}to{opacity:1;transform:translateY(0) scale(1)}}
 
 /* Report Section */
 .report-section{background:var(--card);border-radius:20px;padding:20px;margin-bottom:16px;box-shadow:var(--shadow)}
@@ -394,18 +464,20 @@ body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','SF Pro Text'
 .add-song-btn{width:100%;padding:12px;border:1px dashed rgba(0,0,0,.1);border-radius:12px;background:none;color:var(--dim);cursor:pointer;font-size:12px;margin-top:10px}
 .add-song-btn:active{background:var(--card2)}
 
-/* Modal */
-.modal-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.3);z-index:300;display:flex;align-items:center;justify-content:center;padding:20px;opacity:0;pointer-events:none;transition:opacity .2s;backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}
+/* Modal - Bottom Sheet Style */
+.modal-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.25);z-index:300;display:flex;align-items:flex-end;justify-content:center;opacity:0;pointer-events:none;transition:opacity .25s;backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}
 .modal-overlay.show{opacity:1;pointer-events:auto}
-.modal{background:var(--card);border-radius:20px;padding:24px;width:100%;max-width:400px;max-height:80vh;overflow-y:auto;box-shadow:var(--shadow-lg)}
-.modal-title{font-size:17px;font-weight:700;margin-bottom:20px;display:flex;align-items:center;gap:8px;color:var(--text)}
-.modal input,.modal textarea,.modal select{width:100%;padding:12px 14px;background:var(--card2);border:1px solid var(--border);border-radius:12px;color:var(--text);font-size:14px;margin-bottom:10px;font-family:inherit;outline:none}
-.modal input:focus,.modal textarea:focus,.modal select:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(59,130,246,.08)}
+.modal{background:var(--card);border-radius:24px 24px 0 0;padding:8px 24px 32px;width:100%;max-width:480px;max-height:85vh;overflow-y:auto;box-shadow:0 -4px 40px rgba(0,0,0,.1);transform:translateY(100%);transition:transform .35s var(--ease-out)}
+.modal-overlay.show .modal{transform:translateY(0)}
+.modal::before{content:'';display:block;width:36px;height:4px;border-radius:2px;background:rgba(0,0,0,.1);margin:8px auto 20px}
+.modal-title{font-size:18px;font-weight:800;margin-bottom:20px;display:flex;align-items:center;gap:8px;color:var(--text);letter-spacing:-.3px}
+.modal input,.modal textarea,.modal select{width:100%;padding:14px 16px;background:var(--card2);border:1px solid transparent;border-radius:14px;color:var(--text);font-size:15px;margin-bottom:10px;font-family:inherit;outline:none;transition:all .2s}
+.modal input:focus,.modal textarea:focus,.modal select:focus{border-color:var(--accent);background:var(--card);box-shadow:0 0 0 3px rgba(59,130,246,.08)}
 .modal textarea{resize:vertical;min-height:80px}
-.modal-btns{display:flex;gap:10px;margin-top:16px}
-.modal-btn{flex:1;padding:13px;border-radius:12px;border:none;font-size:14px;font-weight:700;cursor:pointer;transition:transform .1s}
-.modal-btn:active{transform:scale(.97)}
-.modal-btn.primary{background:var(--accent);color:#fff}
+.modal-btns{display:flex;gap:10px;margin-top:20px}
+.modal-btn{flex:1;padding:15px;border-radius:14px;border:none;font-size:15px;font-weight:700;cursor:pointer;transition:all .15s var(--spring)}
+.modal-btn:active{transform:scale(.96)}
+.modal-btn.primary{background:var(--accent);color:#fff;box-shadow:0 4px 16px rgba(59,130,246,.2)}
 .modal-btn.cancel{background:var(--card2);color:var(--dim)}
 
 /* Notes / Voice */
@@ -558,11 +630,11 @@ body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','SF Pro Text'
 .focus-label{font-size:12px;color:var(--dim);margin-bottom:8px}
 .focus-session-info{font-size:11px;color:var(--dim);margin-bottom:12px}
 .focus-btns{display:flex;gap:10px;justify-content:center;margin-top:16px}
-.focus-btn{padding:12px 28px;border-radius:12px;border:none;font-size:14px;font-weight:600;cursor:pointer;transition:transform .1s}
-.focus-btn.start{background:var(--green);color:#fff}
-.focus-btn.pause{background:var(--gold);color:#fff}
+.focus-btn{padding:14px 32px;border-radius:16px;border:none;font-size:15px;font-weight:700;cursor:pointer;transition:all .2s var(--spring)}
+.focus-btn.start{background:var(--green);color:#fff;box-shadow:0 4px 16px rgba(16,185,129,.25)}
+.focus-btn.pause{background:var(--gold);color:#fff;box-shadow:0 4px 16px rgba(234,179,8,.25)}
 .focus-btn.stop{background:var(--card2);color:var(--dim);border:1px solid var(--border)}
-.focus-btn:active{transform:scale(.96)}
+.focus-btn:active{transform:scale(.92)}
 .focus-presets{display:flex;gap:8px;justify-content:center;margin:14px 0}
 .focus-preset{padding:8px 16px;border-radius:10px;border:1px solid var(--border);background:none;color:var(--dim);cursor:pointer;font-size:12px;font-weight:600;transition:all .15s}
 .focus-preset.active{border-color:var(--accent);color:var(--accent);background:rgba(59,130,246,.05)}
@@ -1155,6 +1227,26 @@ body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','SF Pro Text'
   </div>
 </div>
 
+<!-- Alarm Notification Overlay -->
+<div class="alarm-overlay" id="alarm-overlay">
+  <div class="alarm-card">
+    <div class="alarm-icon" id="alarm-icon">⏰</div>
+    <div class="alarm-title" id="alarm-title">퀘스트 시작!</div>
+    <div class="alarm-body" id="alarm-body">다음 루틴을 시작할 시간이에요</div>
+    <div class="alarm-time" id="alarm-time-display"></div>
+    <div class="alarm-btns">
+      <button class="alarm-btn dismiss" onclick="dismissAlarm()">나중에</button>
+      <button class="alarm-btn primary" onclick="dismissAlarm(true)">시작하기</button>
+    </div>
+    <div class="alarm-snooze" onclick="snoozeAlarm()">🔔 5분 뒤 다시 알림</div>
+  </div>
+</div>
+
+<!-- Pull-to-refresh indicator -->
+<div class="ptr-indicator" id="ptr-indicator">
+  <span id="ptr-content">↓</span>
+</div>
+
 <script>
 // ===== CAPACITOR NATIVE BRIDGE =====
 let Capacitor = null;
@@ -1178,8 +1270,8 @@ async function initCapacitor() {
       try {
         const { StatusBar, Style } = await import('@capacitor/status-bar');
         NativeStatusBar = StatusBar;
-        StatusBar.setStyle({ style: Style.Dark });
-        StatusBar.setBackgroundColor({ color: '#0a0a0f' });
+        StatusBar.setStyle({ style: Style.Light });
+        StatusBar.setBackgroundColor({ color: '#f5f6fa' });
       } catch(e) {}
       try {
         const { LocalNotifications } = await import('@capacitor/local-notifications');
@@ -1230,6 +1322,277 @@ async function scheduleRoutineNotifications() {
 }
 
 initCapacitor();
+
+// ===== ALARM NOTIFICATION SYSTEM =====
+let alarmInterval = null;
+let alarmAudioCtx = null;
+let alarmOscillator = null;
+let alarmSnoozed = {};
+let lastAlarmQuestId = null;
+
+function checkAlarms() {
+  if (!gameData || !gameData.quests) return;
+  const now = new Date();
+  const hh = now.getHours();
+  const mm = now.getMinutes();
+  const nowMins = hh * 60 + mm;
+  const todayCompleted = gameData.history[todayKey]?.completed || [];
+
+  const allQuests = Object.values(gameData.quests).flat();
+  for (const q of allQuests) {
+    if (!q.time || todayCompleted.includes(q.id)) continue;
+    const [startTime] = q.time.split('-');
+    const [qh, qm] = startTime.split(':').map(Number);
+    const questMins = qh * 60 + qm;
+    // Trigger alarm 1 min before to 3 mins after quest start
+    if (nowMins >= questMins - 1 && nowMins <= questMins + 3) {
+      const snoozeKey = q.id + '_' + todayKey;
+      if (alarmSnoozed[snoozeKey] && Date.now() < alarmSnoozed[snoozeKey]) continue;
+      if (lastAlarmQuestId === q.id) continue;
+      showAlarm(q);
+      break;
+    }
+  }
+}
+
+function showAlarm(quest) {
+  lastAlarmQuestId = quest.id;
+  const overlay = document.getElementById('alarm-overlay');
+  document.getElementById('alarm-icon').textContent = quest.icon || '⏰';
+  document.getElementById('alarm-title').textContent = quest.name;
+  document.getElementById('alarm-body').textContent = quest.start || quest.desc || '루틴을 시작할 시간이에요!';
+  document.getElementById('alarm-time-display').textContent = quest.time || '';
+  overlay.classList.add('show');
+  startAlarmSound();
+  // Request browser notification too
+  if ('Notification' in window && Notification.permission === 'granted') {
+    new Notification('⏰ ' + quest.name, { body: quest.start || quest.desc || '루틴 시작!', icon: 'icon-192.png', requireInteraction: true });
+  }
+}
+
+function startAlarmSound() {
+  try {
+    const ctx = getAudioCtx();
+    let noteIdx = 0;
+    const melody = [523, 659, 784, 659, 523, 659, 784, 659];
+    const playNote = () => {
+      if (!document.getElementById('alarm-overlay').classList.contains('show')) return;
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.type = 'sine';
+      osc.frequency.value = melody[noteIdx % melody.length];
+      gain.gain.setValueAtTime(0.15, ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.3);
+      osc.start(ctx.currentTime);
+      osc.stop(ctx.currentTime + 0.3);
+      noteIdx++;
+    };
+    playNote();
+    alarmInterval = setInterval(playNote, 400);
+    // Auto-dismiss after 30 seconds
+    setTimeout(() => { if (document.getElementById('alarm-overlay').classList.contains('show')) dismissAlarm(); }, 30000);
+  } catch(e) {}
+}
+
+function dismissAlarm(startQuest) {
+  const overlay = document.getElementById('alarm-overlay');
+  overlay.classList.remove('show');
+  if (alarmInterval) { clearInterval(alarmInterval); alarmInterval = null; }
+  if (startQuest && lastAlarmQuestId) {
+    // Find and toggle the quest
+    const qid = lastAlarmQuestId;
+    const todayCompleted = gameData.history[todayKey]?.completed || [];
+    if (!todayCompleted.includes(qid)) {
+      toggleQuest(qid);
+    }
+  }
+  setTimeout(() => { lastAlarmQuestId = null; }, 60000); // Don't re-trigger for 1 min
+}
+
+function snoozeAlarm() {
+  const snoozeKey = lastAlarmQuestId + '_' + todayKey;
+  alarmSnoozed[snoozeKey] = Date.now() + 5 * 60 * 1000; // 5 min snooze
+  dismissAlarm();
+}
+
+// Request notification permission
+if ('Notification' in window && Notification.permission === 'default') {
+  document.addEventListener('click', function reqNotif() {
+    Notification.requestPermission();
+    document.removeEventListener('click', reqNotif);
+  }, { once: true });
+}
+
+// ===== SCROLL-BASED HEADER =====
+let lastScrollY = 0;
+window.addEventListener('scroll', () => {
+  const hdr = document.querySelector('.hdr');
+  if (window.scrollY > 20) {
+    hdr.classList.add('scrolled');
+  } else {
+    hdr.classList.remove('scrolled');
+  }
+  lastScrollY = window.scrollY;
+}, { passive: true });
+
+// ===== PULL TO REFRESH =====
+let ptrStartY = 0;
+let ptrActive = false;
+document.addEventListener('touchstart', (e) => {
+  if (window.scrollY <= 0) ptrStartY = e.touches[0].clientY;
+}, { passive: true });
+
+document.addEventListener('touchmove', (e) => {
+  if (window.scrollY > 0) return;
+  const dy = e.touches[0].clientY - ptrStartY;
+  const indicator = document.getElementById('ptr-indicator');
+  if (dy > 40 && ptrStartY > 0) {
+    ptrActive = true;
+    indicator.classList.add('pulling');
+  }
+}, { passive: true });
+
+document.addEventListener('touchend', () => {
+  const indicator = document.getElementById('ptr-indicator');
+  if (ptrActive) {
+    indicator.innerHTML = '<div class="ptr-spinner"></div>';
+    indicator.classList.add('refreshing');
+    // Simulate refresh
+    setTimeout(() => {
+      renderAll();
+      indicator.classList.remove('pulling', 'refreshing');
+      indicator.innerHTML = '<span id="ptr-content">↓</span>';
+      hapticFeedback('medium');
+    }, 800);
+  }
+  ptrActive = false;
+  ptrStartY = 0;
+});
+
+// ===== ANIMATED NUMBER COUNTER =====
+function animateCounter(element, targetValue, duration = 600) {
+  const start = parseInt(element.textContent) || 0;
+  const diff = targetValue - start;
+  if (diff === 0) return;
+  const startTime = performance.now();
+  function update(now) {
+    const elapsed = now - startTime;
+    const progress = Math.min(elapsed / duration, 1);
+    // Ease out cubic
+    const eased = 1 - Math.pow(1 - progress, 3);
+    element.textContent = Math.round(start + diff * eased);
+    if (progress < 1) requestAnimationFrame(update);
+    else {
+      element.textContent = targetValue;
+      element.classList.add('bump');
+      setTimeout(() => element.classList.remove('bump'), 300);
+    }
+  }
+  requestAnimationFrame(update);
+}
+
+// ===== ENHANCED CONFETTI SYSTEM =====
+function spawnConfetti(count = 40, origin = null) {
+  const container = document.createElement('div');
+  container.style.cssText = 'position:fixed;inset:0;pointer-events:none;z-index:998;overflow:hidden';
+  document.body.appendChild(container);
+  const colors = ['#3b82f6','#8b5cf6','#10b981','#f59e0b','#ef4444','#ec4899','#06b6d4','#22c55e'];
+  const shapes = ['circle','square','strip'];
+  const cx = origin ? origin.x : window.innerWidth / 2;
+  const cy = origin ? origin.y : window.innerHeight / 3;
+  for (let i = 0; i < count; i++) {
+    const el = document.createElement('div');
+    const shape = shapes[Math.floor(Math.random() * shapes.length)];
+    const color = colors[Math.floor(Math.random() * colors.length)];
+    const size = 4 + Math.random() * 8;
+    const angle = (Math.random() * 360) * Math.PI / 180;
+    const velocity = 200 + Math.random() * 400;
+    const vx = Math.cos(angle) * velocity;
+    const vy = -Math.abs(Math.sin(angle) * velocity) - 100;
+    const rotation = Math.random() * 720 - 360;
+    if (shape === 'circle') {
+      el.style.cssText = `position:absolute;width:${size}px;height:${size}px;border-radius:50%;background:${color};left:${cx}px;top:${cy}px;opacity:1`;
+    } else if (shape === 'strip') {
+      el.style.cssText = `position:absolute;width:${size/2}px;height:${size*2}px;border-radius:1px;background:${color};left:${cx}px;top:${cy}px;opacity:1`;
+    } else {
+      el.style.cssText = `position:absolute;width:${size}px;height:${size}px;border-radius:2px;background:${color};left:${cx}px;top:${cy}px;opacity:1`;
+    }
+    container.appendChild(el);
+    // Physics animation
+    const startTime = performance.now();
+    const gravity = 800;
+    const duration = 1500 + Math.random() * 1000;
+    function animateParticle(now) {
+      const t = (now - startTime) / 1000;
+      if (t > duration / 1000) { el.remove(); return; }
+      const x = cx + vx * t;
+      const y = cy + vy * t + 0.5 * gravity * t * t;
+      const rot = rotation * t;
+      const opacity = Math.max(0, 1 - t / (duration / 1000));
+      el.style.transform = `translate(${x - cx}px, ${y - cy}px) rotate(${rot}deg)`;
+      el.style.opacity = opacity;
+      requestAnimationFrame(animateParticle);
+    }
+    requestAnimationFrame(animateParticle);
+  }
+  setTimeout(() => container.remove(), 3000);
+}
+
+// ===== ENHANCED PARTICLE BURST (for quest complete) =====
+function burstParticles(element, count = 12) {
+  const rect = element.getBoundingClientRect();
+  const cx = rect.left + rect.width / 2;
+  const cy = rect.top + rect.height / 2;
+  const colors = ['#3b82f6','#8b5cf6','#10b981','#f59e0b','#22c55e'];
+  for (let i = 0; i < count; i++) {
+    const el = document.createElement('div');
+    const size = 3 + Math.random() * 5;
+    const angle = (i / count) * Math.PI * 2;
+    const dist = 30 + Math.random() * 40;
+    const tx = Math.cos(angle) * dist;
+    const ty = Math.sin(angle) * dist;
+    const color = colors[Math.floor(Math.random() * colors.length)];
+    el.style.cssText = `position:fixed;width:${size}px;height:${size}px;border-radius:50%;background:${color};left:${cx}px;top:${cy}px;pointer-events:none;z-index:300;transition:all .5s var(--ease-out)`;
+    document.body.appendChild(el);
+    requestAnimationFrame(() => {
+      el.style.transform = `translate(${tx}px, ${ty}px) scale(0)`;
+      el.style.opacity = '0';
+    });
+    setTimeout(() => el.remove(), 600);
+  }
+}
+
+// ===== IMPROVED SOUND SYSTEM =====
+function playAlarmMelody() {
+  // Used by the alarm system - produces a pleasant alarm-like melody
+  try {
+    const ctx = getAudioCtx();
+    const notes = [
+      {freq:659, time:0, dur:.15},
+      {freq:784, time:.2, dur:.15},
+      {freq:659, time:.4, dur:.15},
+      {freq:784, time:.6, dur:.15},
+      {freq:880, time:.8, dur:.3}
+    ];
+    notes.forEach(n => {
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.type = 'sine';
+      osc.frequency.value = n.freq;
+      gain.gain.setValueAtTime(0.12, ctx.currentTime + n.time);
+      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + n.time + n.dur);
+      osc.start(ctx.currentTime + n.time);
+      osc.stop(ctx.currentTime + n.time + n.dur);
+    });
+  } catch(e) {}
+}
+
+// Start alarm checker every 30 seconds
+setInterval(checkAlarms, 30000);
 
 // ===== FIREBASE CONFIG =====
 // TODO: Firebase 콘솔에서 프로젝트 생성 후 아래 값을 채워주세요
@@ -1530,12 +1893,24 @@ function playSound(type) {
     gain.gain.value = 0.08;
 
     if (type === 'complete') {
-      osc.frequency.setValueAtTime(523, ctx.currentTime);
-      osc.frequency.setValueAtTime(659, ctx.currentTime + 0.1);
-      osc.frequency.setValueAtTime(784, ctx.currentTime + 0.2);
-      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.4);
+      // Satisfying Todoist-style "ding" - two harmonious notes
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(880, ctx.currentTime);
+      osc.frequency.setValueAtTime(1318, ctx.currentTime + 0.08);
+      gain.gain.setValueAtTime(0.12, ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.35);
       osc.start(ctx.currentTime);
-      osc.stop(ctx.currentTime + 0.4);
+      osc.stop(ctx.currentTime + 0.35);
+      // Add a harmonic overtone
+      const osc2 = ctx.createOscillator();
+      const gain2 = ctx.createGain();
+      osc2.connect(gain2); gain2.connect(ctx.destination);
+      osc2.type = 'sine';
+      osc2.frequency.value = 1760;
+      gain2.gain.setValueAtTime(0.04, ctx.currentTime + 0.05);
+      gain2.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.25);
+      osc2.start(ctx.currentTime + 0.05);
+      osc2.stop(ctx.currentTime + 0.25);
     } else if (type === 'achievement') {
       osc.frequency.setValueAtTime(523, ctx.currentTime);
       osc.frequency.setValueAtTime(659, ctx.currentTime + 0.15);
@@ -1575,22 +1950,8 @@ function playSound(type) {
 }
 
 // ===== PARTICLE EFFECTS =====
-function spawnParticles(element, count=8) {
-  const rect = element.getBoundingClientRect();
-  const colors = ['#ffd740','#b388ff','#00e676','#448aff','#ff5252','#18ffff'];
-  for (let i = 0; i < count; i++) {
-    const p = document.createElement('div');
-    p.className = 'quest-particle';
-    const angle = (Math.PI * 2 * i) / count;
-    const dist = 30 + Math.random() * 30;
-    p.style.cssText = `
-      left:${rect.left + rect.width/2}px;top:${rect.top + rect.height/2}px;
-      width:6px;height:6px;background:${colors[i%colors.length]};
-      --px:${Math.cos(angle)*dist}px;--py:${Math.sin(angle)*dist}px;
-    `;
-    document.body.appendChild(p);
-    setTimeout(() => p.remove(), 600);
-  }
+function spawnParticles(element, count=12) {
+  burstParticles(element, count);
 }
 
 // ===== LEAGUE SYSTEM =====
@@ -1861,11 +2222,15 @@ function toggleQuest(questId, e) {
     screenFlash('green');
     showPraise(e);
     showXPBreakdown(quest.xp, comboMult, streakMult);
-    // Particle + slide effect
+    // Enhanced particle burst + completing animation
     if (e && e.currentTarget) {
-      spawnParticles(e.currentTarget);
-      e.currentTarget.classList.add('quest-complete-slide');
-      setTimeout(() => e.currentTarget?.classList?.remove('quest-complete-slide'), 400);
+      const target = e.currentTarget;
+      burstParticles(target, 14);
+      target.classList.add('completing');
+      setTimeout(() => target.classList.remove('completing'), 500);
+      // Check mark inside the checkbox
+      const check = target.querySelector('.quest-check, .now-check-done');
+      if (check) { check.classList.add('animating'); setTimeout(() => check.classList.remove('animating'), 400); }
     }
   } else {
     // Uncomplete quest
@@ -2027,6 +2392,8 @@ function renderAll() {
   renderEnergyTracker();
   updateFocusDisplay();
   updateTimeBackground();
+  // Check alarms after render
+  setTimeout(checkAlarms, 1000);
 }
 
 function renderWeeklyGoal() {
@@ -2232,7 +2599,7 @@ function renderNowNext() {
     container.innerHTML = `
       <div class="all-done-card">
         <div style="position:relative">
-          <div class="all-done-icon" style="font-size:72px;animation:charIdle 2s ease-in-out infinite;filter:drop-shadow(0 4px 20px rgba(255,215,64,.4))">${stage.emoji}</div>
+          <div class="all-done-icon" style="font-size:72px;animation:charFloat 3s ease-in-out infinite">${stage.emoji}</div>
         </div>
         <div class="all-done-text">오늘의 퀘스트 ALL CLEAR!</div>
         <div class="all-done-sub" style="margin-top:4px">${stage.title} · ${stage.desc}</div>
@@ -2531,14 +2898,14 @@ function renderQuests() {
         오늘은 휴무일! 푹 쉬세요
       </div>`;
     } else {
-      questsHTML = quests.map(q => {
+      questsHTML = quests.map((q, qi) => {
         const done = todayCompleted.includes(q.id);
         const statsText = Object.entries(q.stats).map(([k,v]) => `${STAT_CONFIG[k]?.icon||''}+${v}`).join(' ');
         const timeHint = getTimeBlockStatus(q.time);
         const difficulty = q.xp >= 35 ? 3 : q.xp >= 25 ? 2 : 1;
         const diffClass = difficulty >= 3 ? 'epic' : difficulty >= 2 ? 'hard' : 'active';
         const diffDots = Array.from({length:3}, (_, i) => `<div class="quest-difficulty-dot ${i < difficulty ? diffClass : ''}"></div>`).join('');
-        return `<div class="quest-item ${done?'done':''}" onclick="toggleQuest('${q.id}',event)">
+        return `<div class="quest-item ${done?'done':''} ripple" style="animation:fadeInUp .35s var(--ease-out) ${qi*0.04}s both" onclick="toggleQuest('${q.id}',event)">
           <div class="quest-check">${done?'✓':''}</div>
           <div class="quest-info">
             <div class="quest-name">${escapeHTML(q.icon)} ${escapeHTML(q.name)} <span class="quest-difficulty">${diffDots}</span></div>
@@ -2666,6 +3033,8 @@ function showLevelUp() {
   overlay.classList.add('show');
   hapticFeedback('heavy');
   playSound('levelup');
+  // Also fire physics-based confetti
+  setTimeout(() => spawnConfetti(50), 300);
   if (window._levelUpTimeout) clearTimeout(window._levelUpTimeout);
   window._levelUpTimeout = setTimeout(() => {
     overlay.classList.remove('show');
@@ -2693,6 +3062,9 @@ function checkAllClear() {
     if (!todayHist._allClearBonus) {
       addXP(50, null, null);
       todayHist._allClearBonus = true;
+      // Big celebration!
+      spawnConfetti(60);
+      playSound('levelup');
     }
   } else {
     banner.classList.remove('show');
