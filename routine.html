@@ -114,13 +114,16 @@ body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','SF Pro Text'
 /* Level Up Overlay */
 .levelup-overlay{position:fixed;top:0;left:0;right:0;bottom:0;z-index:999;display:flex;align-items:center;justify-content:center;pointer-events:none;opacity:0;transition:opacity .3s}
 .levelup-overlay.show{opacity:1;pointer-events:auto}
-.levelup-flash{position:absolute;top:0;left:0;right:0;bottom:0;background:radial-gradient(circle,rgba(255,215,64,.3),transparent 70%);animation:flashPulse 1.5s ease-out}
+.levelup-flash{position:absolute;top:0;left:0;right:0;bottom:0;background:radial-gradient(circle,rgba(255,215,64,.2) 0%,rgba(124,77,255,.1) 50%,transparent 70%);animation:flashPulse 2s ease-out}
 @keyframes flashPulse{0%{opacity:1;transform:scale(.8)}50%{opacity:.8}100%{opacity:0;transform:scale(1.5)}}
-.levelup-content{text-align:center;animation:levelUpBounce .6s cubic-bezier(.68,-.55,.27,1.55)}
-@keyframes levelUpBounce{0%{transform:scale(0);opacity:0}100%{transform:scale(1);opacity:1}}
-.levelup-text{font-size:48px;font-weight:900;background:linear-gradient(135deg,var(--gold),#fff,var(--gold));-webkit-background-clip:text;-webkit-text-fill-color:transparent;text-shadow:none;filter:drop-shadow(0 0 20px rgba(255,215,64,.5))}
-.levelup-sub{font-size:16px;color:var(--gold);margin-top:8px;font-weight:600}
-.levelup-sp{font-size:14px;color:var(--purple);margin-top:4px}
+.levelup-content{text-align:center;animation:levelUpBounce .8s cubic-bezier(.68,-.55,.27,1.55)}
+@keyframes levelUpBounce{0%{transform:scale(0) rotate(-10deg);opacity:0}60%{transform:scale(1.1) rotate(2deg)}100%{transform:scale(1) rotate(0);opacity:1}}
+.levelup-text{font-size:56px;font-weight:900;background:linear-gradient(135deg,var(--gold),#fff,var(--gold));-webkit-background-clip:text;-webkit-text-fill-color:transparent;text-shadow:none;filter:drop-shadow(0 0 30px rgba(255,215,64,.6));letter-spacing:-2px}
+.levelup-sub{font-size:20px;color:var(--gold);margin-top:12px;font-weight:700}
+.levelup-sp{font-size:15px;color:var(--purple);margin-top:6px;font-weight:600}
+.levelup-confetti{position:absolute;top:0;left:0;right:0;bottom:0;pointer-events:none;overflow:hidden}
+.confetti-piece{position:absolute;width:8px;height:8px;border-radius:2px;animation:confettiFall 2s ease-out forwards}
+@keyframes confettiFall{0%{transform:translateY(-100px) rotate(0deg);opacity:1}100%{transform:translateY(100vh) rotate(720deg);opacity:0}}
 
 /* XP Popup */
 .xp-popup{position:fixed;z-index:200;font-size:16px;font-weight:900;color:var(--gold);pointer-events:none;animation:xpFloat 1.2s ease-out forwards;text-shadow:0 0 8px rgba(255,215,64,.5)}
@@ -454,50 +457,18 @@ body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','SF Pro Text'
 </div>
 
 <div class="container">
-  <!-- Date -->
-  <div class="date-display">
-    <div class="date-text" id="date-text"></div>
-    <div class="date-day" id="date-day"></div>
-  </div>
-
-  <!-- Compact XP + Streak -->
-  <div class="xp-section">
-    <div class="xp-info">
-      <span class="xp-label">Lv.<span id="xp-level-inline">1</span></span>
-      <span class="xp-value mono" id="xp-display">0 / 100</span>
-    </div>
-    <div class="xp-bar-bg">
-      <div class="xp-bar-fill" id="xp-bar" style="width:0%"></div>
-    </div>
-    <div class="streak-row">
-      <span class="streak-badge" id="streak-badge">🔥 0일 연속</span>
-      <span class="daily-progress" id="daily-progress">오늘: 0/15</span>
-    </div>
-  </div>
-
-  <!-- Hidden: Stats (shown in full view) -->
-  <div class="stats-section" id="stats-section-main" style="display:none">
-    <div class="section-title">📊 능력치</div>
-    <div class="radar-wrap">
-      <canvas class="radar-canvas" id="radar" width="320" height="320"></canvas>
-      <div class="stats-list" id="stats-list"></div>
-    </div>
-  </div>
-
-  <!-- Hidden: Quote & Energy (shown in full view) -->
-  <div id="extras-section" style="display:none">
-    <div class="quote-banner" id="daily-quote">
-      <div class="quote-text" id="quote-text"></div>
-      <div class="quote-author" id="quote-author"></div>
-    </div>
-    <div class="energy-section" id="energy-section">
-      <div class="energy-row">
-        <span class="energy-label">오늘 컨디션</span>
-        <div class="energy-dots" id="energy-dots"></div>
-      </div>
-      <div class="energy-history" id="energy-history"></div>
-    </div>
-  </div>
+  <!-- Hidden elements for JS compatibility -->
+  <div id="date-text" style="display:none"></div>
+  <div id="date-day" style="display:none"></div>
+  <div id="xp-display" style="display:none">0 / 100</div>
+  <div id="xp-bar" style="display:none"></div>
+  <div id="xp-level-inline" style="display:none">1</div>
+  <div id="streak-badge" style="display:none"></div>
+  <div id="daily-progress" style="display:none"></div>
+  <div id="stats-list" style="display:none"></div>
+  <canvas id="radar" width="1" height="1" style="display:none"></canvas>
+  <div id="daily-quote" style="display:none"><div id="quote-text"></div><div id="quote-author"></div></div>
+  <div id="energy-section" style="display:none"><div id="energy-dots"></div><div id="energy-history"></div></div>
 
   <!-- AI Reminder Banner -->
   <div class="reminder-banner" id="ai-reminder">
@@ -537,12 +508,9 @@ body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','SF Pro Text'
     <div id="now-next-view"></div>
 
     <!-- Full quest list (hidden by default) -->
-    <button class="show-all-btn" id="show-all-btn" onclick="toggleFullQuests()">전체 퀘스트 보기 ▼</button>
+    <button class="show-all-btn" id="show-all-btn" onclick="toggleFullQuests()">전체 목록 ▼</button>
     <div id="quests-container" style="display:none"></div>
-    <div class="skills-section" style="display:none" id="skills-section-wrap">
-      <div class="section-title">🔮 스킬</div>
-      <div class="skills-grid" id="skills-grid"></div>
-    </div>
+    <div id="skills-grid" style="display:none"></div>
   </div>
 
   <!-- Tab: Focus Timer -->
@@ -852,12 +820,13 @@ body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','SF Pro Text'
 </div>
 
 <!-- Level Up Overlay -->
-<div class="levelup-overlay" id="levelup-overlay">
+<div class="levelup-overlay" id="levelup-overlay" onclick="hideLevelUp()">
+  <div class="levelup-confetti" id="levelup-confetti"></div>
   <div class="levelup-flash"></div>
   <div class="levelup-content">
     <div class="levelup-text" id="levelup-text">LEVEL UP!</div>
     <div class="levelup-sub" id="levelup-sub">Lv.2 달성!</div>
-    <div class="levelup-sp">🌟 스킬포인트 +1</div>
+    <div class="levelup-sp">탭하여 닫기</div>
   </div>
 </div>
 
@@ -1435,18 +1404,9 @@ function toggleFullQuests() {
   fullQuestsVisible = !fullQuestsVisible;
   const show = fullQuestsVisible ? 'block' : 'none';
   document.getElementById('quests-container').style.display = show;
-  document.getElementById('skills-section-wrap').style.display = show;
-  document.getElementById('stats-section-main').style.display = show;
-  document.getElementById('extras-section').style.display = show;
   const btn = document.getElementById('show-all-btn');
-  btn.textContent = fullQuestsVisible ? '접기 ▲' : '전체 퀘스트 보기 ▼';
+  btn.textContent = fullQuestsVisible ? '접기 ▲' : '전체 목록 ▼';
   btn.classList.toggle('open', fullQuestsVisible);
-  if (fullQuestsVisible) {
-    renderStats();
-    renderRadar();
-    renderDailyQuote();
-    renderEnergyTracker();
-  }
 }
 
 function renderHeader() {
@@ -1692,8 +1652,27 @@ function showStatPopup(statKey, val, rect) {
 function showLevelUp() {
   const overlay = document.getElementById('levelup-overlay');
   document.getElementById('levelup-sub').textContent = `Lv.${gameData.character.level} 달성!`;
+
+  // Confetti
+  const confettiEl = document.getElementById('levelup-confetti');
+  const colors = ['#ffd740','#b388ff','#448aff','#00e676','#ff5252','#18ffff'];
+  let confettiHTML = '';
+  for (let i = 0; i < 40; i++) {
+    const color = colors[Math.floor(Math.random() * colors.length)];
+    const left = Math.random() * 100;
+    const delay = Math.random() * 0.8;
+    const size = 4 + Math.random() * 8;
+    confettiHTML += `<div class="confetti-piece" style="left:${left}%;top:-10px;width:${size}px;height:${size}px;background:${color};animation-delay:${delay}s"></div>`;
+  }
+  confettiEl.innerHTML = confettiHTML;
+
   overlay.classList.add('show');
-  setTimeout(() => overlay.classList.remove('show'), 2500);
+  hapticFeedback('heavy');
+  setTimeout(() => overlay.classList.remove('show'), 3500);
+}
+
+function hideLevelUp() {
+  document.getElementById('levelup-overlay').classList.remove('show');
 }
 
 // ===== BONUS: All quests done today check =====
