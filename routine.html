@@ -35,7 +35,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','SF Pro Text'
 .mono{font-family:'SF Mono',Menlo,monospace}
 
 /* Header */
-.hdr{display:flex;align-items:center;justify-content:space-between;padding:12px 20px;position:sticky;top:0;background:rgba(10,10,15,.85);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);z-index:100;border-bottom:1px solid var(--border)}
+.hdr{display:flex;align-items:center;justify-content:space-between;padding:12px 20px;position:sticky;top:0;background:rgba(10,10,15,.92);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);z-index:100;border-bottom:1px solid var(--border)}
 .hdr-left{display:flex;align-items:center;gap:10px}
 .hdr-logo{font-size:20px}
 .hdr-title{font-size:18px;font-weight:800;letter-spacing:-.5px}
@@ -89,7 +89,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','SF Pro Text'
 .quest-item:active{transform:scale(.98)}
 .quest-item.done{background:var(--quest-done)}
 .quest-check{width:24px;height:24px;border:2px solid rgba(255,255,255,.15);border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .2s;font-size:13px}
-.quest-item.done .quest-check{background:var(--green);border-color:var(--green);color:#000}
+.quest-item.done .quest-check{background:var(--duo-green);border-color:var(--duo-green);color:#fff;box-shadow:0 2px 8px rgba(88,204,2,.3)}
 .quest-info{flex:1;min-width:0}
 .quest-name{font-size:14px;font-weight:600;display:flex;align-items:center;gap:6px}
 .quest-item.done .quest-name{text-decoration:line-through;opacity:.5}
@@ -138,7 +138,8 @@ body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','SF Pro Text'
 /* ===== CHARACTER EVOLUTION SYSTEM ===== */
 .char-section{text-align:center;padding:20px 0;position:relative}
 .char-avatar-wrap{position:relative;display:inline-block;margin-bottom:8px}
-.char-avatar{font-size:80px;line-height:1;display:block;animation:charIdle 3s ease-in-out infinite;filter:drop-shadow(0 4px 20px rgba(124,77,255,.3))}
+.char-avatar{font-size:72px;line-height:1;display:block;animation:charIdle 3s ease-in-out infinite;filter:drop-shadow(0 4px 20px rgba(124,77,255,.3));cursor:pointer;transition:transform .2s}
+.char-avatar:active{transform:scale(1.2) rotate(10deg);animation:none}
 @keyframes charIdle{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
 .char-glow{position:absolute;inset:-20px;border-radius:50%;background:radial-gradient(circle,rgba(124,77,255,.15),transparent 70%);pointer-events:none}
 .char-name{font-size:15px;font-weight:700;margin-top:4px;color:var(--text)}
@@ -239,7 +240,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','SF Pro Text'
 /* Now / Next View */
 .now-card{background:var(--card);border-radius:20px;padding:20px;margin-bottom:12px;box-shadow:var(--shadow);position:relative;overflow:hidden}
 .now-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--purple),var(--blue))}
-.now-card.completed-card::before{background:var(--green)}
+.now-card.completed-card::before{background:var(--duo-green)}
 .now-label{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--purple);margin-bottom:12px}
 .now-label.done{color:var(--green)}
 .now-quest{display:flex;align-items:center;gap:14px;cursor:pointer;user-select:none}
@@ -614,7 +615,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','SF Pro Text'
   <div class="char-section" id="char-section">
     <div class="char-avatar-wrap">
       <div class="char-glow"></div>
-      <div class="char-avatar" id="char-avatar"></div>
+      <div class="char-avatar" id="char-avatar" onclick="pokeCharacter()"></div>
     </div>
     <div class="char-name" id="char-name-display">Alfred</div>
     <div class="char-title" id="char-title"></div>
@@ -1883,6 +1884,22 @@ function showPraise(e) {
   }
   document.body.appendChild(el);
   setTimeout(() => el.remove(), 1000);
+}
+
+function pokeCharacter() {
+  const avatar = document.getElementById('char-avatar');
+  const reactions = ['😄','🥳','😎','🤩','💪','🔥','✨','🎉'];
+  const reaction = reactions[Math.floor(Math.random() * reactions.length)];
+
+  // Brief reaction animation
+  const original = avatar.textContent;
+  avatar.textContent = reaction;
+  hapticFeedback('light');
+  playSound('complete');
+
+  setTimeout(() => {
+    avatar.textContent = original;
+  }, 800);
 }
 
 function renderBattleStats() {
