@@ -2528,10 +2528,12 @@ function renderSkills() {
   const grid = document.getElementById('skills-grid');
   const skills = gameData.character.skills;
   const stats = gameData.character.stats;
+  const sp = gameData.character.skill_points || 0;
 
   grid.innerHTML = skills.map(skill => {
     const meetsReq = Object.entries(skill.req).every(([s, v]) => (stats[s]||0) >= v);
     const isUnlocked = skill.unlocked || meetsReq;
+    const canUpgrade = isUnlocked && skill.level < skill.max_level && sp > 0;
     const reqText = Object.entries(skill.req).map(([s,v]) => {
       const met = (stats[s]||0) >= v;
       return `<span style="color:${met?'var(--green)':'var(--red)'}"> ${STAT_CONFIG[s]?.name||s} ${stats[s]||0}/${v}</span>`;
@@ -2543,10 +2545,26 @@ function renderSkills() {
       <div class="skill-name">${skill.name}</div>
       <div class="skill-desc">${skill.desc}</div>
       ${isUnlocked ?
-        `<div class="skill-lvl">Lv.${skill.level}/${skill.max_level}</div>` :
+        `<div class="skill-lvl">Lv.${skill.level}/${skill.max_level}</div>
+         ${canUpgrade ? `<button style="margin-top:4px;padding:3px 10px;border-radius:6px;border:1px solid var(--purple);background:rgba(179,136,255,.1);color:var(--purple);font-size:10px;font-weight:700;cursor:pointer" onclick="upgradeSkill('${skill.id}')">⬆ 업그레이드 (1 SP)</button>` : ''}` :
         `<div class="skill-req">${reqText}</div>`}
     </div>`;
   }).join('');
+}
+
+function upgradeSkill(skillId) {
+  const sp = gameData.character.skill_points || 0;
+  if (sp < 1) return;
+  const skill = gameData.character.skills.find(s => s.id === skillId);
+  if (!skill || !skill.unlocked || skill.level >= skill.max_level) return;
+  skill.level++;
+  gameData.character.skill_points--;
+  playSound('achievement');
+  hapticFeedback('medium');
+  showAchievementToast({icon:skill.icon, name:`${skill.name} Lv.${skill.level}!`, desc:'스킬 업그레이드 완료'});
+  saveData();
+  renderSkills();
+  renderHeader();
 }
 
 // ===== UI INTERACTIONS =====
