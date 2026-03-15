@@ -88,7 +88,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','SF Pro Text'
 .quest-item{display:flex;align-items:center;gap:12px;padding:12px 10px;border-radius:12px;cursor:pointer;transition:all .25s cubic-bezier(.4,0,.2,1);position:relative;user-select:none;border-left:3px solid transparent}
 .quest-item:hover{background:rgba(255,255,255,.02)}
 .quest-item:active{transform:scale(.98)}
-.quest-item.done{background:var(--quest-done)}
+.quest-item.done{background:var(--quest-done);opacity:.75}
 .quest-check{width:24px;height:24px;border:2px solid rgba(255,255,255,.15);border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .2s;font-size:13px}
 .quest-item.done .quest-check{background:var(--duo-green);border-color:var(--duo-green);color:#fff;box-shadow:0 2px 8px rgba(88,204,2,.3)}
 .quest-info{flex:1;min-width:0}
@@ -146,6 +146,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','SF Pro Text'
 .char-name{font-size:15px;font-weight:700;margin-top:4px;color:var(--text)}
 .char-title{font-size:11px;color:var(--gold);font-weight:600;margin-top:2px}
 .char-level-badge{display:inline-flex;align-items:center;gap:4px;padding:4px 14px;background:linear-gradient(135deg,rgba(124,77,255,.2),rgba(68,138,255,.2));border:1px solid rgba(124,77,255,.3);border-radius:20px;font-size:12px;font-weight:800;color:var(--purple);margin-top:6px}
+.char-today-xp{font-size:11px;color:var(--gold);margin-top:6px;font-weight:600;opacity:.8}
 
 /* XP Bar - Duolingo Style */
 .xp-inline{margin:12px 0 0;padding:0 20px}
@@ -657,6 +658,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','SF Pro Text'
     <div class="char-name" id="char-name-display">Alfred</div>
     <div class="char-title" id="char-title"></div>
     <div class="char-level-badge" id="char-level-badge">Lv.1</div>
+    <div class="char-today-xp" id="char-today-xp"></div>
     <div class="xp-inline">
       <div class="xp-bar-duo"><div class="xp-bar-duo-fill" id="xp-bar-duo" style="width:0%"></div></div>
       <div class="xp-bar-label"><span id="xp-duo-text">0 XP</span><span id="xp-duo-need">100 XP</span></div>
@@ -1007,7 +1009,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','SF Pro Text'
     <span id="sync-indicator" style="font-size:11px;color:var(--dim)"></span>
   </div>
 
-  <div class="footer">Alfred Quest v3.6 · Gamified Routine · Character Evolution · Streak Freeze</div>
+  <div class="footer" id="app-footer">Alfred Quest v3.6 · Gamified Routine</div>
 </div>
 
 <!-- Song Modal -->
@@ -1941,6 +1943,9 @@ function renderAll() {
   renderCharacter();
   renderStreakCalendar();
   renderXP();
+  // Update footer with total XP
+  const footer = document.getElementById('app-footer');
+  if (footer) footer.textContent = `Alfred Quest v3.6 · Total ${gameData.character.total_xp} XP · Lv.${gameData.character.level}`;
   renderNowNext();
   renderDailyChallenge();
   renderStreakFreezeShop();
@@ -2087,6 +2092,11 @@ function renderCharacter() {
   const pct = Math.min(100, (c.xp / needed) * 100);
   document.getElementById('char-level-badge').innerHTML =
     `<span>${league.icon}</span> Lv.${c.level} · ${league.name} 리그`;
+
+  // Today's XP earned
+  const todayXP = gameData.history[todayKey]?.xp_earned || 0;
+  const todayXPEl = document.getElementById('char-today-xp');
+  if (todayXPEl) todayXPEl.textContent = todayXP > 0 ? `오늘 +${todayXP} XP 획득` : '';
 
   // XP bar
   document.getElementById('xp-bar-duo').style.width = pct + '%';
