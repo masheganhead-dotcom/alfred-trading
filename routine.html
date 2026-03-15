@@ -497,6 +497,11 @@ input:focus,textarea:focus,select:focus{outline:none;box-shadow:0 0 0 2px rgba(5
 .notes-panel-handle{width:40px;height:4px;background:var(--dim);opacity:.3;border-radius:2px;margin:0 auto 16px}
 .notes-overlay{position:fixed;inset:0;background:rgba(0,0,0,.3);z-index:199;opacity:0;pointer-events:none;transition:opacity .3s}
 .notes-overlay.show{opacity:1;pointer-events:auto}
+/* Nag toast */
+.nag-toast{position:fixed;top:-100px;left:12px;right:12px;background:linear-gradient(135deg,#1e293b,#334155);color:#fff;border-radius:16px;padding:14px 16px;z-index:300;display:flex;align-items:center;gap:10px;box-shadow:0 8px 32px rgba(0,0,0,.25);transition:top .4s var(--ease-out);font-size:13px;line-height:1.5}
+.nag-toast.show{top:calc(12px + env(safe-area-inset-top,0px))}
+.nag-toast-content{flex:1;font-weight:500}
+.nag-toast-close{background:rgba(255,255,255,.15);border:none;color:#fff;width:28px;height:28px;border-radius:50%;font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0}
 
 /* Music Tracker */
 .music-section{background:var(--card);border-radius:20px;padding:20px;margin-bottom:16px;box-shadow:var(--shadow)}
@@ -906,6 +911,11 @@ input:focus,textarea:focus,select:focus{outline:none;box-shadow:0 0 0 2px rgba(5
 .tl-equip-slot.equipped{border-color:rgba(124,58,237,.2);background:rgba(124,58,237,.05)}
 
 /* Daily login reward */
+/* Nag banner in timeline */
+.tl-nag-banner{background:linear-gradient(135deg,rgba(30,41,59,.95),rgba(51,65,85,.95));border-radius:16px;padding:14px 16px;margin-bottom:16px;cursor:pointer;animation:fadeInUp .4s var(--ease-out) .1s both;transition:opacity .3s,transform .3s}
+.tl-nag-banner:active{transform:scale(.97);opacity:.8}
+.tl-nag-text{color:#fff;font-size:13px;font-weight:600;line-height:1.5}
+.tl-nag-sub{color:rgba(255,255,255,.4);font-size:10px;margin-top:4px}
 .tl-daily-reward{background:linear-gradient(135deg,rgba(245,158,11,.06),rgba(234,179,8,.04));border:1px solid rgba(245,158,11,.12);border-radius:16px;padding:14px 16px;margin-bottom:16px;display:flex;align-items:center;gap:12px;cursor:pointer;transition:all .2s var(--ease-out);animation:fadeInUp .4s var(--ease-out) .2s both}
 .tl-daily-reward:active{transform:scale(.98)}
 .tl-daily-reward-icon{font-size:28px;animation:rewardBounce 1s var(--spring) infinite}
@@ -1626,6 +1636,155 @@ if ('Notification' in window && Notification.permission === 'default') {
     Notification.requestPermission();
     document.removeEventListener('click', reqNotif);
   }, { once: true });
+}
+
+// ===== SMART NAGGING SYSTEM (시간대별 잔소리) =====
+let lastNagTime = 0;
+let nagCheckInterval = null;
+
+const SMART_NAGS = {
+  // 아침 시간대 (7:00~10:00)
+  morning: [
+    {questId:'m0', after:'07:30', msg:'☀️ 아직 햇빛을 안 쬐셨네요! 10분만 밖에 나가세요. 도파민 리셋 시작!'},
+    {questId:'m1', after:'09:00', msg:'🎬 미드 공부 안 하셨어요! 영어는 매일 해야 느는 거 알죠?'},
+    {questId:'m2', after:'09:00', msg:'🏋️ 아침 복근 운동 건너뛰셨네요. 10분이면 되는데... 핑계 대지 마세요!'},
+    {questId:'m3', after:'09:45', msg:'📖 독서 체크가 안 되어있어요. 한 페이지라도 읽으세요!'},
+    {questId:'m4', after:'10:15', msg:'🤖 AI 작업 할당 아직이에요. Claude한테 일 시켜야죠!'},
+  ],
+  // 작업실 시간대 (10:00~16:00)
+  studio: [
+    {check:'not_at_studio', after:'10:30', msg:'🎵 10시 반인데 아직 작업실 안 가셨나요? 왜요? 빨리 가세요!'},
+    {questId:'s1', after:'10:30', msg:'📋 작업 계획도 안 세우고 뭐 하고 계세요? 계획부터!'},
+    {questId:'s2', after:'11:00', msg:'🔍 레퍼런스 수집 안 했네요. 좋은 음악은 좋은 레퍼에서 나와요!'},
+    {questId:'s3', after:'13:00', msg:'🎹 메인 스케치 아직이요? 완벽주의 금지! DAW부터 켜세요!'},
+    {questId:'s4', after:'15:30', msg:'📱 릴스 아직 안 만드셨네요. 아티스트는 보여줘야 해요!'},
+    {questId:'s5', after:'16:15', msg:'💼 레슨 사업 기획 빼먹으셨어요. 사업도 중요합니다!'},
+  ],
+  // 운동 시간대 (16:00~18:30)
+  exercise: [
+    {questId:'e1', after:'17:00', msg:'🏋️ 운동 시간 지나고 있어요! 스포짐 아직 안 가신 거예요?'},
+    {questId:'e2', after:'18:15', msg:'🏃 유산소 건너뛰려고요? 30분만 뛰세요. 체력이 자본이에요!'},
+  ],
+  // 야간 작업 (19:00~21:00)
+  evening: [
+    {questId:'w1', after:'19:30', msg:'🎯 야간 작업 목표 설정 안 했어요. 방향 없이 작업하면 시간 낭비예요!'},
+    {questId:'w2', after:'21:15', msg:'🧪 창작 실험 시간이었는데 안 하셨네요. 실험이 곧 성장이에요!'},
+  ],
+  // 귀가 후 (21:00~23:00)
+  home: [
+    {questId:'h1', after:'21:45', msg:'🚿 씻으셨나요? 샤워 체크가 안 되어있어요. 사소한 습관이 인생을 바꿉니다!'},
+    {questId:'h2', after:'22:45', msg:'🧠 AI 공부 빼먹으셨네요. 하루 1시간이 1년 뒤 엄청난 차이를 만들어요!'},
+    {questId:'h3', after:'23:15', msg:'🌙 셧다운 리추얼 안 하셨어요! 내일 계획 정리하고 편하게 주무세요.'},
+  ]
+};
+
+function getSmartNag() {
+  const now = new Date();
+  const hh = now.getHours();
+  const mm = now.getMinutes();
+  const nowStr = `${String(hh).padStart(2,'0')}:${String(mm).padStart(2,'0')}`;
+  const todayHist = gameData.history[todayKey] || {completed:[]};
+  const completed = todayHist.completed || [];
+
+  // Determine which time period we're in
+  let nagGroups = [];
+  if (hh >= 7 && hh < 10) nagGroups.push('morning');
+  if (hh >= 10 && hh < 16) nagGroups.push('studio');
+  if (hh >= 16 && hh < 19) nagGroups.push('exercise');
+  if (hh >= 19 && hh < 21) nagGroups.push('evening');
+  if (hh >= 21 && hh < 24) nagGroups.push('home');
+  // Also check previous period's undone quests (catch-up nag)
+  if (hh >= 10 && hh < 12) nagGroups.push('morning'); // Morning catch-up
+  if (hh >= 19 && hh < 20) nagGroups.push('exercise'); // Exercise catch-up
+
+  const nags = [];
+  const uniqueGroups = [...new Set(nagGroups)];
+
+  for (const group of uniqueGroups) {
+    const groupNags = SMART_NAGS[group] || [];
+    for (const nag of groupNags) {
+      if (nowStr < nag.after) continue;
+
+      if (nag.check === 'not_at_studio') {
+        // Check if NO studio quests have been done yet
+        const studioQuests = (gameData.quests.studio || []).map(q => q.id);
+        const anyStudioDone = studioQuests.some(qId => completed.includes(qId));
+        if (!anyStudioDone) nags.push(nag);
+      } else if (nag.questId && !completed.includes(nag.questId)) {
+        nags.push(nag);
+      }
+    }
+  }
+
+  return nags;
+}
+
+function checkSmartNags() {
+  const now = Date.now();
+  // Don't nag more than once every 15 minutes
+  if (now - lastNagTime < 15 * 60 * 1000) return;
+
+  const nags = getSmartNag();
+  if (nags.length === 0) return;
+
+  // Pick one random nag to show (don't overwhelm)
+  const nag = nags[Math.floor(Math.random() * nags.length)];
+  lastNagTime = now;
+
+  // Show in-app toast
+  showNagToast(nag.msg);
+
+  // Send push notification
+  sendNagNotification(nag.msg);
+}
+
+function showNagToast(msg) {
+  const toast = document.createElement('div');
+  toast.className = 'nag-toast';
+  toast.innerHTML = `<div class="nag-toast-content">${msg}</div><button class="nag-toast-close" onclick="this.parentElement.remove()">✕</button>`;
+  document.body.appendChild(toast);
+  requestAnimationFrame(() => toast.classList.add('show'));
+  playSound('click');
+  hapticFeedback('medium');
+  // Auto-dismiss after 8 seconds
+  setTimeout(() => {
+    toast.classList.remove('show');
+    setTimeout(() => toast.remove(), 400);
+  }, 8000);
+}
+
+function sendNagNotification(msg) {
+  // Browser push notification
+  if ('Notification' in window && Notification.permission === 'granted') {
+    const cleanMsg = msg.replace(/^[^\s]+\s/, ''); // Remove leading emoji for title
+    const emoji = msg.match(/^[^\s]+/)?.[0] || '📢';
+    new Notification(`${emoji} 루틴 잔소리`, {
+      body: cleanMsg,
+      icon: 'icon-192.png',
+      tag: 'smart-nag',
+      renotify: true,
+      requireInteraction: false
+    });
+  }
+
+  // Capacitor native notification
+  if (NativeNotifications) {
+    NativeNotifications.schedule({
+      notifications: [{
+        id: 9999,
+        title: '📢 루틴 잔소리',
+        body: msg,
+        schedule: { at: new Date() },
+        sound: 'default'
+      }]
+    }).catch(() => {});
+  }
+}
+
+// Start smart nag checker (every 5 minutes)
+function startSmartNags() {
+  checkSmartNags();
+  nagCheckInterval = setInterval(checkSmartNags, 5 * 60 * 1000);
 }
 
 // ===== SCROLL-BASED HEADER =====
@@ -3053,6 +3212,16 @@ function renderNowNext() {
       <div class="tl-progress"><b>${completedCount}</b>/${totalQuests} <span class="tl-pct">${pct}%</span></div>
     </div>
     <div class="tl-bar"><div class="tl-bar-fill" style="width:${pct}%"></div></div>`;
+
+  // Smart nag banner (inline)
+  const currentNags = getSmartNag();
+  if (currentNags.length > 0) {
+    const randomNag = currentNags[Math.floor(Math.random() * Math.min(currentNags.length, 2))];
+    html += `<div class="tl-nag-banner" onclick="this.style.display='none'">
+      <div class="tl-nag-text">${randomNag.msg}</div>
+      <div class="tl-nag-sub">탭하여 닫기</div>
+    </div>`;
+  }
 
   // Daily login reward
   if (dailyReward) {
@@ -5452,6 +5621,9 @@ setInterval(() => {
       .catch(() => {});
   }
 }, 600000);
+
+// Start smart nagging system
+setTimeout(startSmartNags, 3000);
 </script>
 </body>
 </html>
