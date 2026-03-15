@@ -296,6 +296,19 @@ body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','SF Pro Text'
 .time-evening{background:linear-gradient(180deg,#150a1a 0%,#0a0a0f 100%)}
 .time-night{background:linear-gradient(180deg,#050510 0%,#0a0a0f 100%)}
 
+/* Floating praise text */
+.praise-float{position:fixed;z-index:300;font-size:24px;font-weight:900;pointer-events:none;animation:praiseAnim 1s ease-out forwards;text-shadow:0 2px 8px rgba(0,0,0,.3)}
+@keyframes praiseAnim{0%{opacity:1;transform:translateY(0) scale(.5) rotate(-5deg)}30%{transform:translateY(-20px) scale(1.2) rotate(3deg)}60%{opacity:1;transform:translateY(-40px) scale(1)}100%{opacity:0;transform:translateY(-60px) scale(.8)}}
+
+/* Weekly Goal Progress */
+.weekly-goal{background:linear-gradient(135deg,rgba(255,200,0,.08),rgba(255,150,0,.08));border:1px solid rgba(255,200,0,.15);border-radius:14px;padding:14px;margin-bottom:12px}
+.wg-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
+.wg-title{font-size:12px;font-weight:700;color:var(--duo-yellow)}
+.wg-value{font-size:14px;font-weight:900;color:var(--duo-yellow)}
+.wg-bar{height:8px;background:rgba(255,255,255,.06);border-radius:4px;overflow:hidden}
+.wg-bar-fill{height:100%;background:linear-gradient(90deg,var(--duo-yellow),var(--duo-orange));border-radius:4px;transition:width .8s}
+.wg-sub{font-size:10px;color:var(--dim);margin-top:4px;text-align:right}
+
 /* Screen flash for milestone completions */
 .screen-flash{position:fixed;inset:0;pointer-events:none;z-index:998;opacity:0;transition:opacity .15s}
 .screen-flash.green{background:rgba(0,230,118,.15);opacity:1}
@@ -662,6 +675,16 @@ body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','SF Pro Text'
   <div class="tab-content active" id="tab-quests">
     <!-- Now / Next minimal view -->
     <div id="now-next-view"></div>
+
+    <!-- Weekly Goal -->
+    <div class="weekly-goal" id="weekly-goal">
+      <div class="wg-header">
+        <span class="wg-title">WEEKLY GOAL</span>
+        <span class="wg-value" id="wg-value">0 / 500 XP</span>
+      </div>
+      <div class="wg-bar"><div class="wg-bar-fill" id="wg-bar" style="width:0%"></div></div>
+      <div class="wg-sub" id="wg-sub"></div>
+    </div>
 
     <!-- Today's Battle Stats -->
     <div id="today-battle-stats" style="display:flex;gap:8px;margin-bottom:12px;overflow-x:auto;padding:2px 0">
@@ -1699,6 +1722,7 @@ function toggleQuest(questId, e) {
     addStats(quest.stats, e);
     playSound('complete');
     screenFlash('green');
+    showPraise(e);
     // Particle effect
     if (e && e.currentTarget) spawnParticles(e.currentTarget);
   } else {
@@ -1788,6 +1812,7 @@ function renderAll() {
   renderXP();
   renderNowNext();
   renderDailyChallenge();
+  renderWeeklyGoal();
   renderBattleStats();
   renderQuoteMini();
   renderQuests();
@@ -1796,6 +1821,64 @@ function renderAll() {
   updateFocusDisplay();
   checkAchievements();
   updateTimeBackground();
+}
+
+function renderWeeklyGoal() {
+  const weekGoal = 500 + (gameData.character.level - 1) * 50; // scales with level
+  // Calculate this week's XP
+  const now = new Date();
+  const weekStart = new Date(now);
+  weekStart.setDate(weekStart.getDate() - weekStart.getDay()); // Sunday start
+  weekStart.setHours(0,0,0,0);
+
+  let weekXP = 0;
+  for (let d = new Date(weekStart); d <= now; d.setDate(d.getDate() + 1)) {
+    const key = d.toISOString().split('T')[0];
+    weekXP += (gameData.history[key]?.xp_earned || 0);
+  }
+
+  const pct = Math.min(100, (weekXP / weekGoal) * 100);
+  const valueEl = document.getElementById('wg-value');
+  const barEl = document.getElementById('wg-bar');
+  const subEl = document.getElementById('wg-sub');
+  if (valueEl) valueEl.textContent = `${weekXP} / ${weekGoal} XP`;
+  if (barEl) barEl.style.width = pct + '%';
+  if (subEl) {
+    if (pct >= 100) subEl.textContent = 'WEEKLY GOAL CLEARED!';
+    else subEl.textContent = `${Math.round(weekGoal - weekXP)} XP 남음`;
+  }
+}
+
+// ===== PRAISE TEXT SYSTEM =====
+const PRAISE_TEXTS = [
+  {text:'NICE!', color:'var(--duo-green)'},
+  {text:'GREAT!', color:'var(--duo-yellow)'},
+  {text:'AWESOME!', color:'var(--duo-blue)'},
+  {text:'PERFECT!', color:'var(--gold)'},
+  {text:'INCREDIBLE!', color:'var(--duo-orange)'},
+  {text:'LEGENDARY!', color:'var(--purple)'}
+];
+
+function showPraise(e) {
+  const praise = comboCount >= 5 ? PRAISE_TEXTS[5] :
+                 comboCount >= 3 ? PRAISE_TEXTS[3 + Math.floor(Math.random()*2)] :
+                 PRAISE_TEXTS[Math.floor(Math.random()*3)];
+  const el = document.createElement('div');
+  el.className = 'praise-float';
+  el.textContent = praise.text;
+  el.style.color = praise.color;
+
+  const rect = e?.currentTarget?.getBoundingClientRect();
+  if (rect) {
+    el.style.left = (rect.left + rect.width/2 - 40) + 'px';
+    el.style.top = (rect.top - 10) + 'px';
+  } else {
+    el.style.left = '50%';
+    el.style.top = '40%';
+    el.style.transform = 'translateX(-50%)';
+  }
+  document.body.appendChild(el);
+  setTimeout(() => el.remove(), 1000);
 }
 
 function renderBattleStats() {
