@@ -269,9 +269,11 @@ body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','SF Pro Text'
 .progress-text{font-size:32px;font-weight:800;background:linear-gradient(135deg,var(--purple),var(--blue));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
 .progress-sub{font-size:12px;color:var(--dim);margin-top:2px}
 
-.all-done-card{background:var(--card);border-radius:20px;padding:32px 20px;text-align:center;box-shadow:var(--shadow);margin-bottom:16px}
+.all-done-card{background:linear-gradient(135deg,var(--card),rgba(124,77,255,.06));border:1px solid rgba(255,215,64,.15);border-radius:24px;padding:40px 20px;text-align:center;box-shadow:0 4px 30px rgba(255,215,64,.08);margin-bottom:16px;position:relative;overflow:hidden}
+.all-done-card::before{content:'';position:absolute;top:-50%;right:-30%;width:200px;height:200px;background:radial-gradient(circle,rgba(255,215,64,.06),transparent 60%);pointer-events:none;animation:allDoneGlow 3s ease-in-out infinite alternate}
+@keyframes allDoneGlow{0%{opacity:.3;transform:scale(1)}100%{opacity:.8;transform:scale(1.2)}}
 .all-done-icon{font-size:48px;margin-bottom:8px}
-.all-done-text{font-size:18px;font-weight:800;margin-bottom:4px}
+.all-done-text{font-size:20px;font-weight:900;margin-bottom:4px;background:linear-gradient(135deg,var(--gold),#fff);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
 .all-done-sub{font-size:13px;color:var(--dim)}
 
 .show-all-btn{width:100%;padding:14px;background:var(--card);border:1px solid var(--border);border-radius:14px;color:var(--dim);cursor:pointer;font-size:13px;font-weight:700;margin-bottom:16px;transition:all .2s;display:flex;align-items:center;justify-content:center;gap:8px}
@@ -1348,7 +1350,9 @@ function getDailyChallenge() {
 function renderDailyChallenge() {
   const challenge = getDailyChallenge();
   const el = document.getElementById('daily-challenge');
-  const completed = gameData.history[todayKey]?._challengeDone;
+  const todayHist = gameData.history[todayKey];
+  if (!todayHist) return;
+  const completed = todayHist._challengeDone;
 
   if (completed) {
     el.style.display = 'none';
@@ -1371,8 +1375,8 @@ function renderDailyChallenge() {
   // Check if completed
   try {
     if (challenge.check(gameData, todayCompleted, todayKey)) {
-      if (!gameData.history[todayKey]._challengeDone) {
-        gameData.history[todayKey]._challengeDone = true;
+      if (!todayHist._challengeDone) {
+        todayHist._challengeDone = true;
         gameData.character.xp += challenge.reward;
         gameData.character.total_xp += challenge.reward;
         document.getElementById('dc-progress').style.width = '100%';
