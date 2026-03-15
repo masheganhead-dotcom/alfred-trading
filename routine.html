@@ -1140,7 +1140,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','SF Pro Text'
   </div>
 </div>
 
-<script type="module">
+<script>
 // ===== CAPACITOR NATIVE BRIDGE =====
 let Capacitor = null;
 let NativeHaptics = null;
@@ -1374,9 +1374,8 @@ function checkAchievements() {
       if (achv.check(gameData, todayCompleted, todayKey)) {
         unlocked.push(achv.id);
         showAchievementToast(achv);
-        // Bonus XP for achievement
-        gameData.character.xp += 30;
-        gameData.character.total_xp += 30;
+        // Bonus XP for achievement (use addXP for level-up check)
+        addXP(30, null, null);
         playSound('achievement');
         saveData();
       }
@@ -1486,8 +1485,7 @@ function renderDailyChallenge() {
     if (challenge.check(gameData, todayCompleted, todayKey)) {
       if (!todayHist._challengeDone) {
         todayHist._challengeDone = true;
-        gameData.character.xp += challenge.reward;
-        gameData.character.total_xp += challenge.reward;
+        addXP(challenge.reward, null, null);
         document.getElementById('dc-progress').style.width = '100%';
         playSound('challenge');
         showAchievementToast({icon:'🏆',name:'데일리 챌린지 클리어!',desc:`+${challenge.reward} XP`});
@@ -1995,7 +1993,6 @@ function renderAll() {
   renderSkills();
   renderEnergyTracker();
   updateFocusDisplay();
-  checkAchievements();
   updateTimeBackground();
 }
 
@@ -2289,7 +2286,7 @@ function renderNowNext() {
 
   // Next quest card
   if (nextQuest) {
-    html += `<div class="next-card">
+    html += `<div class="next-card" style="cursor:pointer" onclick="toggleQuest('${nextQuest.id}',event)">
       <div class="next-label">다음</div>
       <div class="next-quest">
         <div class="next-icon">${nextQuest.icon}</div>
@@ -2651,21 +2648,13 @@ function checkAllClear() {
     banner.classList.add('show');
     // Give bonus XP only once per day
     if (!todayHist._allClearBonus) {
-      const bonusXP = 50;
-      gameData.character.xp += bonusXP;
-      gameData.character.total_xp += bonusXP;
-      todayHist.xp_earned = (todayHist.xp_earned||0) + bonusXP;
+      addXP(50, null, null);
       todayHist._allClearBonus = true;
     }
   } else {
     banner.classList.remove('show');
     if (todayHist._allClearBonus) {
-      // Undo bonus if quests unchecked
-      gameData.character.xp -= 50;
-      gameData.character.total_xp -= 50;
-      if (gameData.character.xp < 0) gameData.character.xp = 0;
-      if (gameData.character.total_xp < 0) gameData.character.total_xp = 0;
-      todayHist.xp_earned = (todayHist.xp_earned||0) - 50;
+      removeXP(50);
       delete todayHist._allClearBonus;
     }
   }
@@ -2768,8 +2757,7 @@ function toggleSongPart(songIdx, partIdx) {
     part.done = true;
     part.active = false;
     // Bonus XP for completing a song part
-    gameData.character.xp += 5;
-    gameData.character.total_xp += 5;
+    addXP(5, null, null);
     gameData.character.stats.cre = (gameData.character.stats.cre||1) + 1;
   } else {
     part.done = false;
@@ -3366,6 +3354,9 @@ function toggleFocusTimer() {
 }
 
 function resetFocusTimer() {
+  if (focusTimer.running && focusTimer.remaining > 60) {
+    if (!confirm('진행 중인 세션을 초기화하시겠습니까?')) return;
+  }
   clearInterval(focusTimer.interval);
   focusTimer.running = false;
   focusTimer.isBreak = false;
@@ -3437,8 +3428,7 @@ function logFocusSession() {
 
   // Bonus XP for focus sessions
   const xpBonus = Math.min(Math.round(mins * 0.5), 25);
-  gameData.character.xp += xpBonus;
-  gameData.character.total_xp += xpBonus;
+  addXP(xpBonus, null, null);
   gameData.character.stats.grt = (gameData.character.stats.grt || 1) + 1;
   if (mins >= 50) gameData.character.stats.int = (gameData.character.stats.int || 1) + 1;
 
