@@ -1296,6 +1296,20 @@ const ACHIEVEMENTS = [
   {id:'night_owl',name:'올빼미 장인',desc:'22시 이후 퀘스트 완료',icon:'🦉',check:()=>{
     const h = new Date().getHours();
     return h >= 22;
+  }},
+  {id:'freeze_buyer',name:'보험왕',desc:'스트릭 프리즈 처음 구매',icon:'🛡️',check:g=>(g.character.streak_freezes||0)>0 || g._achievements?.includes('freeze_buyer')},
+  {id:'combo_master',name:'콤보 마스터',desc:'5x 콤보 달성',icon:'💥',check:()=>comboCount>=5},
+  {id:'level_30',name:'레전드의 시작',desc:'레벨 30 달성',icon:'🏆',check:g=>g.character.level>=30},
+  {id:'xp_10000',name:'만의 경지',desc:'총 10000 XP 획득',icon:'🌟',check:g=>g.character.total_xp>=10000},
+  {id:'weekly_clear',name:'주간 정복자',desc:'주간 XP 목표 달성',icon:'🎖️',check:g=>{
+    const weekGoal = 500 + (g.character.level - 1) * 50;
+    const now = new Date();
+    const weekStart = new Date(now); weekStart.setDate(weekStart.getDate() - weekStart.getDay()); weekStart.setHours(0,0,0,0);
+    let weekXP = 0;
+    for (let d = new Date(weekStart); d <= now; d.setDate(d.getDate() + 1)) {
+      weekXP += (g.history[d.toISOString().split('T')[0]]?.xp_earned || 0);
+    }
+    return weekXP >= weekGoal;
   }}
 ];
 
@@ -2102,12 +2116,23 @@ function renderNowNext() {
   // All done?
   if (completedCount >= totalQuests && totalQuests > 0) {
     const stage = getCharacterStage(gameData.character.level);
+    const xpEarned = gameData.history[todayKey]?.xp_earned || 0;
+    const statsGained = gameData.history[todayKey]?.stats_gained || {};
+    const totalStats = Object.values(statsGained).reduce((a,b) => a+b, 0);
+    const streakMult = getStreakMultiplier();
     container.innerHTML = `
       <div class="all-done-card">
-        <div class="all-done-icon" style="font-size:64px;animation:charIdle 2s ease-in-out infinite">${stage.emoji}</div>
-        <div class="all-done-text">오늘의 퀘스트 완료!</div>
-        <div class="all-done-sub">${totalQuests}개 퀘스트 · ${gameData.history[todayKey]?.xp_earned || 0} XP 획득</div>
-        <div style="margin-top:12px;font-size:13px;color:var(--gold);font-weight:600">${stage.title} · ${stage.desc}</div>
+        <div style="position:relative">
+          <div class="all-done-icon" style="font-size:72px;animation:charIdle 2s ease-in-out infinite;filter:drop-shadow(0 4px 20px rgba(255,215,64,.4))">${stage.emoji}</div>
+        </div>
+        <div class="all-done-text">오늘의 퀘스트 ALL CLEAR!</div>
+        <div class="all-done-sub" style="margin-top:4px">${stage.title} · ${stage.desc}</div>
+        <div style="display:flex;gap:16px;justify-content:center;margin-top:16px">
+          <div style="text-align:center"><div style="font-size:22px;font-weight:900;color:var(--gold)">${xpEarned}</div><div style="font-size:10px;color:var(--dim)">XP 획득</div></div>
+          <div style="text-align:center"><div style="font-size:22px;font-weight:900;color:var(--purple)">${totalQuests}</div><div style="font-size:10px;color:var(--dim)">퀘스트</div></div>
+          <div style="text-align:center"><div style="font-size:22px;font-weight:900;color:var(--cyan)">${totalStats}</div><div style="font-size:10px;color:var(--dim)">스탯</div></div>
+        </div>
+        ${streakMult > 1 ? `<div style="margin-top:10px;font-size:11px;color:var(--gold)">🔥 스트릭 보너스 ×${streakMult} 적용됨!</div>` : ''}
       </div>`;
     return;
   }
@@ -2157,12 +2182,12 @@ function renderNowNext() {
   // Motivational message
   const hour = new Date().getHours();
   const motivations = [];
-  if (pct === 0) motivations.push('첫 퀘스트를 시작해볼까요?');
-  else if (pct < 30) motivations.push('좋은 시작이에요! 계속 가보죠');
-  else if (pct < 50) motivations.push('절반 가까이 왔어요! 파이팅');
-  else if (pct < 70) motivations.push('절반 넘었어요! 대단해요');
-  else if (pct < 90) motivations.push('거의 다 했어요! 마지막 스퍼트');
-  else motivations.push('완벽에 가까워요! 끝까지!');
+  if (pct === 0) motivations.push('첫 퀘스트를 시작해볼까요? 🎯');
+  else if (pct < 30) motivations.push('좋은 시작이에요! 계속 가보죠 💪');
+  else if (pct < 50) motivations.push('절반 가까이 왔어요! 🔥');
+  else if (pct < 70) motivations.push('절반 넘었어요! 대단해요 ⚡');
+  else if (pct < 90) motivations.push('거의 다 했어요! 마지막 스퍼트 🏃');
+  else motivations.push('완벽에 가까워요! 끝까지! 🏆');
 
   if (comboCount >= 3) motivations.push(`${comboCount}x 콤보 유지 중!`);
 
@@ -2197,6 +2222,19 @@ function renderNowNext() {
         </div>
         <div class="next-xp">+${nextQuest.xp}</div>
       </div>
+    </div>`;
+  }
+
+  // Show last 3 completed quests as feedback
+  const recentDone = allQuests.filter(q => todayCompleted.includes(q.id)).slice(-3).reverse();
+  if (recentDone.length > 0) {
+    html += `<div style="margin-bottom:12px;padding:8px 12px;background:var(--card);border-radius:12px;opacity:.6">
+      <div style="font-size:10px;font-weight:700;color:var(--dim);margin-bottom:6px;text-transform:uppercase;letter-spacing:1px">최근 완료</div>
+      ${recentDone.map(q => `<div style="display:flex;align-items:center;gap:8px;padding:3px 0;font-size:12px">
+        <span style="color:var(--duo-green)">✓</span>
+        <span style="text-decoration:line-through;opacity:.6">${q.icon} ${q.name}</span>
+        <span style="margin-left:auto;font-size:10px;color:var(--green)">+${q.xp}</span>
+      </div>`).join('')}
     </div>`;
   }
 
