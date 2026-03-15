@@ -632,7 +632,15 @@ body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display',sans-serif;ba
   <div class="modal">
     <div class="modal-title">⚙️ 설정</div>
     <div class="settings-group">
-      <div class="settings-label">📅 iCloud 캘린더 연동</div>
+      <div class="settings-label">📅 루틴 알림 → Apple 캘린더 추가</div>
+      <div class="settings-help">
+        아래 버튼을 누르면 루틴 스케줄이 Apple 캘린더에 자동 등록됩니다.<br>
+        매일 각 퀘스트 시작 전 알림이 옵니다. (운동은 평일만)
+      </div>
+      <button class="modal-btn primary" style="width:100%;margin-top:8px" onclick="downloadRoutineICS()">📲 루틴 캘린더 추가하기</button>
+    </div>
+    <div class="settings-group">
+      <div class="settings-label">📅 iCloud 캘린더 연동 (외부)</div>
       <div class="settings-help">
         iCloud.com → 캘린더 → 공유할 캘린더 우클릭 → '공개 캘린더' 체크 → URL 복사<br>
         형식: webcal://p00-caldav.icloud.com/... 또는 https://...
@@ -2233,6 +2241,25 @@ function showSettingsModal() {
 
 function closeSettingsModal() {
   document.getElementById('settings-modal').classList.remove('show');
+}
+
+function downloadRoutineICS() {
+  fetch('alfred-routine.ics')
+    .then(r => r.blob())
+    .then(blob => {
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'alfred-routine.ics';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+      closeSettingsModal();
+    })
+    .catch(() => {
+      alert('캘린더 파일을 불러올 수 없습니다.');
+    });
 }
 
 function saveSettings() {
