@@ -170,7 +170,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','SF Pro Text'
 .streak-freeze{font-size:10px;color:var(--duo-blue);display:flex;align-items:center;gap:3px}
 
 /* Combo Multiplier */
-.combo-indicator{position:fixed;top:80px;right:16px;z-index:90;padding:6px 14px;border-radius:16px;font-size:13px;font-weight:900;opacity:0;pointer-events:none;transition:all .3s cubic-bezier(.68,-.55,.27,1.55)}
+.combo-indicator{position:fixed;top:80px;right:16px;z-index:90;padding:6px 14px;border-radius:16px;font-size:13px;font-weight:900;opacity:0;transform:scale(0.5);pointer-events:none;transition:all .3s cubic-bezier(.68,-.55,.27,1.55)}
 .combo-indicator.show{opacity:1;transform:scale(1)}
 .combo-indicator.x2{background:rgba(255,200,0,.2);color:var(--duo-yellow);border:1px solid rgba(255,200,0,.3)}
 .combo-indicator.x3{background:rgba(255,150,0,.2);color:var(--duo-orange);border:1px solid rgba(255,150,0,.3)}
@@ -213,7 +213,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','SF Pro Text'
 @keyframes questPop{0%{transform:scale(.9)}50%{transform:scale(1.05)}100%{transform:scale(1)}}
 
 /* Quest item improvements */
-.quest-item{transition:all .2s cubic-bezier(.4,0,.2,1)}
 .quest-item.done{animation:questDone .3s ease}
 @keyframes questDone{0%{transform:translateX(0)}20%{transform:translateX(8px)}40%{transform:translateX(-4px)}60%{transform:translateX(2px)}100%{transform:translateX(0)}}
 .quest-check.animating{animation:checkBounce .4s cubic-bezier(.68,-.55,.27,1.55)}
@@ -232,7 +231,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','SF Pro Text'
 .league-master{background:rgba(179,136,255,.15);color:#b388ff;border:1px solid rgba(179,136,255,.3)}
 
 /* Now card improvements */
-.now-card{transition:transform .2s}
 .now-card:active{transform:scale(.98)}
 
 /* Progress ring */
@@ -245,7 +243,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','SF Pro Text'
 .footer{text-align:center;padding:16px;font-size:11px;color:var(--dim);opacity:.5}
 
 /* Now / Next View */
-.now-card{background:var(--card);border-radius:20px;padding:20px;margin-bottom:12px;box-shadow:var(--shadow);position:relative;overflow:hidden}
+.now-card{background:var(--card);border-radius:20px;padding:20px;margin-bottom:12px;box-shadow:var(--shadow);position:relative;overflow:hidden;transition:transform .2s,border-color .3s;border:1px solid transparent}
 .now-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--purple),var(--blue))}
 .now-card.completed-card::before{background:var(--duo-green)}
 .now-label{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--purple);margin-bottom:12px}
@@ -623,7 +621,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','SF Pro Text'
 .quest-item.done .quest-check{box-shadow:0 2px 12px rgba(88,204,2,.35)}
 
 /* Now card pulse border */
-.now-card{border:1px solid transparent;transition:border-color .3s}
 .now-card:has(.now-quest:active){border-color:rgba(179,136,255,.3)}
 
 /* Streak milestone celebration */
@@ -1656,7 +1653,7 @@ function getDefaultData() {
         {id:"star_power",name:"스타 파워",desc:"매력 관련 XP +30%",icon:"⭐",level:0,max_level:5,unlocked:false,req:{chr:15}},
         {id:"ceo_mind",name:"CEO 마인드",desc:"사업 퀘스트 XP 2배",icon:"👑",level:0,max_level:5,unlocked:false,req:{biz:20}}
       ],
-      streak:0,best_streak:0,last_completed_date:null
+      streak:0,best_streak:0,last_completed_date:null,grace_used_week:null,streak_freezes:0
     },
     quests:{
       morning:[
@@ -1837,7 +1834,10 @@ function toggleQuest(questId, e) {
     hapticFeedback('medium');
     const comboMult = addCombo();
     const streakMult = getStreakMultiplier();
-    addXP(Math.round(quest.xp * comboMult), questId, e);
+    const actualXP = addXP(Math.round(quest.xp * comboMult), questId, e);
+    // Store actual XP awarded for accurate undo
+    if (!gameData.history[todayKey]._xpAwarded) gameData.history[todayKey]._xpAwarded = {};
+    gameData.history[todayKey]._xpAwarded[questId] = actualXP;
     addStats(quest.stats, e);
     playSound('complete');
     screenFlash('green');
@@ -1852,7 +1852,22 @@ function toggleQuest(questId, e) {
   } else {
     // Uncomplete quest
     todayCompleted.splice(idx, 1);
-    removeXP(quest.xp);
+    // Use stored actual XP if available, otherwise fall back to base
+    const storedXP = gameData.history[todayKey]._xpAwarded?.[questId];
+    if (storedXP) {
+      gameData.character.xp -= storedXP;
+      gameData.character.total_xp -= storedXP;
+      gameData.history[todayKey].xp_earned = (gameData.history[todayKey].xp_earned||0) - storedXP;
+      while (gameData.character.xp < 0 && gameData.character.level > 1) {
+        gameData.character.level--;
+        gameData.character.xp += xpForLevel(gameData.character.level);
+      }
+      if (gameData.character.xp < 0) gameData.character.xp = 0;
+      if (gameData.character.total_xp < 0) gameData.character.total_xp = 0;
+      delete gameData.history[todayKey]._xpAwarded[questId];
+    } else {
+      removeXP(quest.xp);
+    }
     removeStats(quest.stats);
     comboCount = 0;
     updateComboDisplay();
@@ -2272,12 +2287,12 @@ function renderNowNext() {
     html += `<div class="now-card ${timeActive ? 'time-active' : ''}">
       <div class="now-label">${timeActive ? '🟢 지금 시간!' : '지금 할 일'} <span style="float:right;font-size:10px;color:var(--dim);text-transform:none;letter-spacing:0">${motivations[0]}</span></div>
       <div class="now-quest" onclick="toggleQuest('${currentQuest.id}',event)">
-        <div class="now-icon">${currentQuest.icon}</div>
+        <div class="now-icon">${escapeHTML(currentQuest.icon)}</div>
         <div class="now-info">
-          <div class="now-name">${currentQuest.name}</div>
-          <div class="now-desc">${currentQuest.desc}</div>
-          ${currentQuest.start ? `<div class="now-start">⚡ ${currentQuest.start}</div>` : ''}
-          ${currentQuest.time ? `<div class="now-time">🕐 ${currentQuest.time}</div>` : ''}
+          <div class="now-name">${escapeHTML(currentQuest.name)}</div>
+          <div class="now-desc">${escapeHTML(currentQuest.desc)}</div>
+          ${currentQuest.start ? `<div class="now-start">⚡ ${escapeHTML(currentQuest.start)}</div>` : ''}
+          ${currentQuest.time ? `<div class="now-time">🕐 ${escapeHTML(currentQuest.time)}</div>` : ''}
         </div>
         <div class="now-xp">+${currentQuest.xp}${bonusXP}</div>
       </div>
@@ -2289,10 +2304,10 @@ function renderNowNext() {
     html += `<div class="next-card" style="cursor:pointer" onclick="toggleQuest('${nextQuest.id}',event)">
       <div class="next-label">다음</div>
       <div class="next-quest">
-        <div class="next-icon">${nextQuest.icon}</div>
+        <div class="next-icon">${escapeHTML(nextQuest.icon)}</div>
         <div class="next-info">
-          <div class="next-name">${nextQuest.name}</div>
-          ${nextQuest.time ? `<div class="next-time">🕐 ${nextQuest.time}</div>` : ''}
+          <div class="next-name">${escapeHTML(nextQuest.name)}</div>
+          ${nextQuest.time ? `<div class="next-time">🕐 ${escapeHTML(nextQuest.time)}</div>` : ''}
         </div>
         <div class="next-xp">+${nextQuest.xp}</div>
       </div>
@@ -2306,7 +2321,7 @@ function renderNowNext() {
       <div style="font-size:10px;font-weight:700;color:var(--dim);margin-bottom:6px;text-transform:uppercase;letter-spacing:1px">최근 완료</div>
       ${recentDone.map(q => `<div style="display:flex;align-items:center;gap:8px;padding:3px 0;font-size:12px">
         <span style="color:var(--duo-green)">✓</span>
-        <span style="text-decoration:line-through;opacity:.6">${q.icon} ${q.name}</span>
+        <span style="text-decoration:line-through;opacity:.6">${escapeHTML(q.icon)} ${escapeHTML(q.name)}</span>
         <span style="margin-left:auto;font-size:10px;color:var(--green)">+${q.xp}</span>
       </div>`).join('')}
     </div>`;
@@ -2505,10 +2520,10 @@ function renderQuests() {
         return `<div class="quest-item ${done?'done':''}" onclick="toggleQuest('${q.id}',event)">
           <div class="quest-check">${done?'✓':''}</div>
           <div class="quest-info">
-            <div class="quest-name">${q.icon} ${q.name} <span class="quest-difficulty">${diffDots}</span></div>
-            <div class="quest-desc">${q.desc}</div>
-            ${q.time ? `<div class="quest-time-hint"><span class="time-block ${timeHint.cls}">🕐 ${q.time}</span>${timeHint.label}</div>` : ''}
-            ${q.start && !done ? `<div style="font-size:10px;color:var(--gold);margin-top:1px">⚡ 2분룰: ${q.start}</div>` : ''}
+            <div class="quest-name">${escapeHTML(q.icon)} ${escapeHTML(q.name)} <span class="quest-difficulty">${diffDots}</span></div>
+            <div class="quest-desc">${escapeHTML(q.desc)}</div>
+            ${q.time ? `<div class="quest-time-hint"><span class="time-block ${timeHint.cls}">🕐 ${escapeHTML(q.time)}</span>${timeHint.label}</div>` : ''}
+            ${q.start && !done ? `<div style="font-size:10px;color:var(--gold);margin-top:1px">⚡ 2분룰: ${escapeHTML(q.start)}</div>` : ''}
             <div class="quest-stats-gain">${statsText}</div>
           </div>
           <div class="quest-xp mono">${done?'✓':''} +${q.xp}</div>
@@ -2630,11 +2645,18 @@ function showLevelUp() {
   overlay.classList.add('show');
   hapticFeedback('heavy');
   playSound('levelup');
-  setTimeout(() => overlay.classList.remove('show'), 3500);
+  if (window._levelUpTimeout) clearTimeout(window._levelUpTimeout);
+  window._levelUpTimeout = setTimeout(() => {
+    overlay.classList.remove('show');
+    confettiEl.innerHTML = '';
+  }, 3500);
 }
 
 function hideLevelUp() {
-  document.getElementById('levelup-overlay').classList.remove('show');
+  if (window._levelUpTimeout) clearTimeout(window._levelUpTimeout);
+  const overlay = document.getElementById('levelup-overlay');
+  overlay.classList.remove('show');
+  document.getElementById('levelup-confetti').innerHTML = '';
 }
 
 // ===== BONUS: All quests done today check =====
@@ -2692,8 +2714,9 @@ function renderSongs() {
     return;
   }
   list.innerHTML = songs.map((song, idx) => {
-    const doneParts = song.parts.filter(p => p.done).length;
-    const totalParts = song.parts.length;
+    const parts = song.parts || [];
+    const doneParts = parts.filter(p => p.done).length;
+    const totalParts = parts.length;
     const pct = totalParts > 0 ? Math.round(doneParts / totalParts * 100) : 0;
     const isDone = pct === 100;
     return `<div class="song-card">
@@ -3304,12 +3327,16 @@ function toggleFocusTimer() {
     document.getElementById('focus-session-label').textContent =
       focusTimer.isBreak ? '☕ 휴식 중' : '🔥 집중 중';
 
+    focusTimer._lastTick = Date.now();
     focusTimer.interval = setInterval(() => {
+      const now = Date.now();
+      const elapsed = Math.round((now - focusTimer._lastTick) / 1000);
+      focusTimer._lastTick = now;
       if (focusTimer.mode === 'free') {
-        focusTimer.remaining++;
+        focusTimer.remaining += elapsed;
         focusTimer.total = focusTimer.remaining;
       } else {
-        focusTimer.remaining--;
+        focusTimer.remaining -= elapsed;
       }
       updateFocusDisplay();
 
@@ -4187,15 +4214,16 @@ checkAIReminder();
 // Auto-save every 30s
 setInterval(saveData, 30000);
 
-// Check for day change
+// Check for day change + update daily challenge timer every minute
 setInterval(() => {
   const newKey = new Date().toISOString().split('T')[0];
   if (newKey !== todayKey) {
     todayKey = newKey;
     checkDayReset();
-    // checkDayReset already sets todayCompleted from history, don't override
     renderAll();
   }
+  // Live-update daily challenge timer
+  renderDailyChallenge();
 }, 60000);
 
 // Refresh iCal every 10 minutes
