@@ -85,7 +85,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','SF Pro Text'
 .quest-chevron.open{transform:rotate(180deg)}
 .quest-list{padding:0 14px 14px}
 .quest-list.collapsed{display:none}
-.quest-item{display:flex;align-items:center;gap:12px;padding:12px 10px;border-radius:12px;cursor:pointer;transition:all .15s;position:relative;user-select:none}
+.quest-item{display:flex;align-items:center;gap:12px;padding:12px 10px;border-radius:12px;cursor:pointer;transition:all .2s cubic-bezier(.4,0,.2,1);position:relative;user-select:none;border-left:3px solid transparent}
 .quest-item:active{transform:scale(.98)}
 .quest-item.done{background:var(--quest-done)}
 .quest-check{width:24px;height:24px;border:2px solid rgba(255,255,255,.15);border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .2s;font-size:13px}
@@ -552,6 +552,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','SF Pro Text'
   </div>
   <div class="hdr-right">
     <span class="hdr-level" id="hdr-level">Lv.1</span>
+    <span id="hdr-streak" style="font-size:12px;font-weight:700;color:var(--gold)"></span>
     <button class="settings-btn" onclick="showSettingsModal()">⚙️</button>
     <a href="index.html" class="hdr-link">📊 Trading</a>
   </div>
@@ -627,11 +628,11 @@ body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','SF Pro Text'
   <!-- Tab Navigation -->
   <div class="tab-nav">
     <button class="tab-btn active" onclick="switchTab('quests',this)">⚔️ 퀘스트</button>
-    <button class="tab-btn" onclick="switchTab('focus',this)">🎯 포커스</button>
+    <button class="tab-btn" onclick="switchTab('focus',this)">🎯 집중</button>
     <button class="tab-btn" onclick="switchTab('calendar',this)">📅 캘린더</button>
     <button class="tab-btn" onclick="switchTab('music',this)">🎵 작업</button>
     <button class="tab-btn" onclick="switchTab('notes',this)">📝 노트</button>
-    <button class="tab-btn" onclick="switchTab('report',this)">📊 리포트</button>
+    <button class="tab-btn" onclick="switchTab('report',this)">🏆 업적</button>
   </div>
 
   <!-- Tab: Quests (default) -->
@@ -1191,7 +1192,13 @@ const ACHIEVEMENTS = [
   }}
 ];
 
+let _lastAchievementCheck = 0;
 function checkAchievements() {
+  // Throttle: max once per 2 seconds
+  const now = Date.now();
+  if (now - _lastAchievementCheck < 2000) return;
+  _lastAchievementCheck = now;
+
   if (!gameData._achievements) gameData._achievements = [];
   const unlocked = gameData._achievements;
 
@@ -1205,6 +1212,7 @@ function checkAchievements() {
         gameData.character.xp += 30;
         gameData.character.total_xp += 30;
         playSound('achievement');
+        saveData();
       }
     } catch(e) {}
   }
@@ -1853,10 +1861,24 @@ function renderNowNext() {
     </div>
   </div>`;
 
+  // Motivational message
+  const hour = new Date().getHours();
+  const motivations = [];
+  if (pct === 0) motivations.push('첫 퀘스트를 시작해볼까요?');
+  else if (pct < 30) motivations.push('좋은 시작이에요! 계속 가보죠');
+  else if (pct < 50) motivations.push('절반 가까이 왔어요! 파이팅');
+  else if (pct < 70) motivations.push('절반 넘었어요! 대단해요');
+  else if (pct < 90) motivations.push('거의 다 했어요! 마지막 스퍼트');
+  else motivations.push('완벽에 가까워요! 끝까지!');
+
+  if (comboCount >= 3) motivations.push(`${comboCount}x 콤보 유지 중!`);
+
   // Current quest card
   if (currentQuest) {
+    const comboMult = getComboMultiplier();
+    const bonusXP = comboMult > 1 ? ` (x${comboMult})` : '';
     html += `<div class="now-card">
-      <div class="now-label">지금 할 일</div>
+      <div class="now-label">지금 할 일 <span style="float:right;font-size:10px;color:var(--dim);text-transform:none;letter-spacing:0">${motivations[0]}</span></div>
       <div class="now-quest" onclick="toggleQuest('${currentQuest.id}',event)">
         <div class="now-icon">${currentQuest.icon}</div>
         <div class="now-info">
@@ -1865,7 +1887,7 @@ function renderNowNext() {
           ${currentQuest.start ? `<div class="now-start">⚡ ${currentQuest.start}</div>` : ''}
           ${currentQuest.time ? `<div class="now-time">🕐 ${currentQuest.time}</div>` : ''}
         </div>
-        <div class="now-xp">+${currentQuest.xp}</div>
+        <div class="now-xp">+${currentQuest.xp}${bonusXP}</div>
       </div>
     </div>`;
   }
@@ -1899,7 +1921,14 @@ function toggleFullQuests() {
 }
 
 function renderHeader() {
-  document.getElementById('hdr-level').textContent = `Lv.${gameData.character.level}`;
+  const league = getLeague(gameData.character.level);
+  document.getElementById('hdr-level').textContent = `${league.icon} Lv.${gameData.character.level}`;
+  const streakEl = document.getElementById('hdr-streak');
+  if (streakEl && gameData.character.streak > 0) {
+    streakEl.textContent = `🔥${gameData.character.streak}`;
+  } else if (streakEl) {
+    streakEl.textContent = '';
+  }
 }
 
 function renderXP() {
