@@ -85,7 +85,8 @@ body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','SF Pro Text'
 .quest-chevron.open{transform:rotate(180deg)}
 .quest-list{padding:0 14px 14px}
 .quest-list.collapsed{display:none}
-.quest-item{display:flex;align-items:center;gap:12px;padding:12px 10px;border-radius:12px;cursor:pointer;transition:all .2s cubic-bezier(.4,0,.2,1);position:relative;user-select:none;border-left:3px solid transparent}
+.quest-item{display:flex;align-items:center;gap:12px;padding:12px 10px;border-radius:12px;cursor:pointer;transition:all .25s cubic-bezier(.4,0,.2,1);position:relative;user-select:none;border-left:3px solid transparent}
+.quest-item:hover{background:rgba(255,255,255,.02)}
 .quest-item:active{transform:scale(.98)}
 .quest-item.done{background:var(--quest-done)}
 .quest-check{width:24px;height:24px;border:2px solid rgba(255,255,255,.15);border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .2s;font-size:13px}
@@ -327,8 +328,9 @@ body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','SF Pro Text'
 .tab-btn{font-size:10px;padding:4px 2px;border-radius:0;border:none;background:none;color:var(--dim);cursor:pointer;white-space:nowrap;font-weight:600;display:flex;flex-direction:column;align-items:center;gap:2px;flex:1;transition:color .15s}
 .tab-btn.active{color:var(--purple)}
 .tab-btn:active{opacity:.7}
-.tab-content{display:none}
+.tab-content{display:none;animation:tabFadeIn .25s ease}
 .tab-content.active{display:block}
+@keyframes tabFadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
 
 /* Report Section */
 .report-section{background:var(--card);border-radius:16px;padding:16px;margin-bottom:16px;box-shadow:var(--shadow)}
@@ -580,6 +582,40 @@ body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','SF Pro Text'
 /* Improved tab scrollbar */
 .tab-nav::-webkit-scrollbar{display:none}
 .tab-nav{-ms-overflow-style:none;scrollbar-width:none}
+
+/* Category colored borders */
+.quest-section[data-cat="morning"] .quest-item{border-left-color:rgba(255,215,64,.4)}
+.quest-section[data-cat="studio"] .quest-item{border-left-color:rgba(179,136,255,.4)}
+.quest-section[data-cat="recovery"] .quest-item{border-left-color:rgba(24,255,255,.4)}
+.quest-section[data-cat="exercise"] .quest-item{border-left-color:rgba(255,82,82,.4)}
+.quest-section[data-cat="evening_work"] .quest-item{border-left-color:rgba(68,138,255,.4)}
+.quest-section[data-cat="home"] .quest-item{border-left-color:rgba(105,240,174,.4)}
+.quest-item.done{border-left-color:rgba(88,204,2,.5)!important}
+
+/* Streak Freeze */
+.freeze-shop{background:linear-gradient(135deg,rgba(28,176,246,.08),rgba(124,77,255,.08));border:1px solid rgba(28,176,246,.2);border-radius:14px;padding:14px;margin-bottom:12px;text-align:center}
+.freeze-shop-title{font-size:12px;font-weight:700;color:var(--duo-blue);margin-bottom:6px;display:flex;align-items:center;justify-content:center;gap:6px}
+.freeze-shop-desc{font-size:11px;color:var(--dim);margin-bottom:10px;line-height:1.5}
+.freeze-btn{padding:10px 20px;border-radius:10px;border:none;font-size:13px;font-weight:700;cursor:pointer;background:var(--duo-blue);color:#fff;transition:all .15s}
+.freeze-btn:active{transform:scale(.95);opacity:.8}
+.freeze-btn:disabled{opacity:.4;cursor:not-allowed}
+.freeze-inventory{display:flex;align-items:center;justify-content:center;gap:4px;margin-top:8px;font-size:12px;color:var(--dim)}
+
+/* Skill point badge */
+.sp-badge{display:inline-flex;align-items:center;gap:3px;font-size:11px;color:var(--purple);font-weight:700;padding:2px 8px;background:rgba(179,136,255,.1);border-radius:10px;margin-left:8px}
+
+/* Quest item done green glow enhancement */
+.quest-item.done .quest-check{box-shadow:0 2px 12px rgba(88,204,2,.35)}
+
+/* Now card pulse border */
+.now-card{border:1px solid transparent;transition:border-color .3s}
+.now-card:has(.now-quest:active){border-color:rgba(179,136,255,.3)}
+
+/* Header progress mini dots */
+.hdr-progress{display:flex;gap:2px;align-items:center}
+.hdr-dot{width:4px;height:4px;border-radius:50%;background:rgba(255,255,255,.15);transition:background .2s}
+.hdr-dot.done{background:var(--duo-green)}
+.hdr-dot.current{background:var(--gold);box-shadow:0 0 4px var(--gold)}
 </style>
 </head>
 <body>
@@ -628,6 +664,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','SF Pro Text'
       <span class="streak-fire" id="streak-fire"></span>
       <span class="streak-count" id="streak-count">0</span>
       <span class="streak-label">일 연속</span>
+      <span class="streak-freeze" id="streak-freeze-display"></span>
     </div>
   </div>
 
@@ -678,6 +715,14 @@ body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','SF Pro Text'
   <div class="tab-content active" id="tab-quests">
     <!-- Now / Next minimal view -->
     <div id="now-next-view"></div>
+
+    <!-- Streak Freeze Shop -->
+    <div class="freeze-shop" id="freeze-shop" style="display:none">
+      <div class="freeze-shop-title">🛡️ 스트릭 프리즈 상점</div>
+      <div class="freeze-shop-desc">스킬 포인트로 스트릭 보호권을 구매하세요!<br>하루 빠져도 스트릭이 유지됩니다</div>
+      <button class="freeze-btn" id="freeze-buy-btn" onclick="buyStreakFreeze()">🛡️ 구매 (2 SP)</button>
+      <div class="freeze-inventory" id="freeze-inventory"></div>
+    </div>
 
     <!-- Weekly Goal -->
     <div class="weekly-goal" id="weekly-goal">
@@ -960,7 +1005,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','SF Pro Text'
     <span id="sync-indicator" style="font-size:11px;color:var(--dim)"></span>
   </div>
 
-  <div class="footer">Alfred Quest v3.0 · Gamified Routine · Character Evolution · Daily Challenges</div>
+  <div class="footer">Alfred Quest v3.6 · Gamified Routine · Character Evolution · Streak Freeze</div>
 </div>
 
 <!-- Song Modal -->
@@ -1592,21 +1637,28 @@ function getDefaultData() {
 function checkDayReset() {
   const last = gameData.character.last_completed_date;
   if (last && last !== todayKey) {
-    // Check streak with grace day system (Duolingo research: 1 grace day/week)
+    // Check streak with grace day + streak freeze system
     const lastDate = new Date(last);
     const today = new Date(todayKey);
     const diff = Math.floor((today - lastDate) / 86400000);
     if (diff > 2) {
-      // More than 2 days gap = streak broken (no grace)
-      gameData.character.streak = 0;
+      // More than 2 days gap - check freezes
+      const freezes = gameData.character.streak_freezes || 0;
+      if (freezes >= diff - 1) {
+        gameData.character.streak_freezes -= (diff - 1);
+        console.log(`[Streak] ${diff-1} freeze(s) used - streak preserved!`);
+      } else {
+        gameData.character.streak = 0;
+      }
     } else if (diff === 2) {
-      // 1 day missed - use grace day if available this week
+      // 1 day missed - use grace day or freeze
       if (!gameData.character.grace_used_week || getWeekKey() !== gameData.character.grace_used_week) {
-        // Grace day available! Keep streak but mark as used
         gameData.character.grace_used_week = getWeekKey();
         console.log('[Streak] Grace day used - streak preserved!');
+      } else if (gameData.character.streak_freezes > 0) {
+        gameData.character.streak_freezes--;
+        console.log('[Streak] Freeze used - streak preserved!');
       } else {
-        // Already used grace this week
         gameData.character.streak = 0;
       }
     }
@@ -1810,6 +1862,49 @@ function checkSkillUnlocks() {
   }
 }
 
+// ===== STREAK FREEZE SHOP =====
+function buyStreakFreeze() {
+  if (gameData.character.skill_points < 2) {
+    showAchievementToast({icon:'❌', name:'스킬 포인트 부족!', desc:'레벨업으로 SP를 모으세요'});
+    return;
+  }
+  gameData.character.skill_points -= 2;
+  if (!gameData.character.streak_freezes) gameData.character.streak_freezes = 0;
+  gameData.character.streak_freezes++;
+  playSound('achievement');
+  hapticFeedback('medium');
+  showAchievementToast({icon:'🛡️', name:'스트릭 프리즈 획득!', desc:`보유: ${gameData.character.streak_freezes}개`});
+  saveData();
+  renderStreakFreezeShop();
+}
+
+function renderStreakFreezeShop() {
+  const shop = document.getElementById('freeze-shop');
+  if (!shop) return;
+  const sp = gameData.character.skill_points || 0;
+  const freezes = gameData.character.streak_freezes || 0;
+
+  // Show shop if player has SP or freezes
+  if (sp > 0 || freezes > 0) {
+    shop.style.display = 'block';
+  } else {
+    shop.style.display = 'none';
+    return;
+  }
+
+  const btn = document.getElementById('freeze-buy-btn');
+  if (btn) {
+    btn.disabled = sp < 2;
+    btn.textContent = `🛡️ 구매 (2 SP) · 보유: ${sp} SP`;
+  }
+  const inv = document.getElementById('freeze-inventory');
+  if (inv) {
+    inv.innerHTML = freezes > 0
+      ? `${'🛡️'.repeat(Math.min(freezes, 10))} <span style="color:var(--duo-blue);font-weight:700">${freezes}개 보유</span>`
+      : '<span style="color:var(--dim)">보유한 프리즈가 없습니다</span>';
+  }
+}
+
 // ===== RENDER =====
 function renderAll() {
   renderHeader();
@@ -1817,6 +1912,7 @@ function renderAll() {
   renderXP();
   renderNowNext();
   renderDailyChallenge();
+  renderStreakFreezeShop();
   renderWeeklyGoal();
   renderBattleStats();
   renderQuoteMini();
@@ -1977,6 +2073,13 @@ function renderCharacter() {
     fire.textContent = '❄️';
     count.textContent = '0';
   }
+
+  // Freeze shields
+  const freezeDisplay = document.getElementById('streak-freeze-display');
+  if (freezeDisplay) {
+    const freezes = c.streak_freezes || 0;
+    freezeDisplay.innerHTML = freezes > 0 ? `🛡️ ×${freezes}` : '';
+  }
 }
 
 function getAllQuestsFlat() {
@@ -2118,6 +2221,21 @@ function renderHeader() {
     streakEl.textContent = `🔥${gameData.character.streak}`;
   } else if (streakEl) {
     streakEl.textContent = '';
+  }
+
+  // Show SP badge if has skill points
+  const sp = gameData.character.skill_points || 0;
+  let spEl = document.getElementById('hdr-sp');
+  if (sp > 0) {
+    if (!spEl) {
+      spEl = document.createElement('span');
+      spEl.id = 'hdr-sp';
+      spEl.className = 'sp-badge';
+      document.querySelector('.hdr-right').insertBefore(spEl, document.querySelector('.settings-btn'));
+    }
+    spEl.textContent = `⭐ ${sp} SP`;
+  } else if (spEl) {
+    spEl.remove();
   }
 }
 
@@ -2283,7 +2401,7 @@ function renderQuests() {
       }).join('');
     }
 
-    return `<div class="quest-section">
+    return `<div class="quest-section" data-cat="${catKey}">
       <div class="quest-header" onclick="toggleSection(this)">
         <div class="quest-cat">${catCfg.icon} ${catCfg.name} <span style="font-size:11px;color:var(--dim);font-weight:400">${catCfg.subtitle}</span></div>
         <div class="quest-progress">
