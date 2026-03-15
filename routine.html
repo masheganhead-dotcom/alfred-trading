@@ -666,6 +666,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','SF Pro Text'
       <span class="streak-label">일 연속</span>
       <span class="streak-freeze" id="streak-freeze-display"></span>
     </div>
+    <div id="streak-calendar" style="display:flex;gap:2px;padding:8px 20px 0;max-width:260px;margin:0 auto"></div>
   </div>
 
   <!-- Daily Challenge -->
@@ -1060,6 +1061,15 @@ body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','SF Pro Text'
     <div class="settings-group">
       <div class="settings-label">👤 캐릭터 이름</div>
       <input id="settings-char-name" placeholder="이름">
+    </div>
+    <div class="settings-group">
+      <div class="settings-label">💾 데이터 관리</div>
+      <div style="display:flex;gap:8px">
+        <button class="modal-btn cancel" style="flex:1;font-size:11px" onclick="exportData()">📤 내보내기</button>
+        <button class="modal-btn cancel" style="flex:1;font-size:11px" onclick="document.getElementById('import-file').click()">📥 가져오기</button>
+        <input type="file" id="import-file" accept=".json" style="display:none" onchange="importData(event)">
+      </div>
+      <div style="font-size:10px;color:var(--dim);margin-top:6px">JSON 파일로 데이터를 백업하거나 복원할 수 있습니다</div>
     </div>
     <div class="modal-btns">
       <button class="modal-btn cancel" onclick="closeSettingsModal()">취소</button>
@@ -1923,6 +1933,7 @@ function renderStreakFreezeShop() {
 function renderAll() {
   renderHeader();
   renderCharacter();
+  renderStreakCalendar();
   renderXP();
   renderNowNext();
   renderDailyChallenge();
@@ -3917,6 +3928,86 @@ function renderEvolutionTimeline() {
       ${reached ? '<span style="font-size:14px;color:var(--green)">✓</span>' : '<span style="font-size:10px;color:var(--dim)">🔒</span>'}
     </div>`;
   }).join('');
+}
+
+// ===== DATA EXPORT/IMPORT =====
+function exportData() {
+  const blob = new Blob([JSON.stringify(gameData, null, 2)], {type:'application/json'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `alfred-quest-backup-${todayKey}.json`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+  showAchievementToast({icon:'💾', name:'백업 완료!', desc:`${todayKey} 데이터 저장됨`});
+}
+
+function importData(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    try {
+      const data = JSON.parse(e.target.result);
+      if (!data.character || !data.quests) {
+        alert('유효하지 않은 Alfred Quest 데이터 파일입니다.');
+        return;
+      }
+      if (!confirm('현재 데이터를 가져온 데이터로 교체하시겠습니까?\n(현재 데이터는 덮어씁니다)')) return;
+      gameData = data;
+      todayCompleted = (gameData.history[todayKey]?.completed) || [];
+      saveData();
+      renderAll();
+      showAchievementToast({icon:'📥', name:'데이터 복원 완료!', desc:'게임 데이터가 복원되었습니다'});
+      closeSettingsModal();
+    } catch (err) {
+      alert('파일을 읽을 수 없습니다: ' + err.message);
+    }
+  };
+  reader.readAsText(file);
+  event.target.value = '';
+}
+
+// ===== STREAK MINI CALENDAR (last 7 days in character section) =====
+function renderStreakCalendar() {
+  const container = document.getElementById('streak-calendar');
+  if (!container) return;
+  const now = new Date();
+  let html = '';
+  for (let i = 6; i >= 0; i--) {
+    const d = new Date(now);
+    d.setDate(d.getDate() - i);
+    const key = d.toISOString().split('T')[0];
+    const hist = gameData.history[key];
+    const dayLabel = DAYS_KO[d.getDay()];
+    const isToday = i === 0;
+
+    let status = 'empty'; // no data
+    if (hist && hist.completed && hist.completed.length > 0) {
+      const dayOfWeek = d.getDay();
+      const isRest = gameData.settings.exercise_rest_days.includes(dayOfWeek);
+      let total = 0;
+      for (const [cat, quests] of Object.entries(gameData.quests)) {
+        if (cat === 'exercise' && isRest) continue;
+        total += quests.length;
+      }
+      const rate = total > 0 ? hist.completed.length / total : 0;
+      if (rate >= 0.9) status = 'full';
+      else if (rate >= 0.3) status = 'partial';
+    }
+
+    const bgColors = {full:'rgba(88,204,2,.3)', partial:'rgba(255,215,64,.2)', empty:'rgba(255,255,255,.04)'};
+    const borderStyle = isToday ? 'border:1px solid var(--gold)' : '';
+    html += `<div style="text-align:center;flex:1">
+      <div style="font-size:9px;color:var(--dim);margin-bottom:3px">${dayLabel}</div>
+      <div style="width:28px;height:28px;border-radius:6px;background:${bgColors[status]};display:flex;align-items:center;justify-content:center;margin:0 auto;font-size:12px;${borderStyle}">
+        ${status === 'full' ? '✓' : status === 'partial' ? '·' : ''}
+      </div>
+    </div>`;
+  }
+  container.innerHTML = html;
 }
 
 // Handle enter key in note input
