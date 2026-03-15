@@ -696,40 +696,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','SF Pro Text'
   <div id="daily-quote" style="display:none"><div id="quote-text"></div><div id="quote-author"></div></div>
   <div id="energy-section" style="display:none"><div id="energy-dots"></div><div id="energy-history"></div></div>
 
-  <!-- Character Avatar -->
-  <div class="char-section" id="char-section">
-    <div class="char-avatar-wrap">
-      <div class="char-glow"></div>
-      <div class="char-avatar" id="char-avatar" onclick="pokeCharacter()"></div>
-    </div>
-    <div class="char-name" id="char-name-display">Alfred</div>
-    <div class="char-title" id="char-title"></div>
-    <div class="char-level-badge" id="char-level-badge">Lv.1</div>
-    <div class="char-today-xp" id="char-today-xp"></div>
-    <div class="xp-inline">
-      <div class="xp-bar-duo"><div class="xp-bar-duo-fill" id="xp-bar-duo" style="width:0%"></div></div>
-      <div class="xp-bar-label"><span id="xp-duo-text">0 XP</span><span id="xp-duo-need">100 XP</span></div>
-    </div>
-    <div class="streak-duo" id="streak-duo">
-      <span class="streak-fire" id="streak-fire"></span>
-      <span class="streak-count" id="streak-count">0</span>
-      <span class="streak-label">일 연속</span>
-      <span class="streak-freeze" id="streak-freeze-display"></span>
-    </div>
-    <div id="streak-calendar" style="display:flex;gap:2px;padding:8px 20px 0;max-width:260px;margin:0 auto"></div>
-  </div>
-
-  <!-- Daily Challenge -->
-  <div class="daily-challenge" id="daily-challenge" style="display:none">
-    <div class="dc-header">
-      <span class="dc-badge" id="dc-badge">DAILY CHALLENGE</span>
-      <span class="dc-timer" id="dc-timer"></span>
-    </div>
-    <div class="dc-task" id="dc-task"></div>
-    <div class="dc-reward" id="dc-reward"></div>
-    <div class="dc-progress-bar"><div class="dc-progress-fill" id="dc-progress"></div></div>
-  </div>
-
   <!-- AI Reminder Banner -->
   <div class="reminder-banner" id="ai-reminder">
     <div class="reminder-title">🤖 AI 작업 점검 시간!</div>
@@ -799,6 +765,40 @@ body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','SF Pro Text'
     <button class="show-all-btn" id="show-all-btn" onclick="toggleFullQuests()">📜 전체 목록 ▼</button>
     <div id="quests-container" style="display:none"></div>
     <div id="skills-grid" style="display:none"></div>
+
+    <!-- Daily Challenge -->
+    <div class="daily-challenge" id="daily-challenge" style="display:none">
+      <div class="dc-header">
+        <span class="dc-badge" id="dc-badge">DAILY CHALLENGE</span>
+        <span class="dc-timer" id="dc-timer"></span>
+      </div>
+      <div class="dc-task" id="dc-task"></div>
+      <div class="dc-reward" id="dc-reward"></div>
+      <div class="dc-progress-bar"><div class="dc-progress-fill" id="dc-progress"></div></div>
+    </div>
+
+    <!-- Character Avatar (below quests) -->
+    <div class="char-section" id="char-section">
+      <div class="char-avatar-wrap">
+        <div class="char-glow"></div>
+        <div class="char-avatar" id="char-avatar" onclick="pokeCharacter()"></div>
+      </div>
+      <div class="char-name" id="char-name-display">Alfred</div>
+      <div class="char-title" id="char-title"></div>
+      <div class="char-level-badge" id="char-level-badge">Lv.1</div>
+      <div class="char-today-xp" id="char-today-xp"></div>
+      <div class="xp-inline">
+        <div class="xp-bar-duo"><div class="xp-bar-duo-fill" id="xp-bar-duo" style="width:0%"></div></div>
+        <div class="xp-bar-label"><span id="xp-duo-text">0 XP</span><span id="xp-duo-need">100 XP</span></div>
+      </div>
+      <div class="streak-duo" id="streak-duo">
+        <span class="streak-fire" id="streak-fire"></span>
+        <span class="streak-count" id="streak-count">0</span>
+        <span class="streak-label">일 연속</span>
+        <span class="streak-freeze" id="streak-freeze-display"></span>
+      </div>
+      <div id="streak-calendar" style="display:flex;gap:2px;padding:8px 20px 0;max-width:260px;margin:0 auto"></div>
+    </div>
   </div>
 
   <!-- Tab: Focus Timer -->
