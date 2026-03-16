@@ -1,10 +1,12 @@
 BEGIN:VCALENDAR
 VERSION:2.0
-PRODID:-//Alfred Quest System//Daily Routine//KO
+PRODID:-//Alfred//Daily Routine//KO
 CALSCALE:GREGORIAN
 METHOD:PUBLISH
-X-WR-CALNAME:Alfred Daily Routine
+X-WR-CALNAME:Ai
 X-WR-TIMEZONE:Asia/Seoul
+REFRESH-INTERVAL;VALUE=DURATION:PT6H
+X-PUBLISHED-TTL:PT6H
 BEGIN:VTIMEZONE
 TZID:Asia/Seoul
 BEGIN:STANDARD
@@ -15,11 +17,12 @@ TZNAME:KST
 END:STANDARD
 END:VTIMEZONE
 BEGIN:VEVENT
+UID:alfred-sunlight@routine
 DTSTART;TZID=Asia/Seoul:20260316T070000
 DTEND;TZID=Asia/Seoul:20260316T073000
 RRULE:FREQ=DAILY
 SUMMARY:☀️ 햇빛 쬐기
-DESCRIPTION:기상 후 1시간 내 10-30분 야외 햇빛 (Huberman 프로토콜)\n🎯 시작: 현관문 열기\n⚡ XP: 15 | 💪STR +1 🔥GRT +1
+DESCRIPTION:기상 후 1시간 내 10-30분 야외 햇빛 (Huberman 프로토콜)\n🎯 시작: 현관문 열기
 BEGIN:VALARM
 TRIGGER:-PT5M
 ACTION:DISPLAY
@@ -27,11 +30,12 @@ DESCRIPTION:☀️ 햇빛 쬐기 시작! 현관문 열기
 END:VALARM
 END:VEVENT
 BEGIN:VEVENT
+UID:alfred-drama@routine
 DTSTART;TZID=Asia/Seoul:20260316T073000
 DTEND;TZID=Asia/Seoul:20260316T083000
 RRULE:FREQ=DAILY
 SUMMARY:🎬 미드 공부
-DESCRIPTION:Ginnie&Georgia - 발음/악센트/단어/표현 정리\n🎯 시작: 넷플릭스 켜기\n⚡ XP: 30 | 📚INT +2
+DESCRIPTION:Ginnie&Georgia - 발음/악센트/단어/표현 정리\n🎯 시작: 넷플릭스 켜기
 BEGIN:VALARM
 TRIGGER:-PT2M
 ACTION:DISPLAY
@@ -39,11 +43,12 @@ DESCRIPTION:🎬 미드 공부 시작! 넷플릭스 켜기
 END:VALARM
 END:VEVENT
 BEGIN:VEVENT
+UID:alfred-abs@routine
 DTSTART;TZID=Asia/Seoul:20260316T083000
 DTEND;TZID=Asia/Seoul:20260316T084500
 RRULE:FREQ=DAILY
 SUMMARY:🏋️ 복근 운동
-DESCRIPTION:아침 코어 운동 (10분)\n🎯 시작: 매트 깔기\n⚡ XP: 20 | 💪STR +2
+DESCRIPTION:아침 코어 운동 (10분)\n🎯 시작: 매트 깔기
 BEGIN:VALARM
 TRIGGER:-PT1M
 ACTION:DISPLAY
@@ -51,11 +56,12 @@ DESCRIPTION:🏋️ 복근 운동 시작! 매트 깔기
 END:VALARM
 END:VEVENT
 BEGIN:VEVENT
+UID:alfred-reading@routine
 DTSTART;TZID=Asia/Seoul:20260316T084500
 DTEND;TZID=Asia/Seoul:20260316T093000
 RRULE:FREQ=DAILY
 SUMMARY:📖 독서
-DESCRIPTION:정해진 페이지 분량 읽기\n🎯 시작: 책 펼치기\n⚡ XP: 25 | 📚INT +2
+DESCRIPTION:정해진 페이지 분량 읽기\n🎯 시작: 책 펼치기
 BEGIN:VALARM
 TRIGGER:-PT2M
 ACTION:DISPLAY
@@ -63,11 +69,12 @@ DESCRIPTION:📖 독서 시작! 책 펼치기
 END:VALARM
 END:VEVENT
 BEGIN:VEVENT
+UID:alfred-ai-task@routine
 DTSTART;TZID=Asia/Seoul:20260316T093000
 DTEND;TZID=Asia/Seoul:20260316T100000
 RRULE:FREQ=DAILY
 SUMMARY:🤖 AI 작업 할당
-DESCRIPTION:코딩 작업 분배 & 자동화 세팅\n🎯 시작: Claude 열기\n⚡ XP: 20 | 💼BIZ +1 📚INT +1
+DESCRIPTION:코딩 작업 분배 & 자동화 세팅\n🎯 시작: Claude 열기
 BEGIN:VALARM
 TRIGGER:-PT2M
 ACTION:DISPLAY
@@ -75,11 +82,12 @@ DESCRIPTION:🤖 AI 작업 할당! Claude 열기
 END:VALARM
 END:VEVENT
 BEGIN:VEVENT
+UID:alfred-plan@routine
 DTSTART;TZID=Asia/Seoul:20260316T100000
 DTEND;TZID=Asia/Seoul:20260316T101500
 RRULE:FREQ=DAILY
 SUMMARY:📋 작업 계획 수립
-DESCRIPTION:데드라인 확인, 최소 2곡 계획\n🎯 시작: 노트 앱 열기\n⚡ XP: 15 | 💼BIZ +1
+DESCRIPTION:데드라인 확인, 최소 2곡 계획\n🎯 시작: 노트 앱 열기
 BEGIN:VALARM
 TRIGGER:-PT2M
 ACTION:DISPLAY
@@ -87,11 +95,12 @@ DESCRIPTION:📋 작업실 도착! 노트 앱 열기
 END:VALARM
 END:VEVENT
 BEGIN:VEVENT
+UID:alfred-reference@routine
 DTSTART;TZID=Asia/Seoul:20260316T101500
 DTEND;TZID=Asia/Seoul:20260316T104500
 RRULE:FREQ=DAILY
 SUMMARY:🔍 레퍼런스 수집
-DESCRIPTION:오늘 만들 곡의 레퍼런스 5분 분석 청취\n🎯 시작: 레퍼 1곡 재생\n⚡ XP: 20 | 🎵CRE +2
+DESCRIPTION:오늘 만들 곡의 레퍼런스 5분 분석 청취\n🎯 시작: 레퍼 1곡 재생
 BEGIN:VALARM
 TRIGGER:-PT1M
 ACTION:DISPLAY
@@ -99,11 +108,12 @@ DESCRIPTION:🔍 레퍼런스 수집! 레퍼 1곡 재생
 END:VALARM
 END:VEVENT
 BEGIN:VEVENT
+UID:alfred-sketch@routine
 DTSTART;TZID=Asia/Seoul:20260316T104500
 DTEND;TZID=Asia/Seoul:20260316T123000
 RRULE:FREQ=DAILY
 SUMMARY:🎹 메인 스케치
-DESCRIPTION:테마 스케치 → 1절 완성 (디테일 집착 X)\n🎯 시작: DAW 열고 코드 하나 치기\n⚡ XP: 40 | 🎵CRE +3
+DESCRIPTION:테마 스케치 → 1절 완성 (디테일 집착 X)\n🎯 시작: DAW 열고 코드 하나 치기
 BEGIN:VALARM
 TRIGGER:-PT2M
 ACTION:DISPLAY
@@ -111,11 +121,12 @@ DESCRIPTION:🎹 메인 스케치 시작! DAW 열고 코드 하나 치기
 END:VALARM
 END:VEVENT
 BEGIN:VEVENT
+UID:alfred-nsdr@routine
 DTSTART;TZID=Asia/Seoul:20260316T130000
 DTEND;TZID=Asia/Seoul:20260316T132000
 RRULE:FREQ=DAILY
 SUMMARY:🧘 NSDR 리셋
-DESCRIPTION:10-20분 비수면 깊은 휴식 (도파민 65% 회복)\n🎯 시작: 눈 감고 누워 숨 3번 쉬기\n⚡ XP: 20 | 🔥GRT +1 📚INT +1
+DESCRIPTION:10-20분 비수면 깊은 휴식 (도파민 65% 회복)\n🎯 시작: 눈 감고 누워 숨 3번 쉬기
 BEGIN:VALARM
 TRIGGER:-PT2M
 ACTION:DISPLAY
@@ -123,11 +134,12 @@ DESCRIPTION:🧘 NSDR 리셋! 눈 감고 누워 숨 3번 쉬기
 END:VALARM
 END:VEVENT
 BEGIN:VEVENT
+UID:alfred-reels@routine
 DTSTART;TZID=Asia/Seoul:20260316T140000
 DTEND;TZID=Asia/Seoul:20260316T150000
 RRULE:FREQ=DAILY
 SUMMARY:📱 릴스 제작
-DESCRIPTION:아티스트 릴스 1개 기획+제작\n🎯 시작: 카메라 앱 열기\n⚡ XP: 25 | ✨CHR +2
+DESCRIPTION:아티스트 릴스 1개 기획+제작\n🎯 시작: 카메라 앱 열기
 BEGIN:VALARM
 TRIGGER:-PT2M
 ACTION:DISPLAY
@@ -135,11 +147,12 @@ DESCRIPTION:📱 릴스 제작! 카메라 앱 열기
 END:VALARM
 END:VEVENT
 BEGIN:VEVENT
+UID:alfred-lesson@routine
 DTSTART;TZID=Asia/Seoul:20260316T150000
 DTEND;TZID=Asia/Seoul:20260316T160000
 RRULE:FREQ=DAILY
 SUMMARY:💼 레슨 사업 기획
-DESCRIPTION:레슨 확장 및 기획\n🎯 시작: 레슨 노트 열기\n⚡ XP: 20 | 💼BIZ +2
+DESCRIPTION:레슨 확장 및 기획\n🎯 시작: 레슨 노트 열기
 BEGIN:VALARM
 TRIGGER:-PT2M
 ACTION:DISPLAY
@@ -147,11 +160,12 @@ DESCRIPTION:💼 레슨 사업 기획! 레슨 노트 열기
 END:VALARM
 END:VEVENT
 BEGIN:VEVENT
+UID:alfred-weight@routine
 DTSTART;TZID=Asia/Seoul:20260316T163000
 DTEND;TZID=Asia/Seoul:20260316T173000
 RRULE:FREQ=DAILY;BYDAY=MO,TU,WE,TH,FR
 SUMMARY:🏋️ 웨이트 1시간
-DESCRIPTION:스포짐 웨이트 트레이닝\n🎯 시작: 운동복 갈아입기\n⚡ XP: 35 | 💪STR +3\n📌 토/일 휴무
+DESCRIPTION:스포짐 웨이트 트레이닝\n🎯 시작: 운동복 갈아입기\n📌 토/일 휴무
 BEGIN:VALARM
 TRIGGER:-PT10M
 ACTION:DISPLAY
@@ -159,11 +173,12 @@ DESCRIPTION:🏋️ 운동 시간! 운동복 갈아입기
 END:VALARM
 END:VEVENT
 BEGIN:VEVENT
+UID:alfred-cardio@routine
 DTSTART;TZID=Asia/Seoul:20260316T173000
 DTEND;TZID=Asia/Seoul:20260316T180000
 RRULE:FREQ=DAILY;BYDAY=MO,TU,WE,TH,FR
 SUMMARY:🏃 유산소 30분
-DESCRIPTION:러닝/사이클 등\n🎯 시작: 러닝화 신기\n⚡ XP: 25 | 💪STR +2\n📌 토/일 휴무
+DESCRIPTION:러닝/사이클 등\n🎯 시작: 러닝화 신기\n📌 토/일 휴무
 BEGIN:VALARM
 TRIGGER:-PT1M
 ACTION:DISPLAY
@@ -171,11 +186,12 @@ DESCRIPTION:🏃 유산소 시작! 러닝화 신기
 END:VALARM
 END:VEVENT
 BEGIN:VEVENT
+UID:alfred-goal@routine
 DTSTART;TZID=Asia/Seoul:20260316T190000
 DTEND;TZID=Asia/Seoul:20260316T191500
 RRULE:FREQ=DAILY
 SUMMARY:🎯 목표 설정
-DESCRIPTION:어떤 곡, 어떤 파트, 어떤 방향인지 명확히\n🎯 시작: 종이에 한 줄 쓰기\n⚡ XP: 15 | 💼BIZ +1
+DESCRIPTION:어떤 곡, 어떤 파트, 어떤 방향인지 명확히\n🎯 시작: 종이에 한 줄 쓰기
 BEGIN:VALARM
 TRIGGER:-PT2M
 ACTION:DISPLAY
@@ -183,11 +199,12 @@ DESCRIPTION:🎯 야간 작업 시작! 종이에 한 줄 쓰기
 END:VALARM
 END:VEVENT
 BEGIN:VEVENT
+UID:alfred-experiment@routine
 DTSTART;TZID=Asia/Seoul:20260316T191500
 DTEND;TZID=Asia/Seoul:20260316T210000
 RRULE:FREQ=DAILY
 SUMMARY:🧪 창작 실험
-DESCRIPTION:새로운 느낌 탐구, 실험과 도전 (판단 OFF, 놀이 ON)\n🎯 시작: 랜덤 사운드 하나 고르기\n⚡ XP: 35 | 🎵CRE +3 🔥GRT +1
+DESCRIPTION:새로운 느낌 탐구, 실험과 도전 (판단 OFF, 놀이 ON)\n🎯 시작: 랜덤 사운드 하나 고르기
 BEGIN:VALARM
 TRIGGER:-PT1M
 ACTION:DISPLAY
@@ -195,11 +212,12 @@ DESCRIPTION:🧪 창작 실험! 랜덤 사운드 하나 고르기
 END:VALARM
 END:VEVENT
 BEGIN:VEVENT
+UID:alfred-shower@routine
 DTSTART;TZID=Asia/Seoul:20260316T210000
 DTEND;TZID=Asia/Seoul:20260316T213000
 RRULE:FREQ=DAILY
 SUMMARY:🚿 샤워 & 정리
-DESCRIPTION:옷 갈아입고 바로 샤워\n🎯 시작: 옷 벗기\n⚡ XP: 10 | 🔥GRT +1
+DESCRIPTION:옷 갈아입고 바로 샤워\n🎯 시작: 옷 벗기
 BEGIN:VALARM
 TRIGGER:-PT2M
 ACTION:DISPLAY
@@ -207,11 +225,12 @@ DESCRIPTION:🚿 귀환! 샤워 & 정리
 END:VALARM
 END:VEVENT
 BEGIN:VEVENT
+UID:alfred-ai-study@routine
 DTSTART;TZID=Asia/Seoul:20260316T213000
 DTEND;TZID=Asia/Seoul:20260316T223000
 RRULE:FREQ=DAILY
 SUMMARY:🧠 AI 공부
-DESCRIPTION:AI 관련 학습\n🎯 시작: 강의 영상 재생\n⚡ XP: 25 | 📚INT +2
+DESCRIPTION:AI 관련 학습\n🎯 시작: 강의 영상 재생
 BEGIN:VALARM
 TRIGGER:-PT2M
 ACTION:DISPLAY
@@ -219,11 +238,12 @@ DESCRIPTION:🧠 AI 공부! 강의 영상 재생
 END:VALARM
 END:VEVENT
 BEGIN:VEVENT
+UID:alfred-shutdown@routine
 DTSTART;TZID=Asia/Seoul:20260316T223000
 DTEND;TZID=Asia/Seoul:20260316T230000
 RRULE:FREQ=DAILY
 SUMMARY:🌙 셧다운 리추얼
-DESCRIPTION:내일 계획 3줄 정리 → 전자기기 OFF → '셧다운 컴플리트'\n🎯 시작: 노트 펼치고 내일 할 일 1줄\n⚡ XP: 15 | 🔥GRT +2
+DESCRIPTION:내일 계획 3줄 정리 → 전자기기 OFF → '셧다운 컴플리트'\n🎯 시작: 노트 펼치고 내일 할 일 1줄
 BEGIN:VALARM
 TRIGGER:-PT2M
 ACTION:DISPLAY
