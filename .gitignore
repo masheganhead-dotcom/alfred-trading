@@ -9,17 +9,4 @@ bot/*.pyc
 bot/__pycache__/
 *.env
 .env
-node_modules/
-www/
-ios/
-android/
-.capacitor/
-*.xcworkspace
-*.xcodeproj
-Pods/
-
-# Web Push (민감 정보)
-push_config.json
-push_subscription.json
-push_log.txt
 .venv/
