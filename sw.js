@@ -13,6 +13,9 @@ let smartNags = [];        // [{questId, after, msg, group}]
 let completedToday = [];   // quest IDs completed today
 let lastNagShown = 0;      // timestamp of last nag notification
 
+let shownAlarms = {};   // { questId: timestamp } - alarms shown today
+let lastCheckTime = 0;  // prevent flood on SW wake
+
 // Store schedule in IndexedDB for persistence across SW restarts
 const DB_NAME = 'alfred-sw-db';
 const DB_VERSION = 1;
@@ -40,6 +43,7 @@ async function saveScheduleData() {
     store.put({ key: 'smartNags', value: smartNags });
     store.put({ key: 'completedToday', value: completedToday });
     store.put({ key: 'lastNagShown', value: lastNagShown });
+    store.put({ key: 'shownAlarms', value: shownAlarms });
     await new Promise((resolve, reject) => {
       tx.oncomplete = resolve;
       tx.onerror = reject;
@@ -64,6 +68,7 @@ async function loadScheduleData() {
     smartNags = (await getVal('smartNags')) || [];
     completedToday = (await getVal('completedToday')) || [];
     lastNagShown = (await getVal('lastNagShown')) || 0;
+    shownAlarms = (await getVal('shownAlarms')) || {};
     db.close();
   } catch(e) {
     console.log('[SW] IndexedDB load error:', e);
@@ -72,19 +77,35 @@ async function loadScheduleData() {
 
 // ===== BACKGROUND NOTIFICATION CHECKER =====
 async function checkAndNotify() {
+  const now = Date.now();
+
+  // Prevent notification flood: minimum 60s between checks
+  if (now - lastCheckTime < 60 * 1000) return;
+  lastCheckTime = now;
+
   await loadScheduleData();
 
-  const now = new Date();
-  const hh = now.getHours();
-  const mm = now.getMinutes();
+  const d = new Date();
+  const hh = d.getHours();
+  const mm = d.getMinutes();
   const nowMins = hh * 60 + mm;
   const nowStr = `${String(hh).padStart(2,'0')}:${String(mm).padStart(2,'0')}`;
+  const todayStr = d.toISOString().slice(0, 10);
+
+  // Reset shown alarms at midnight
+  if (shownAlarms._date !== todayStr) {
+    shownAlarms = { _date: todayStr };
+  }
 
   // 1) Quest alarm notifications (2 min before ~ 3 min after)
+  //    Only show ONCE per quest per day, max 1 quest alarm per check
+  let shownQuestAlarm = false;
   for (const q of questSchedule) {
     if (completedToday.includes(q.id)) continue;
+    if (shownAlarms[q.id]) continue; // Already shown today
     const questMins = q.hour * 60 + q.minute;
     if (nowMins >= questMins - 2 && nowMins <= questMins + 3) {
+      shownAlarms[q.id] = now;
       await self.registration.showNotification(`⏰ ${q.icon} ${q.name}`, {
         body: q.start || q.desc || '루틴을 시작할 시간이에요!',
         icon: './icon-192.png',
@@ -92,11 +113,17 @@ async function checkAndNotify() {
         renotify: true,
         data: { type: 'quest-alarm', questId: q.id }
       });
+      shownQuestAlarm = true;
+      break; // Only 1 alarm per check cycle
     }
   }
 
-  // 2) Smart nag notifications (every 15 min max)
-  if (Date.now() - lastNagShown < 15 * 60 * 1000) return;
+  // Save shown alarms state
+  await saveScheduleData();
+
+  // 2) Smart nag notifications (every 15 min max, skip if quest alarm just shown)
+  if (shownQuestAlarm) return;
+  if (now - lastNagShown < 15 * 60 * 1000) return;
 
   let nagGroups = [];
   if (hh >= 7 && hh < 10) nagGroups.push('morning');
@@ -133,7 +160,7 @@ async function checkAndNotify() {
       data: { type: 'smart-nag' }
     });
 
-    lastNagShown = Date.now();
+    lastNagShown = now;
     await saveScheduleData();
   }
 }

@@ -1971,12 +1971,22 @@ function hapticFeedback(type = 'light') {
 
 async function scheduleRoutineNotifications() {
   if (!NativeNotifications) return;
-  await NativeNotifications.cancel({ notifications: await NativeNotifications.getPending().then(r => r.notifications) }).catch(() => {});
+
+  // Cancel all pending notifications first
+  try {
+    const pending = await NativeNotifications.getPending();
+    if (pending.notifications.length > 0) {
+      await NativeNotifications.cancel({ notifications: pending.notifications });
+    }
+  } catch(e) {}
 
   const quests = gameData?.quests || getDefaultData().quests;
+  const todayHist = gameData?.history?.[todayKey] || { completed: [] };
+  const completed = todayHist.completed || [];
   const notifications = [];
   let id = 1;
 
+  // 1) Quest start-time alarms (daily repeating)
   const allQuests = Object.values(quests).flat();
   for (const q of allQuests) {
     if (!q.time) continue;
@@ -1985,7 +1995,7 @@ async function scheduleRoutineNotifications() {
 
     notifications.push({
       id: id++,
-      title: `${q.icon} ${q.name}`,
+      title: `⏰ ${q.icon} ${q.name}`,
       body: q.start ? `🎯 ${q.start}` : q.desc,
       schedule: {
         on: { hour: hours, minute: Math.max(0, minutes - 2) },
@@ -1995,8 +2005,72 @@ async function scheduleRoutineNotifications() {
     });
   }
 
-  await NativeNotifications.schedule({ notifications });
-  console.log(`[Notifications] Scheduled ${notifications.length} daily reminders`);
+  // 2) Smart nag notifications: schedule for TODAY at specific times
+  //    Only schedule nags for uncompleted quests
+  const now = new Date();
+  const nagSchedule = [
+    // 아침 (07:00~10:00)
+    { h: 7,  m: 30, title: '😤 아직도요?', body: '아침 루틴이 밀리고 있어요! 지금 시작하면 아직 늦지 않았어요', qid: 'm0' },
+    { h: 8,  m: 15, title: '🫵 이거 안 하셨죠?', body: '아침 퀘스트 확인하세요. 알프레드가 다 보고 있어요 👀', qid: 'm0' },
+    { h: 9,  m: 15, title: '🎬 미드 공부!', body: '영어 실력은 복리로 쌓이는 거예요. 오늘 안 하면 내일 더 밀립니다 📈', qid: 'm1' },
+    { h: 9,  m: 30, title: '🏋️ 코어 운동!', body: '10분이면 끝나는데 핑계가 10분보다 길어요 ㅋㅋ 매트 까세요!', qid: 'm2' },
+    { h: 10, m: 0,  title: '📖 독서 패스?', body: '한 페이지가 뭐가 어렵다고! 책 펴면 이미 절반 성공이에요', qid: 'm3' },
+    // 작업실 (13:00~17:30)
+    { h: 13, m: 15, title: '🎵 작업실!', body: '1시 넘었는데 아직 작업실 안 가셨나요? 빨리 가세요!' },
+    { h: 14, m: 0,  title: '📋 계획 세우세요!', body: '30분이면 끝나는 계획, 방향부터 잡으세요!', qid: 's1' },
+    { h: 15, m: 0,  title: '🎹 DAW 켜세요!', body: '완벽주의 금지! DAW부터 켜세요! 느낌이 먼저예요', qid: 's2' },
+    { h: 16, m: 15, title: '🎼 1절 스케치!', body: '인트로→벌스→훅 흐름부터 잡으세요. 디테일은 나중에!', qid: 's3' },
+    // 운동 (17:30~19:00)
+    { h: 18, m: 0,  title: '💪 운동 갔어요?', body: '헬스장이 기다리고 있어요! 몸이 자본입니다', qid: 'e1' },
+    { h: 18, m: 45, title: '🏃 유산소!', body: '30분 유산소! 체력이 곧 자본입니다!', qid: 'e2' },
+    // 저녁 (19:00~23:00)
+    { h: 19, m: 15, title: '🚿 샤워 하세요!', body: '운동하고 땀범벅인 채로 돌아다니시면... 😭', qid: 'w1' },
+    { h: 20, m: 15, title: '🎯 창의력 타임!', body: '방향 없이 작업하면 표류하는 배예요. 종이에 한 줄만 쓰세요!', qid: 'w2' },
+    { h: 21, m: 0,  title: '🔮 몰입 시간!', body: '넷플릭스 보고 있으면 리모컨 내려놓고 DAW 켜세요!', qid: 'w3' },
+    { h: 22, m: 15, title: '🌌 프리 세션!', body: '밤의 고요함은 최고의 사운드 디자인 시간이에요!', qid: 'w4' },
+    // 마무리 (22:00~24:00)
+    { h: 23, m: 0,  title: '🧠 AI 공부!', body: '옆 동네 개발자는 지금 Claude로 앱 만들고 있답니다. 30분만!', qid: 'h1' },
+    { h: 23, m: 20, title: '🌙 셧다운 리추얼!', body: '내일 계획 3줄 + 전자기기 OFF. 수면의 질 = 내일 퍼포먼스!', qid: 'h2' },
+    { h: 23, m: 45, title: '😴 자세요!', body: '폰 내려놓으세요! 내일 7시에 일어나야 합니다!', qid: 'h2' },
+  ];
+
+  const nowMins = now.getHours() * 60 + now.getMinutes();
+
+  for (const nag of nagSchedule) {
+    // Skip if quest already completed today
+    if (nag.qid && completed.includes(nag.qid)) continue;
+
+    const nagMins = nag.h * 60 + nag.m;
+    // Only schedule future nags for today
+    if (nagMins <= nowMins) continue;
+
+    // Schedule at exact time TODAY (not repeating - re-scheduled daily)
+    const schedDate = new Date(now);
+    schedDate.setHours(nag.h, nag.m, 0, 0);
+
+    notifications.push({
+      id: id++,
+      title: nag.title,
+      body: nag.body,
+      schedule: { at: schedDate },
+      sound: 'default'
+    });
+  }
+
+  // Schedule in batches to avoid iOS limits
+  const BATCH_SIZE = 30;
+  for (let i = 0; i < notifications.length; i += BATCH_SIZE) {
+    const batch = notifications.slice(i, i + BATCH_SIZE);
+    await NativeNotifications.schedule({ notifications: batch });
+  }
+  console.log(`[Notifications] Scheduled ${notifications.length} notifications (${allQuests.length} quests + ${notifications.length - allQuests.length} nags)`);
+}
+
+// Re-schedule nag notifications when a quest is completed (remove its nags)
+async function rescheduleNagsOnComplete() {
+  if (!NativeNotifications) return;
+  // Just re-run the full scheduler - it checks completed quests
+  await scheduleRoutineNotifications();
 }
 
 initCapacitor();
@@ -2007,18 +2081,44 @@ let alarmAudioCtx = null;
 let alarmOscillator = null;
 let alarmSnoozed = {};
 let lastAlarmQuestId = null;
+let lastAlarmCheckTime = 0;         // prevent flood on app resume
+let shownAlarmIds = new Set();      // alarms already shown today
+
+// Reset shown alarms at midnight
+(function() {
+  const resetKey = 'alarm_reset_date';
+  const today = new Date().toDateString();
+  if (localStorage.getItem(resetKey) !== today) {
+    localStorage.setItem(resetKey, today);
+    shownAlarmIds = new Set();
+  }
+})();
+
+// Suppress alarm flood when returning from background
+document.addEventListener('visibilitychange', () => {
+  if (document.visibilityState === 'visible') {
+    // Skip the first alarm check after coming back to foreground
+    lastAlarmCheckTime = Date.now();
+  }
+});
 
 function checkAlarms() {
   if (!gameData || !gameData.quests) return;
-  const now = new Date();
-  const hh = now.getHours();
-  const mm = now.getMinutes();
+  // Throttle: at least 30s between checks (prevents flood on resume)
+  const ts = Date.now();
+  if (ts - lastAlarmCheckTime < 30000) return;
+  lastAlarmCheckTime = ts;
+
+  const d = new Date();
+  const hh = d.getHours();
+  const mm = d.getMinutes();
   const nowMins = hh * 60 + mm;
   const todayCompleted = gameData.history[todayKey]?.completed || [];
 
   const allQuests = Object.values(gameData.quests).flat();
   for (const q of allQuests) {
     if (!q.time || todayCompleted.includes(q.id)) continue;
+    if (shownAlarmIds.has(q.id)) continue; // Already shown this alarm today
     const [startTime] = q.time.split('-');
     const [qh, qm] = startTime.split(':').map(Number);
     const questMins = qh * 60 + qm;
@@ -2027,8 +2127,9 @@ function checkAlarms() {
       const snoozeKey = q.id + '_' + todayKey;
       if (alarmSnoozed[snoozeKey] && Date.now() < alarmSnoozed[snoozeKey]) continue;
       if (lastAlarmQuestId === q.id) continue;
+      shownAlarmIds.add(q.id); // Mark as shown
       showAlarm(q);
-      break;
+      break; // Only 1 alarm per check
     }
   }
 }
@@ -2104,7 +2205,7 @@ if ('Notification' in window && Notification.permission === 'default') {
 }
 
 // ===== SMART NAGGING SYSTEM (시간대별 잔소리) =====
-let lastNagTime = 0;
+let lastNagTime = parseInt(localStorage.getItem('alfred_lastNagTime') || '0', 10);
 let nagCheckInterval = null;
 
 const SMART_NAGS = {
@@ -2193,6 +2294,8 @@ function getSmartNag() {
 }
 
 function checkSmartNags() {
+  // Don't run if page is hidden (prevents queuing notifications while in background)
+  if (document.hidden) return;
   const now = Date.now();
   // Don't nag more than once every 15 minutes
   if (now - lastNagTime < 15 * 60 * 1000) return;
@@ -2203,6 +2306,7 @@ function checkSmartNags() {
   // Pick one random nag to show (don't overwhelm)
   const nag = nags[Math.floor(Math.random() * nags.length)];
   lastNagTime = now;
+  localStorage.setItem('alfred_lastNagTime', String(now));
 
   // Show in-app toast
   showNagToast(nag.msg);
@@ -3288,6 +3392,8 @@ function toggleQuest(questId, e) {
   renderAll();
   // Notify service worker about completed quests for background notifications
   notifySWQuestCompleted();
+  // Re-schedule native notifications (remove completed quest nags)
+  rescheduleNagsOnComplete();
 }
 
 function findQuest(id) {
