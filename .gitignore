@@ -17,3 +17,9 @@ android/
 *.xcworkspace
 *.xcodeproj
 Pods/
+
+# Web Push (민감 정보)
+push_config.json
+push_subscription.json
+push_log.txt
+.venv/

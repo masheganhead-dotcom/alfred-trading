@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env -S /home/user/alfred-trading/.venv/bin/python3
 """
 Alfred Quest - Web Push 알림 발송기
 
