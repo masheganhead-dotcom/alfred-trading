@@ -288,3 +288,19 @@ function startBackgroundCheckLoop() {
   bgCheckTimer = setTimeout(runCheck, 60 * 1000); // First check after 1 minute
 }
 startBackgroundCheckLoop();
+
+// ===== KEEP-ALIVE: Extend SW lifetime with self-ping =====
+// When the app page is open, it pings the SW to keep it alive
+self.addEventListener('message', (e) => {
+  if (e.data && e.data.type === 'KEEP_ALIVE') {
+    // Just respond to keep the SW active
+    if (e.source) {
+      e.source.postMessage({ type: 'KEEP_ALIVE_ACK' });
+    }
+  }
+});
+
+// On activate, trigger an immediate check
+self.addEventListener('activate', () => {
+  checkAndNotify().catch(() => {});
+});

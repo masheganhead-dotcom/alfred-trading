@@ -6192,7 +6192,7 @@ document.getElementById('note-input').addEventListener('keydown', (e) => {
 // ===== WEB PUSH CONFIGURATION =====
 // VAPID public key - generate with: python3 generate_vapid_keys.py
 // Then paste the public key here and put the private key in push_sender.py
-const VAPID_PUBLIC_KEY = localStorage.getItem('alfred_vapid_public_key') || '';
+const VAPID_PUBLIC_KEY = 'BMIrcWwGx4FQyytODpc0lMmrk-5hI9LQoAHFkmWJgY0Cc8NouaPxGln0lD4sRS0setkYTDJ5TmLWdbWHy26gG2E';
 
 function urlBase64ToUint8Array(base64String) {
   const padding = '='.repeat((4 - base64String.length % 4) % 4);
@@ -6230,7 +6230,9 @@ async function subscribeToPush(swReg) {
     const subJson = JSON.stringify(subscription.toJSON(), null, 2);
     localStorage.setItem('alfred_push_subscription', subJson);
 
-    // Show subscription info in console for easy copy
+    // Auto-send subscription to server for push_subscription.json
+    await sendSubscriptionToServer(subscription);
+
     console.log('[Push] Subscription (copy to push_subscription.json):');
     console.log(subJson);
 
@@ -6241,12 +6243,62 @@ async function subscribeToPush(swReg) {
   }
 }
 
+// Auto-save subscription to server (push_server.js)
+async function sendSubscriptionToServer(subscription) {
+  const endpoints = [
+    './save_subscription',                    // Same-origin (reverse proxy)
+    'http://localhost:3456/save_subscription', // Local push server
+  ];
+  for (const url of endpoints) {
+    try {
+      const resp = await fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(subscription.toJSON())
+      });
+      if (resp.ok) {
+        console.log(`[Push] ✅ Subscription saved to server (${url})`);
+        return;
+      }
+    } catch(e) {}
+  }
+  console.log('[Push] Server save unavailable. Use downloadPushSubscription() to export manually.');
+}
+
+// Download subscription as file (for manual setup)
+function downloadPushSubscription() {
+  const sub = localStorage.getItem('alfred_push_subscription');
+  if (!sub) {
+    alert('푸시 구독 정보가 없습니다. 먼저 알림을 허용해주세요.');
+    return;
+  }
+  const blob = new Blob([sub], { type: 'application/json' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'push_subscription.json';
+  a.click();
+  URL.revokeObjectURL(a.href);
+}
+
+// Copy subscription to clipboard
+async function copyPushSubscription() {
+  const sub = localStorage.getItem('alfred_push_subscription');
+  if (!sub) {
+    alert('푸시 구독 정보가 없습니다.');
+    return;
+  }
+  try {
+    await navigator.clipboard.writeText(sub);
+    alert('✅ 클립보드에 복사되었습니다!');
+  } catch(e) {
+    prompt('아래 내용을 복사하세요:', sub);
+  }
+}
+
 // ===== PUSH SETUP UI =====
 function showPushSetupGuide() {
   const sub = localStorage.getItem('alfred_push_subscription');
-  const vapid = localStorage.getItem('alfred_vapid_public_key');
-
-  if (sub && vapid) {
+  if (sub) {
     console.log('[Push] ✅ Push notifications configured!');
     console.log('[Push] Subscription:', sub);
     return true;
@@ -6296,6 +6348,13 @@ if ('serviceWorker' in navigator) {
       console.log('[Push] Subscription updated (auto-resubscribe)');
     }
   });
+
+  // Keep-alive ping: keep SW awake while app is open
+  setInterval(() => {
+    if (navigator.serviceWorker.controller) {
+      navigator.serviceWorker.controller.postMessage({ type: 'KEEP_ALIVE' });
+    }
+  }, 25 * 1000); // Every 25 seconds
 }
 
 // Build & send quest schedule + smart nags to the Service Worker
