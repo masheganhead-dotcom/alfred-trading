@@ -3060,6 +3060,8 @@ function toggleQuest(questId, e) {
   checkBossDefeat();
   saveData();
   renderAll();
+  // Notify service worker about completed quests for background notifications
+  notifySWQuestCompleted();
 }
 
 function findQuest(id) {
@@ -5864,13 +5866,108 @@ document.getElementById('note-input').addEventListener('keydown', (e) => {
   if (e.key === 'Enter') addTextNote();
 });
 
-// ===== PWA SERVICE WORKER =====
+// ===== PWA SERVICE WORKER + BACKGROUND NOTIFICATIONS =====
 if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.register('./sw.js').catch(e => console.log('SW registration failed:', e));
+  navigator.serviceWorker.register('./sw.js').then(async (reg) => {
+    console.log('[SW] Registered');
+
+    // Wait for the SW to be ready
+    const swReg = await navigator.serviceWorker.ready;
+
+    // Register Periodic Background Sync (for background notifications)
+    if ('periodicSync' in swReg) {
+      try {
+        const status = await navigator.permissions.query({ name: 'periodic-background-sync' });
+        if (status.state === 'granted') {
+          await swReg.periodicSync.register('routine-nag-check', {
+            minInterval: 3 * 60 * 1000 // Every 3 minutes (browser may throttle)
+          });
+          console.log('[SW] Periodic background sync registered');
+        }
+      } catch(e) {
+        console.log('[SW] Periodic sync not available:', e);
+      }
+    }
+
+    // Send schedule data to service worker
+    sendScheduleToSW();
+  }).catch(e => console.log('SW registration failed:', e));
 }
+
+// Build & send quest schedule + smart nags to the Service Worker
+function sendScheduleToSW() {
+  if (!navigator.serviceWorker.controller) return;
+
+  // Build quest schedule with times
+  const allQuests = Object.values(gameData?.quests || {}).flat();
+  const questSchedule = [];
+  for (const q of allQuests) {
+    if (!q.time) continue;
+    const [startTime] = q.time.split('-');
+    const [hour, minute] = startTime.split(':').map(Number);
+    questSchedule.push({
+      id: q.id, name: q.name, icon: q.icon,
+      desc: q.desc, start: q.start || '',
+      hour, minute
+    });
+  }
+
+  // Flatten smart nags with group info
+  const smartNagsList = [];
+  for (const [group, nags] of Object.entries(SMART_NAGS)) {
+    for (const nag of nags) {
+      smartNagsList.push({
+        questId: nag.questId || null,
+        check: nag.check || null,
+        after: nag.after,
+        msg: nag.msg,
+        group
+      });
+    }
+  }
+
+  const completedToday = gameData?.history?.[todayKey]?.completed || [];
+
+  navigator.serviceWorker.controller.postMessage({
+    type: 'UPDATE_SCHEDULE',
+    questSchedule,
+    smartNags: smartNagsList,
+    completedToday
+  });
+  console.log(`[SW] Sent schedule: ${questSchedule.length} quests, ${smartNagsList.length} nags`);
+}
+
+// Update SW whenever a quest is completed
+function notifySWQuestCompleted() {
+  if (!navigator.serviceWorker?.controller) return;
+  const completedToday = gameData?.history?.[todayKey]?.completed || [];
+  navigator.serviceWorker.controller.postMessage({
+    type: 'UPDATE_COMPLETED',
+    completedToday
+  });
+}
+
+// Re-send schedule periodically (in case SW restarts)
+setInterval(() => {
+  if (navigator.serviceWorker?.controller) sendScheduleToSW();
+}, 10 * 60 * 1000);
 
 // ===== START =====
 init();
+
+// Send schedule to SW after init (with retry for controller readiness)
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.ready.then(() => {
+    // Controller may not be set on first load; wait for controllerchange
+    if (navigator.serviceWorker.controller) {
+      sendScheduleToSW();
+    } else {
+      navigator.serviceWorker.addEventListener('controllerchange', () => {
+        sendScheduleToSW();
+      }, { once: true });
+    }
+  });
+}
 
 // Fetch iCal events on startup (silently for today strip)
 if (getICalURL()) {
