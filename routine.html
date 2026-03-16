@@ -5963,6 +5963,71 @@ document.getElementById('note-input').addEventListener('keydown', (e) => {
   if (e.key === 'Enter') addTextNote();
 });
 
+// ===== WEB PUSH CONFIGURATION =====
+// VAPID public key - generate with: python3 generate_vapid_keys.py
+// Then paste the public key here and put the private key in push_sender.py
+const VAPID_PUBLIC_KEY = localStorage.getItem('alfred_vapid_public_key') || '';
+
+function urlBase64ToUint8Array(base64String) {
+  const padding = '='.repeat((4 - base64String.length % 4) % 4);
+  const base64 = (base64String + padding).replace(/-/g, '+').replace(/_/g, '/');
+  const rawData = window.atob(base64);
+  const outputArray = new Uint8Array(rawData.length);
+  for (let i = 0; i < rawData.length; ++i) {
+    outputArray[i] = rawData.charCodeAt(i);
+  }
+  return outputArray;
+}
+
+async function subscribeToPush(swReg) {
+  if (!VAPID_PUBLIC_KEY) {
+    console.log('[Push] No VAPID key configured. Run generate_vapid_keys.py first.');
+    return null;
+  }
+
+  try {
+    // Check existing subscription
+    let subscription = await swReg.pushManager.getSubscription();
+
+    if (!subscription) {
+      // Subscribe to push
+      subscription = await swReg.pushManager.subscribe({
+        userVisibleOnly: true,
+        applicationServerKey: urlBase64ToUint8Array(VAPID_PUBLIC_KEY)
+      });
+      console.log('[Push] New subscription created');
+    } else {
+      console.log('[Push] Existing subscription found');
+    }
+
+    // Save subscription for the push sender script
+    const subJson = JSON.stringify(subscription.toJSON(), null, 2);
+    localStorage.setItem('alfred_push_subscription', subJson);
+
+    // Show subscription info in console for easy copy
+    console.log('[Push] Subscription (copy to push_subscription.json):');
+    console.log(subJson);
+
+    return subscription;
+  } catch(e) {
+    console.log('[Push] Subscription failed:', e);
+    return null;
+  }
+}
+
+// ===== PUSH SETUP UI =====
+function showPushSetupGuide() {
+  const sub = localStorage.getItem('alfred_push_subscription');
+  const vapid = localStorage.getItem('alfred_vapid_public_key');
+
+  if (sub && vapid) {
+    console.log('[Push] ✅ Push notifications configured!');
+    console.log('[Push] Subscription:', sub);
+    return true;
+  }
+  return false;
+}
+
 // ===== PWA SERVICE WORKER + BACKGROUND NOTIFICATIONS =====
 if ('serviceWorker' in navigator) {
   navigator.serviceWorker.register('./sw.js').then(async (reg) => {
@@ -5986,9 +6051,25 @@ if ('serviceWorker' in navigator) {
       }
     }
 
+    // Subscribe to Web Push for true background notifications
+    if ('PushManager' in window) {
+      const permission = await Notification.requestPermission();
+      if (permission === 'granted') {
+        await subscribeToPush(swReg);
+      }
+    }
+
     // Send schedule data to service worker
     sendScheduleToSW();
   }).catch(e => console.log('SW registration failed:', e));
+
+  // Listen for subscription changes from SW
+  navigator.serviceWorker.addEventListener('message', (e) => {
+    if (e.data?.type === 'PUSH_SUBSCRIPTION_CHANGED') {
+      localStorage.setItem('alfred_push_subscription', JSON.stringify(e.data.subscription));
+      console.log('[Push] Subscription updated (auto-resubscribe)');
+    }
+  });
 }
 
 // Build & send quest schedule + smart nags to the Service Worker

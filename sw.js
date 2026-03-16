@@ -204,6 +204,10 @@ self.addEventListener('periodicsync', (e) => {
 // ===== NOTIFICATION CLICK: Open app when notification is tapped =====
 self.addEventListener('notificationclick', (e) => {
   e.notification.close();
+
+  // Handle "dismiss" action - just close
+  if (e.action === 'dismiss') return;
+
   e.waitUntil(
     clients.matchAll({ type: 'window', includeUncontrolled: true }).then(windowClients => {
       // Focus existing window if open
@@ -213,8 +217,62 @@ self.addEventListener('notificationclick', (e) => {
         }
       }
       // Otherwise open new window
-      return clients.openWindow('./routine.html');
+      const url = e.notification.data?.url || './routine.html';
+      return clients.openWindow(url);
     })
+  );
+});
+
+// ===== WEB PUSH EVENT HANDLER =====
+// This is the KEY to background notifications - fires even when app is closed
+self.addEventListener('push', (e) => {
+  let data = { title: '🔔 알프레드 퀘스트', body: '루틴을 확인하세요!', type: 'push-reminder' };
+
+  if (e.data) {
+    try {
+      data = { ...data, ...e.data.json() };
+    } catch(err) {
+      try {
+        data.body = e.data.text();
+      } catch(err2) {}
+    }
+  }
+
+  const options = {
+    body: data.body,
+    icon: './icon-192.png',
+    badge: './icon-192.png',
+    tag: data.tag || 'push-' + Date.now(),
+    renotify: true,
+    requireInteraction: true,
+    vibrate: [200, 100, 200, 100, 200],
+    data: { type: data.type || 'push-reminder', url: './routine.html' },
+    actions: [
+      { action: 'open', title: '열기' },
+      { action: 'dismiss', title: '나중에' }
+    ]
+  };
+
+  e.waitUntil(
+    self.registration.showNotification(data.title, options)
+  );
+});
+
+// Handle push subscription change (auto-resubscribe)
+self.addEventListener('pushsubscriptionchange', (e) => {
+  e.waitUntil(
+    self.registration.pushManager.subscribe(e.oldSubscription.options)
+      .then(subscription => {
+        // Notify all clients about new subscription
+        return self.clients.matchAll().then(clients => {
+          clients.forEach(client => {
+            client.postMessage({
+              type: 'PUSH_SUBSCRIPTION_CHANGED',
+              subscription: subscription.toJSON()
+            });
+          });
+        });
+      })
   );
 });
 
