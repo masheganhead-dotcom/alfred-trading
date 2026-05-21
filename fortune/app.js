@@ -6,6 +6,9 @@ import { drawSpread, interpretCard, cardKey } from "./core/tarot.js";
 import { analyzeGunghap } from "./core/gunghap.js";
 import { calculateTojeong, lookupTojeong } from "./core/tojeong.js";
 import { analyzeShinsal, checkSamjae, mudangSummary, dangsa } from "./core/mudang.js";
+import { determineYongsin } from "./core/yongsin.js";
+import { determineGeokguk } from "./core/geokguk.js";
+import { predictNextYears, predictLifeEvents, analyzeGungseong } from "./core/sigi.js";
 import { sajuToMBTI, bayesianFortune, extractSajuSignals, biorhythm, lifePathNumber, comprehensiveScore } from "./core/science.js";
 import { sajuToBig5, birthSeasonEffect, forerIndex, calculateZodiac, crossCompare, SCIENCE_CITATIONS } from "./core/statistical_science.js";
 
@@ -384,7 +387,15 @@ window.castMudang = function() {
       const summary = mudangSummary(saju, shinsal, samjae, DATA.ilju, DATA.mudang, DATA.mudang.napeum_60);
       const dangsaResult = dangsa(saju, DATA.mudang);
 
-      wrap.innerHTML = renderMudang(saju, shinsal, samjae, summary, dangsaResult);
+      // v3.0 추가: 격국·용신·시기예측·궁성
+      const yongsin = determineYongsin(saju);
+      const geokguk = determineGeokguk(saju, yongsin.strength);
+      const next10 = predictNextYears(saju, currentYear, 10, gender);
+      const lifeEvents = predictLifeEvents(saju, currentYear, gender);
+      const gungseong = analyzeGungseong(saju);
+
+      wrap.innerHTML = renderMudang(saju, shinsal, samjae, summary, dangsaResult) +
+                       renderMyeongri(yongsin, geokguk, next10, lifeEvents, gungseong);
     } catch (e) {
       wrap.innerHTML = `<div class="section"><div class="result-text danger">${e.message}</div></div>`;
       console.error(e);
@@ -443,6 +454,131 @@ function renderMudang(saju, shinsal, samjae, summary, dangsaResult) {
     <div class="section">
       <div class="section-title">🎭 당사주 4단계 운세</div>
       ${dangsaHtml}
+    </div>
+  `;
+}
+
+// ========== 정통 명리학 결과 (격국·용신·시기·궁성) ==========
+function renderMyeongri(yongsin, geokguk, next10, lifeEvents, gungseong) {
+  const ohaengColor = { "목":"#22c55e","화":"#ef4444","토":"#eab308","금":"#e5e7eb","수":"#3b82f6" };
+
+  // 신강/신약 게이지
+  const strBarColor = yongsin.strength.isStrong ? "#ef4444" : yongsin.strength.isWeak ? "#3b82f6" : "#eab308";
+
+  // 시기 예측 — 향후 10년 매트릭스
+  const yearRows = next10.map(y => {
+    const scoreColor = y.score >= 65 ? "#00e676" : y.score >= 45 ? "#ffd740" : "#ff5252";
+    const eventBadges = y.events.slice(0, 3).map(e => {
+      const c = ["결혼","재물","직장","학업","결합"].includes(e.type) ? "#00e676"
+              : ["위기","손재"].includes(e.type) ? "#ff5252" : "#ffd740";
+      return `<span style="font-size:10px;padding:1px 6px;border-radius:4px;background:${c}22;color:${c};margin-right:3px">${e.type}</span>`;
+    }).join("");
+    return `
+      <div style="display:flex;align-items:center;padding:8px;background:var(--card2);border-radius:6px;margin-bottom:4px;font-size:12px">
+        <div style="width:50px;font-weight:700">${y.year}</div>
+        <div style="width:50px;color:var(--gold2)" class="han">${y.yearGapja}</div>
+        <div style="flex:1">${eventBadges || '<span style="color:var(--dim);font-size:11px">평년</span>'}</div>
+        <div style="width:40px;text-align:right;color:${scoreColor};font-weight:700">${y.score}</div>
+      </div>
+    `;
+  }).join("");
+
+  // 인생 이벤트 시기 예측
+  const eventCards = [
+    { key:"marriage", icon:"💍", label:"결혼" },
+    { key:"wealth", icon:"💰", label:"재물" },
+    { key:"promotion", icon:"📈", label:"승진" },
+    { key:"study", icon:"📚", label:"학업" },
+    { key:"danger", icon:"⚠", label:"위기" },
+  ].map(c => {
+    const e = lifeEvents[c.key];
+    if (!e) return `<div style="background:var(--card2);padding:10px;border-radius:8px;text-align:center"><div>${c.icon}</div><div style="font-size:11px;color:var(--dim);margin-top:4px">${c.label}</div><div style="font-size:11px;color:var(--dim);margin-top:2px">향후 20년 무</div></div>`;
+    return `<div style="background:var(--card2);padding:10px;border-radius:8px;text-align:center"><div>${c.icon}</div><div style="font-size:11px;color:var(--dim);margin-top:4px">${c.label}</div><div style="font-size:14px;font-weight:700;color:var(--gold2);margin-top:2px">${e.year}년</div></div>`;
+  }).join("");
+
+  // 궁성 4개
+  const gungHtml = ["year","month","day","hour"].map(p => {
+    const g = gungseong[p];
+    return `
+      <div style="background:var(--card2);padding:10px;border-radius:8px;margin-bottom:6px">
+        <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px">
+          <span style="color:var(--gold2);font-weight:600">${g.palace}</span>
+          <span style="color:var(--dim);font-size:11px">${g.age}</span>
+        </div>
+        <div class="han" style="font-size:14px;color:var(--text)">${g.pillar.gapja}${g.sipsin.stem ? ` · ${g.sipsin.stem}` : ''}</div>
+        <div style="font-size:12px;margin-top:4px">${g.advice}</div>
+      </div>
+    `;
+  }).join("");
+
+  return `
+    <div class="section" style="border-color:var(--gold);background:rgba(212,175,55,.04)">
+      <div class="section-title">📿 정통 명리학 v3.0 (격국·용신·시기예측)</div>
+      <div style="font-size:11px;color:var(--dim)">자평진전·적천수 정통 기법. "잘 맞춘다"의 핵심 4기법 자동 적용.</div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">⚖ 신강·신약 정밀 측정</div>
+      <div style="text-align:center;margin:10px 0">
+        <div style="font-size:32px;font-weight:800;color:${strBarColor}">${yongsin.strength.score}점</div>
+        <div style="font-size:14px;font-weight:700;color:${strBarColor}">${yongsin.strength.grade}</div>
+      </div>
+      <div style="height:10px;background:var(--card2);border-radius:5px;overflow:hidden;margin-top:8px">
+        <div style="width:${yongsin.strength.score}%;height:100%;background:${strBarColor};transition:width .5s"></div>
+      </div>
+      <details style="margin-top:10px"><summary style="font-size:11px;color:var(--dim);cursor:pointer">계산 상세 (${yongsin.strength.details.length}개)</summary>
+        <div style="font-size:11px;color:var(--dim);margin-top:6px;line-height:1.6">${yongsin.strength.details.join("<br>")}</div>
+      </details>
+    </div>
+
+    <div class="section">
+      <div class="section-title">🎯 격국(格局) — 사주의 그릇</div>
+      <div style="text-align:center;margin:8px 0">
+        <div class="han" style="font-size:24px;color:var(--gold2);font-weight:700">${geokguk.name}</div>
+        <div style="font-size:11px;color:var(--dim);margin-top:4px">${geokguk.type}</div>
+      </div>
+      <div class="result-text">▣ 그릇: ${geokguk.desc}
+
+▣ 직업 적성: ${geokguk.career}
+
+▣ 명리 노트: ${geokguk.note}</div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">💎 용신(用神) — 인생의 약</div>
+      <div style="text-align:center;margin:10px 0">
+        <div style="font-size:18px;font-weight:700">${yongsin.primary.method}</div>
+        <div style="font-size:48px;font-weight:800;color:${ohaengColor[yongsin.primary.ohaeng]||'var(--gold2)'};margin:6px 0">${yongsin.primary.ohaeng || "-"}</div>
+        <div style="font-size:11px;color:var(--dim)">${yongsin.primary.reason}</div>
+      </div>
+      ${yongsin.primary.prescription ? `
+        <div style="margin-top:14px;display:grid;grid-template-columns:1fr 1fr;gap:6px;font-size:12px">
+          <div style="background:var(--card2);padding:8px;border-radius:6px"><b style="color:var(--gold2)">색</b><br>${yongsin.primary.prescription.color}</div>
+          <div style="background:var(--card2);padding:8px;border-radius:6px"><b style="color:var(--gold2)">방향</b><br>${yongsin.primary.prescription.direction}</div>
+          <div style="background:var(--card2);padding:8px;border-radius:6px;grid-column:1/3"><b style="color:var(--gold2)">직업</b><br>${yongsin.primary.prescription.job}</div>
+          <div style="background:var(--card2);padding:8px;border-radius:6px"><b style="color:var(--gold2)">음식</b><br>${yongsin.primary.prescription.food}</div>
+          <div style="background:var(--card2);padding:8px;border-radius:6px"><b style="color:var(--gold2)">활동</b><br>${yongsin.primary.prescription.activity}</div>
+          <div style="background:var(--card2);padding:8px;border-radius:6px;grid-column:1/3"><b style="color:var(--gold2)">행운의 숫자</b> ${yongsin.primary.prescription.number}</div>
+        </div>
+      ` : ''}
+      ${yongsin.gisin ? `<div style="margin-top:10px;padding:8px;background:rgba(255,82,82,.08);border-radius:6px;font-size:12px"><b style="color:var(--red)">⚠ 기신(忌神):</b> ${yongsin.gisin} — 이 오행은 피하라 (색·방향·인연)</div>` : ''}
+    </div>
+
+    <div class="section">
+      <div class="section-title">⏰ 인생 주요 시기 (향후 20년)</div>
+      <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:6px">${eventCards}</div>
+      <div style="font-size:11px;color:var(--dim);margin-top:10px;text-align:center">결혼·재물·승진·학업·위기의 가장 가까운 해</div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">📅 향후 10년 세운 매트릭스</div>
+      <div style="font-size:11px;color:var(--dim);margin-bottom:8px">매년 사주에 들어오는 십신·합충 분석. 60점 이상 길운.</div>
+      ${yearRows}
+    </div>
+
+    <div class="section">
+      <div class="section-title">🏛 4궁(宮) — 가족·인생 4단계</div>
+      ${gungHtml}
     </div>
   `;
 }
