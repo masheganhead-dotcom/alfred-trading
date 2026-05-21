@@ -1,21 +1,30 @@
 // app.js - 메인 UI 컨트롤러
-import { calculateSaju, CHEONGAN, CHEONGAN_KOR, JIJI, JIJI_KOR, STEM_OHAENG, BRANCH_OHAENG } from "./core/saju.js";
+import { calculateSaju, CHEONGAN, CHEONGAN_KOR, JIJI, JIJI_KOR, STEM_OHAENG, BRANCH_OHAENG, ANIMALS } from "./core/saju.js";
 import { interpretSaju } from "./core/interpret.js";
 import { coinDivination, yarrowDivination, LINE_POSITIONS } from "./core/iching.js";
 import { drawSpread, interpretCard, cardKey } from "./core/tarot.js";
 import { analyzeGunghap } from "./core/gunghap.js";
 import { calculateTojeong, lookupTojeong } from "./core/tojeong.js";
+import { analyzeShinsal, checkSamjae, mudangSummary, dangsa } from "./core/mudang.js";
+import { sajuToMBTI, bayesianFortune, extractSajuSignals, biorhythm, lifePathNumber, comprehensiveScore } from "./core/science.js";
 
 // === 데이터 로드 ===
 let DATA = {};
 async function loadData() {
-  const [basic, iching, tarot, tojeong] = await Promise.all([
+  const [basic, iching, tarot, tojeong, ilju, mudang, ddi] = await Promise.all([
     fetch("./data/saju_basic.json").then(r => r.json()),
     fetch("./data/iching64.json").then(r => r.json()),
     fetch("./data/tarot78.json").then(r => r.json()),
     fetch("./data/tojeong144.json").then(r => r.json()),
+    fetch("./data/ilju60.json").then(r => r.json()),
+    fetch("./data/korea_mudang.json").then(r => r.json()),
+    fetch("./data/ddi_gunghap.json").then(r => r.json()),
   ]);
-  DATA = { basic, iching, tarot, tojeong };
+  DATA = { basic, iching, tarot, tojeong, ilju, mudang, ddi };
+  // 오늘 날짜로 기본값 설정
+  const today = new Date().toISOString().slice(0, 10);
+  const tgt = document.getElementById("sc-target");
+  if (tgt) tgt.value = today;
 }
 loadData();
 
@@ -349,6 +358,330 @@ function renderGunghap(a, b, r) {
   ${r.complement.desc}</div>
     </div>
   `;
+}
+
+// =========================================================
+// === 무당점 (한국식 종합 해석) ===
+// =========================================================
+window.castMudang = function() {
+  const year = +document.getElementById("m-year").value;
+  const month = +document.getElementById("m-month").value;
+  const day = +document.getElementById("m-day").value;
+  const hour = +document.getElementById("m-hour").value;
+  const gender = document.getElementById("m-gender").value;
+  const longitude = +document.getElementById("m-lng").value;
+
+  const wrap = document.getElementById("mudang-result");
+  wrap.innerHTML = '<div class="section"><div class="loading"><div class="spinner"></div><br>신령님께 여쭙는 중...</div></div>';
+
+  setTimeout(() => {
+    try {
+      const saju = calculateSaju({year, month, day, hour, gender, longitude});
+      const shinsal = analyzeShinsal(saju);
+      const currentYear = new Date().getFullYear();
+      const samjae = checkSamjae(saju.pillars.year.branch, currentYear);
+      const summary = mudangSummary(saju, shinsal, samjae, DATA.ilju, DATA.mudang, DATA.mudang.napeum_60);
+      const dangsaResult = dangsa(saju, DATA.mudang);
+
+      wrap.innerHTML = renderMudang(saju, shinsal, samjae, summary, dangsaResult);
+    } catch (e) {
+      wrap.innerHTML = `<div class="section"><div class="result-text danger">${e.message}</div></div>`;
+      console.error(e);
+    }
+  }, 80);
+};
+
+function renderMudang(saju, shinsal, samjae, summary, dangsaResult) {
+  // 신살 배지
+  const shinsalBadges = shinsal.map(s => {
+    const color = s.type === "길신" ? "#00e676" :
+                  s.type === "흉살" ? "#ff5252" :
+                  s.type === "길흉양면" ? "#ffd740" :
+                  s.type === "관계살" ? "#ff7043" : "#8a7fa3";
+    return `<span class="badge" style="background:${color}22;color:${color};border:1px solid ${color}55">${s.name}</span>`;
+  }).join("") || '<span style="color:var(--dim);font-size:12px">특이 신살 없음 (평이한 사주)</span>';
+
+  // 당사주
+  const dangsaHtml = dangsaResult.map(d => `
+    <div style="background:var(--card2);padding:10px;border-radius:8px;margin-bottom:6px">
+      <div style="font-size:12px;color:var(--gold2);font-weight:600">${d.stage} (${d.ageRange})</div>
+      <div class="han" style="font-size:14px;margin-top:2px">${d.starHan} · ${d.star}</div>
+      <div style="font-size:12px;color:var(--dim);margin-top:2px">${d.desc}</div>
+      <div style="font-size:12px;margin-top:4px">${d.fortune}</div>
+    </div>
+  `).join("");
+
+  // 삼재 박스
+  const samjaeBox = samjae.inSamjae ? `
+    <div class="section" style="border-color:var(--red);background:rgba(255,82,82,.06)">
+      <div class="section-title" style="color:var(--red)">⚠ 삼재 진행 중</div>
+      <div style="font-size:14px;font-weight:700;color:var(--red);margin-bottom:6px">${samjae.phase} (${samjae.startYear}~${samjae.endYear})</div>
+      <div class="result-text">${DATA.mudang.samjae_relief[samjae.phase].mudang}</div>
+    </div>
+  ` : `
+    <div class="section">
+      <div class="section-title" style="color:var(--green)">✓ 삼재 없음</div>
+      <div style="font-size:12px;color:var(--dim)">현재 삼재기가 아닙니다. 평안한 운기.</div>
+    </div>
+  `;
+
+  return `
+    <div class="section">
+      <div class="section-title">🪔 ${saju.pillars.day.gapja} 일주 · ${saju.animal}띠</div>
+      <div style="font-size:11px;color:var(--dim);text-align:center;margin-bottom:8px">납음: ${DATA.mudang.napeum_60.data[saju.pillars.day.gapja] || "-"}</div>
+      <div class="result-text" style="white-space:pre-wrap">${summary}</div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">⭐ 신살(神煞) 자동 판별</div>
+      <div class="badges">${shinsalBadges}</div>
+    </div>
+
+    ${samjaeBox}
+
+    <div class="section">
+      <div class="section-title">🎭 당사주 4단계 운세</div>
+      ${dangsaHtml}
+    </div>
+  `;
+}
+
+// =========================================================
+// === 삼재 체크 ===
+// =========================================================
+window.checkSamjaeFn = function() {
+  const animal = +document.getElementById("sj-animal").value;
+  const animalKor = ANIMALS[animal];
+  const wrap = document.getElementById("samjae-result");
+  const curYear = new Date().getFullYear();
+  const years = [];
+  for (let y = curYear - 1; y <= curYear + 5; y++) {
+    const sj = checkSamjae(animal, y);
+    years.push({year: y, ...sj});
+  }
+  const rows = years.map(y => {
+    const isCur = y.year === curYear;
+    let label = "-", color = "var(--dim)";
+    if (y.inSamjae) {
+      label = y.phase;
+      color = y.phase === "중삼재" ? "#ff5252" : y.phase === "들삼재" ? "#ff9800" : "#ffd740";
+    } else {
+      label = "평년";
+      color = "#00e676";
+    }
+    return `
+      <div style="display:flex;justify-content:space-between;padding:10px;background:${isCur?'rgba(212,175,55,.1)':'var(--card2)'};border-radius:8px;margin-bottom:6px;${isCur?'border:1px solid var(--gold)':''}">
+        <div style="font-weight:${isCur?'700':'500'}">${y.year}년 ${isCur?'(올해)':''}</div>
+        <div style="color:${color};font-weight:700">${label}</div>
+      </div>
+    `;
+  }).join("");
+
+  // 액땜 처방
+  const curSamjae = years.find(y => y.year === curYear);
+  let prescription = "";
+  if (curSamjae.inSamjae) {
+    const relief = DATA.mudang.samjae_relief[curSamjae.phase];
+    prescription = `
+      <div class="section" style="border-color:var(--red);background:rgba(255,82,82,.06)">
+        <div class="section-title" style="color:var(--red)">⚠ ${curSamjae.phase} 처방</div>
+        <div class="result-text">▣ 기운: ${relief.energy}
+
+▣ 주의사항:
+${relief.caution.map(c => "  · " + c).join("\n")}
+
+▣ 추천 부적: ${relief.bujeok.join(", ")}
+
+▣ 조언:
+${relief.advice}
+
+▣ 무당 풀이:
+${relief.mudang}</div>
+      </div>
+    `;
+  }
+
+  wrap.innerHTML = `
+    <div class="section">
+      <div class="section-title">${animalKor}띠 - ${curYear}년 기준 삼재 흐름</div>
+      ${rows}
+    </div>
+    ${prescription}
+  `;
+};
+
+// =========================================================
+// === 과학 결합 분석 ===
+// =========================================================
+window.calcScience = function() {
+  const year = +document.getElementById("sc-year").value;
+  const month = +document.getElementById("sc-month").value;
+  const day = +document.getElementById("sc-day").value;
+  const hour = +document.getElementById("sc-hour").value;
+  const gender = document.getElementById("sc-gender").value;
+  const targetStr = document.getElementById("sc-target").value;
+  const target = targetStr ? new Date(targetStr) : new Date();
+
+  const wrap = document.getElementById("science-result");
+  wrap.innerHTML = '<div class="section"><div class="loading"><div class="spinner"></div><br>과학적 분석 중...</div></div>';
+
+  setTimeout(() => {
+    try {
+      const saju = calculateSaju({year, month, day, hour, gender});
+      const mbti = sajuToMBTI(saju);
+      const bio = biorhythm(year, month, day, target);
+      const lp = lifePathNumber(year, month, day);
+      const signals = extractSajuSignals(saju);
+      const bayes = bayesianFortune(signals);
+      const total = comprehensiveScore(saju, bio, lp, bayes);
+
+      wrap.innerHTML = renderScience(saju, mbti, bio, lp, bayes, total);
+      drawBioChart(bio);
+    } catch (e) {
+      wrap.innerHTML = `<div class="section"><div class="result-text danger">${e.message}</div></div>`;
+      console.error(e);
+    }
+  }, 80);
+};
+
+function renderScience(saju, mbti, bio, lp, bayes, total) {
+  // MBTI 게이지
+  const mbtiBars = [
+    ["E", "I"], ["N", "S"], ["T", "F"], ["J", "P"]
+  ].map(([a, b]) => {
+    const aVal = mbti.scores[a];
+    return `
+      <div style="margin:6px 0">
+        <div style="display:flex;justify-content:space-between;font-size:11px;margin-bottom:2px">
+          <span>${a} ${aVal}%</span><span>${100 - aVal}% ${b}</span>
+        </div>
+        <div style="height:6px;background:var(--card2);border-radius:3px;overflow:hidden">
+          <div style="width:${aVal}%;height:100%;background:linear-gradient(90deg,var(--gold),var(--gold2))"></div>
+        </div>
+      </div>
+    `;
+  }).join("");
+
+  // 바이오리듬
+  const bioBars = Object.entries(bio.cycles).map(([k, c]) => {
+    const color = c.percent > 30 ? "#00e676" : c.percent < -30 ? "#ff5252" : "#ffd740";
+    const w = Math.abs(c.percent);
+    return `
+      <div style="margin:8px 0">
+        <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px">
+          <span>${c.label} (${c.period}일 주기)</span>
+          <span style="color:${color};font-weight:700">${c.percent}% · ${c.phase}</span>
+        </div>
+        <div style="height:8px;background:var(--card2);border-radius:4px;position:relative;overflow:hidden">
+          <div style="position:absolute;left:50%;top:0;bottom:0;width:1px;background:var(--border)"></div>
+          <div style="position:absolute;top:0;bottom:0;${c.percent>=0?'left:50%':'right:50%'};width:${w/2}%;background:${color};opacity:.7"></div>
+        </div>
+      </div>
+    `;
+  }).join("");
+
+  // 베이지안
+  const signalsHtml = bayes.signals.map(s => {
+    const c = s.type === "positive" ? "#00e676" : "#ff5252";
+    const sign = s.type === "positive" ? "+" : "−";
+    return `<span class="badge" style="background:${c}22;color:${c}">${sign} ${s.label}</span>`;
+  }).join("") || '<span style="color:var(--dim);font-size:12px">시그널 없음</span>';
+
+  return `
+    <div class="section">
+      <div class="section-title">🧬 종합 점수</div>
+      <div class="compat-score">${total.total}점</div>
+      <div class="compat-grade" style="color:var(--gold2)">${total.grade}급</div>
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:12px;font-size:11px;text-align:center">
+        <div style="background:var(--card2);padding:8px;border-radius:6px"><div style="color:var(--dim)">사주</div><div style="font-size:18px;font-weight:700">${total.breakdown.saju}</div></div>
+        <div style="background:var(--card2);padding:8px;border-radius:6px"><div style="color:var(--dim)">바이오</div><div style="font-size:18px;font-weight:700">${total.breakdown.bio}</div></div>
+        <div style="background:var(--card2);padding:8px;border-radius:6px"><div style="color:var(--dim)">수비학</div><div style="font-size:18px;font-weight:700">${total.breakdown.lifePath}</div></div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">🧠 사주 ⊕ MBTI 매핑</div>
+      <div style="text-align:center;font-size:32px;font-weight:800;color:var(--gold2);margin:4px 0">${mbti.type}</div>
+      <div style="text-align:center;font-size:12px;color:var(--dim);margin-bottom:10px">신뢰도 ${mbti.confidence}%</div>
+      ${mbtiBars}
+      <div style="font-size:12px;margin-top:10px;color:var(--text)">${mbti.description}</div>
+      <div style="font-size:10px;color:var(--dim);margin-top:8px;font-style:italic">⚠ ${mbti.disclaimer}</div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">📊 베이지안 운세 확률</div>
+      <div style="text-align:center;margin:8px 0">
+        <div style="font-size:36px;font-weight:800;color:${bayes.probability >= 50 ? 'var(--green)' : 'var(--red)'}">
+          ${bayes.probability}%
+        </div>
+        <div style="font-size:11px;color:var(--dim)">신뢰구간 ${bayes.confidenceInterval[0]}% ~ ${bayes.confidenceInterval[1]}%</div>
+        <div style="font-size:13px;margin-top:6px;color:var(--gold2);font-weight:600">${bayes.interpretation}</div>
+      </div>
+      <div style="margin-top:12px;font-size:11px;color:var(--dim);margin-bottom:6px">검출 시그널 (${bayes.nSignals}개):</div>
+      <div class="badges">${signalsHtml}</div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">🌊 바이오리듬 (${bio.targetDate} 기준)</div>
+      ${bioBars}
+      <canvas id="bio-chart" style="width:100%;height:120px;margin-top:14px"></canvas>
+    </div>
+
+    <div class="section">
+      <div class="section-title">🔢 수비학 (Life Path Number)</div>
+      <div style="text-align:center;font-size:48px;font-weight:800;color:var(--gold2);margin:10px 0">
+        ${lp.lifePathNumber}${lp.isMaster ? ' ✨' : ''}
+      </div>
+      ${lp.isMaster ? '<div style="text-align:center;color:var(--gold);font-size:12px;margin-bottom:8px">★ 마스터 넘버 ★</div>' : ''}
+      <div style="font-size:11px;color:var(--dim);text-align:center;margin-bottom:8px">
+        ${lp.year} + ${lp.month} + ${lp.day} = ${lp.sum} → ${lp.lifePathNumber}
+      </div>
+      <div class="result-text">${lp.meaning}</div>
+    </div>
+  `;
+}
+
+function drawBioChart(bio) {
+  const c = document.getElementById("bio-chart");
+  if (!c) return;
+  const dpr = window.devicePixelRatio || 1;
+  const W = c.parentElement.clientWidth - 32;
+  const H = 120;
+  c.width = W * dpr; c.height = H * dpr;
+  c.style.width = W + "px"; c.style.height = H + "px";
+  const ctx = c.getContext("2d");
+  ctx.scale(dpr, dpr);
+  ctx.clearRect(0, 0, W, H);
+
+  // 0선
+  const mid = H / 2;
+  ctx.strokeStyle = "#2a2240";
+  ctx.lineWidth = 1;
+  ctx.setLineDash([4, 4]);
+  ctx.beginPath();
+  ctx.moveTo(0, mid); ctx.lineTo(W, mid); ctx.stroke();
+  ctx.setLineDash([]);
+
+  // 오늘(offset=0) 선
+  const todayX = (7 / 37) * W;
+  ctx.strokeStyle = "rgba(212,175,55,.5)";
+  ctx.beginPath();
+  ctx.moveTo(todayX, 0); ctx.lineTo(todayX, H); ctx.stroke();
+
+  // 4개 사이클
+  const colors = { physical: "#ef4444", emotional: "#3b82f6", intellectual: "#22c55e", intuitive: "#d4af37" };
+  for (const [k, col] of Object.entries(colors)) {
+    ctx.beginPath();
+    ctx.strokeStyle = col;
+    ctx.lineWidth = 2;
+    bio.trend.forEach((p, i) => {
+      const x = (i / (bio.trend.length - 1)) * W;
+      const y = mid - p[k] * (H / 2 - 10);
+      if (i === 0) ctx.moveTo(x, y);
+      else ctx.lineTo(x, y);
+    });
+    ctx.stroke();
+  }
 }
 
 // === 토정비결 ===

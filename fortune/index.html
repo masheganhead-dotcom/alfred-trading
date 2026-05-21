@@ -141,12 +141,17 @@ button.ghost{background:var(--card2);color:var(--text);border:1px solid var(--bo
 </div>
 
 <div class="container">
-  <div class="tabbar">
+  <div class="tabbar" style="grid-template-columns:repeat(4,1fr)">
     <button class="tabbtn active" data-tab="saju" onclick="setTab(this)">사주</button>
+    <button class="tabbtn" data-tab="mudang" onclick="setTab(this)">무당점</button>
     <button class="tabbtn" data-tab="iching" onclick="setTab(this)">주역</button>
     <button class="tabbtn" data-tab="tarot" onclick="setTab(this)">타로</button>
+  </div>
+  <div class="tabbar" style="grid-template-columns:repeat(4,1fr);margin-top:-6px">
     <button class="tabbtn" data-tab="gunghap" onclick="setTab(this)">궁합</button>
     <button class="tabbtn" data-tab="tojeong" onclick="setTab(this)">토정</button>
+    <button class="tabbtn" data-tab="samjae" onclick="setTab(this)">삼재</button>
+    <button class="tabbtn" data-tab="science" onclick="setTab(this)">과학</button>
   </div>
 
   <!-- ============== 사주 ============== -->
@@ -256,8 +261,72 @@ button.ghost{background:var(--card2);color:var(--text);border:1px solid var(--bo
     <div id="tojeong-result"></div>
   </div>
 
+  <!-- ============== 무당점 (한국식 종합 해석) ============== -->
+  <div class="tab-content hidden" id="tab-mudang">
+    <div class="section">
+      <div class="section-title">🪔 무당점 - 한국식 종합 운세</div>
+      <div style="color:var(--dim);font-size:12px;margin-bottom:10px">사주 탭에서 산출 후 여기로 와서 신살·일주·당사주·삼재·납음을 한 번에 본다</div>
+      <div class="field-row">
+        <div class="field"><label>연도</label><input type="number" id="m-year" value="1990"></div>
+        <div class="field"><label>월</label><input type="number" id="m-month" value="5"></div>
+      </div>
+      <div class="field-row">
+        <div class="field"><label>일</label><input type="number" id="m-day" value="15"></div>
+        <div class="field"><label>시</label><input type="number" id="m-hour" value="12"></div>
+      </div>
+      <div class="field-row">
+        <div class="field"><label>성별</label><select id="m-gender"><option value="M">남</option><option value="F">여</option></select></div>
+        <div class="field"><label>경도</label><input type="number" id="m-lng" value="127" step="0.5"></div>
+      </div>
+      <button class="primary" onclick="castMudang()">🪔 무당점 받기</button>
+    </div>
+    <div id="mudang-result"></div>
+  </div>
+
+  <!-- ============== 삼재 체크 ============== -->
+  <div class="tab-content hidden" id="tab-samjae">
+    <div class="section">
+      <div class="section-title">⚠ 삼재 체크 + 액땜 처방</div>
+      <div style="color:var(--dim);font-size:12px;margin-bottom:10px">띠를 선택하면 현재·향후 5년의 삼재 여부를 본다</div>
+      <div class="field"><label>띠 선택</label>
+        <select id="sj-animal">
+          <option value="0">쥐(子)</option><option value="1">소(丑)</option>
+          <option value="2">호랑이(寅)</option><option value="3">토끼(卯)</option>
+          <option value="4">용(辰)</option><option value="5">뱀(巳)</option>
+          <option value="6">말(午)</option><option value="7">양(未)</option>
+          <option value="8">원숭이(申)</option><option value="9">닭(酉)</option>
+          <option value="10">개(戌)</option><option value="11">돼지(亥)</option>
+        </select>
+      </div>
+      <button class="primary" onclick="checkSamjaeFn()">⚠ 삼재 보기</button>
+    </div>
+    <div id="samjae-result"></div>
+  </div>
+
+  <!-- ============== 과학 결합 ============== -->
+  <div class="tab-content hidden" id="tab-science">
+    <div class="section">
+      <div class="section-title">🔬 과학적 결합 분석</div>
+      <div style="color:var(--dim);font-size:12px;margin-bottom:10px">사주 ⊕ MBTI 매핑 ⊕ 바이오리듬 ⊕ 수비학 ⊕ 베이지안 확률</div>
+      <div class="field-row">
+        <div class="field"><label>연도</label><input type="number" id="sc-year" value="1990"></div>
+        <div class="field"><label>월</label><input type="number" id="sc-month" value="5"></div>
+      </div>
+      <div class="field-row">
+        <div class="field"><label>일</label><input type="number" id="sc-day" value="15"></div>
+        <div class="field"><label>시</label><input type="number" id="sc-hour" value="12"></div>
+      </div>
+      <div class="field-row">
+        <div class="field"><label>성별</label><select id="sc-gender"><option value="M">남</option><option value="F">여</option></select></div>
+        <div class="field"><label>분석 기준일</label><input type="date" id="sc-target"></div>
+      </div>
+      <button class="primary" onclick="calcScience()">🔬 과학 분석</button>
+    </div>
+    <div id="science-result"></div>
+  </div>
+
   <div class="footer">
-    오라클 v1.0 · 사주·주역·타로·궁합·토정비결<br>
+    오라클 v2.0 · 사주·무당점·주역·타로·궁합·토정·삼재·과학결합<br>
     오픈소스 기반: manseryeok-js · bazi-mcp · korean_lunar_calendar · Brianfit/I-Ching<br>
     천문 계산: Jean Meeus Astronomical Algorithms<br>
     ⚠ 운명은 참고일 뿐, 결정은 본인의 몫
