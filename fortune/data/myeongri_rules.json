@@ -1,0 +1,146 @@
+{
+  "_meta": {
+    "title": "명리학 고전 룰 디지털화 v1.0",
+    "sources": [
+      "자평진전(子平眞詮) - 심효첨 (명대)",
+      "적천수(滴天髓) - 유백온 (명대) / 임철초 평주",
+      "궁통보감(窮通寶鑑) - 청대",
+      "연해자평(淵海子平) - 송대",
+      "삼명통회(三命通會) - 명대"
+    ],
+    "format": "if-then 패턴. 사주의 특정 조건이 충족되면 결과·해석 매칭",
+    "count_target": "Phase 2에서 100+, Phase 3에서 500+",
+    "applicability": "정통 명리학 학파(자평진전·적천수)의 핵심 룰만. 결과론적 매칭 보조용"
+  },
+  "rules": [
+    {"id":"R001","category":"격국","name":"정관격_재성유","if":{"geokguk":"정관격","sipsin_has":"정재"},"then":"정관격에 재성이 있으면 재생관으로 격이 빛난다","outcome_tags":["명예","안정","대기업","공직"],"score":85},
+    {"id":"R002","category":"격국","name":"정관격_식상극","if":{"geokguk":"정관격","sipsin_has":"상관"},"then":"정관격에 상관이 있으면 상관견관으로 흉. 명예 손상","outcome_tags":["파직","구설","명예손상"],"score":25},
+    {"id":"R003","category":"격국","name":"편관격_식신제살","if":{"geokguk":"편관격","sipsin_has":"식신"},"then":"편관격에 식신이 있으면 식신제살로 길. 강력한 권위","outcome_tags":["권력","무관","외과","법조"],"score":80},
+    {"id":"R004","category":"격국","name":"편관격_인성","if":{"geokguk":"편관격","sipsin_has":["정인","편인"]},"then":"편관격에 인성이 있으면 살인상생. 학자형 권력자","outcome_tags":["교수","연구","고위공직"],"score":85},
+    {"id":"R005","category":"격국","name":"식신격_재성","if":{"geokguk":"식신격","sipsin_has":["정재","편재"]},"then":"식신격에 재성이면 식신생재. 사업·창작으로 부","outcome_tags":["사업","요식","창작","부유"],"score":85},
+    {"id":"R006","category":"격국","name":"식신격_편인극","if":{"geokguk":"식신격","sipsin_has":"편인"},"then":"식신격에 편인이면 편인도식. 식복·자식 손상","outcome_tags":["가난","자녀어려움","고독"],"score":30},
+    {"id":"R007","category":"격국","name":"상관격_인성","if":{"geokguk":"상관격","sipsin_has":["정인","편인"]},"then":"상관격에 인성이면 상관패인. 천재형 예술가","outcome_tags":["천재","예술가","학자","스타"],"score":90},
+    {"id":"R008","category":"격국","name":"상관격_정관","if":{"geokguk":"상관격","sipsin_has":"정관"},"then":"상관견관 - 명예 파괴, 직장 자주 옮김","outcome_tags":["반항","이직","구설"],"score":30},
+    {"id":"R009","category":"격국","name":"정재격_식신","if":{"geokguk":"정재격","sipsin_has":"식신"},"then":"정재격에 식신이면 식신생재. 꾸준한 안정 재물","outcome_tags":["근면","월급","자영업","안정"],"score":80},
+    {"id":"R010","category":"격국","name":"정재격_비겁","if":{"geokguk":"정재격","sipsin_has":["비견","겁재"],"strength":"신왕"},"then":"신왕 정재격에 비겁 거듭이면 군겁쟁재. 손재","outcome_tags":["손재","부부갈등","동업분쟁"],"score":35},
+    {"id":"R011","category":"격국","name":"편재격_신왕","if":{"geokguk":"편재격","strength":"신왕"},"then":"신왕 편재격은 큰돈 감당. 사업가·CEO","outcome_tags":["사업가","부동산","무역","인기"],"score":90},
+    {"id":"R012","category":"격국","name":"편재격_신약","if":{"geokguk":"편재격","strength":"신약"},"then":"신약 편재격은 재다신약. 재물 보여도 못 잡음","outcome_tags":["가난","스트레스","과로"],"score":35},
+    {"id":"R013","category":"격국","name":"정인격_정관","if":{"geokguk":"정인격","sipsin_has":"정관"},"then":"정인격에 정관이면 관인상생. 명문가·학자관료","outcome_tags":["학자","교수","고위공직","명문가"],"score":90},
+    {"id":"R014","category":"격국","name":"정인격_재성","if":{"geokguk":"정인격","sipsin_has":["정재","편재"]},"then":"정인격에 재성이면 탐재괴인. 학업·명예 손상","outcome_tags":["학업중단","욕심","평판하락"],"score":35},
+    {"id":"R015","category":"격국","name":"편인격_편재","if":{"geokguk":"편인격","sipsin_has":"편재"},"then":"편인격에 편재면 편인을 제어. 비주류로 큰 부","outcome_tags":["기술","연예","예술","독립사업"],"score":80},
+    {"id":"R016","category":"격국","name":"건록격","if":{"geokguk":"건록격"},"then":"건록격은 자수성가의 표상. 식상·재성 운에 발복","outcome_tags":["자수성가","독립","전문직"],"score":75},
+    {"id":"R017","category":"격국","name":"양인격_편관","if":{"geokguk":"양인격","sipsin_has":"편관"},"then":"양인격에 편관이면 양인합살. 최고의 무관·정치인","outcome_tags":["장군","경찰","정치인","CEO"],"score":92},
+    {"id":"R018","category":"격국","name":"양인격_정관","if":{"geokguk":"양인격","sipsin_has":"정관"},"then":"양인견정관 - 충돌·파직 가능","outcome_tags":["충돌","권력다툼","파직"],"score":35},
+    {"id":"R019","category":"외격","name":"종강격","if":{"strength":"극신왕"},"then":"종강격 - 일간 극강. 한 분야 최고 전문가·권력자","outcome_tags":["전문가","독선","권력자"],"score":85},
+    {"id":"R020","category":"외격","name":"종재격","if":{"geokguk":"종재격"},"then":"종재격 - 재를 따라가는 격. 사업·금융 큰 부","outcome_tags":["사업가","금융","무역"],"score":85},
+    {"id":"R021","category":"외격","name":"종살격","if":{"geokguk":"종살격"},"then":"종살격 - 권력에 종속해 빛남","outcome_tags":["대기업","공직","군경"],"score":85},
+    {"id":"R022","category":"외격","name":"종아격","if":{"geokguk":"종아격"},"then":"종아격 - 자식·작품을 따라감. 예술·창작","outcome_tags":["예술가","연예","작가","교사"],"score":85},
+
+    {"id":"R023","category":"신살","name":"천을귀인","if":{"shinsal":"천을귀인"},"then":"천을귀인은 최고 길신. 위기에 귀인 도움","outcome_tags":["인덕","위기극복","길운"],"score":85},
+    {"id":"R024","category":"신살","name":"문창귀인","if":{"shinsal":"문창귀인"},"then":"문창귀인은 학업·시험·문서 길","outcome_tags":["학자","시험합격","교육"],"score":75},
+    {"id":"R025","category":"신살","name":"도화살_여","if":{"shinsal":"도화살","gender":"F"},"then":"여성 도화살은 인기·매력. 연예·예술 길. 강하면 색난","outcome_tags":["인기","연예","예술","미모"],"score":70},
+    {"id":"R026","category":"신살","name":"도화살_남","if":{"shinsal":"도화살","gender":"M"},"then":"남성 도화살은 이성 인기. 사회성·매력","outcome_tags":["인기","사교","바람기"],"score":65},
+    {"id":"R027","category":"신살","name":"역마살","if":{"shinsal":"역마살"},"then":"역마살은 이동·해외·변동. 영업·운수·무역","outcome_tags":["해외","무역","이동","영업"],"score":70},
+    {"id":"R028","category":"신살","name":"화개살","if":{"shinsal":"화개살"},"then":"화개살은 예술·종교·고독. 정신 분야","outcome_tags":["예술","종교","역술","학자"],"score":75},
+    {"id":"R029","category":"신살","name":"양인살_무관","if":{"shinsal":"양인살","geokguk":["편관격","양인격"]},"then":"양인 + 편관격은 군경·외과·격투의 최고","outcome_tags":["군인","경찰","외과의","격투기"],"score":85},
+    {"id":"R030","category":"신살","name":"백호살_복수","if":{"shinsal":"백호살","count":">=2"},"then":"백호살 2개 이상은 큰 사고·수술 운. 단 강한 직업이면 권위","outcome_tags":["사고주의","수술","무관","의료"],"score":40,"warning":true},
+    {"id":"R031","category":"신살","name":"괴강살","if":{"shinsal":"괴강살"},"then":"괴강살은 두령 기상. 카리스마·여성은 부부 약함","outcome_tags":["리더","독립","부부갈등"],"score":70},
+    {"id":"R032","category":"신살","name":"원진살","if":{"shinsal":"원진살"},"then":"원진살은 가까운 관계의 미움","outcome_tags":["가족갈등","부부갈등","원망"],"score":40,"warning":true},
+    {"id":"R033","category":"신살","name":"귀문관살","if":{"shinsal":"귀문관살"},"then":"귀문관살은 신경예민·직감·예지. 정신 분야 재능. 강하면 불안","outcome_tags":["예술","역술","정신과약점","직관"],"score":60},
+    {"id":"R034","category":"신살","name":"공망_일지","if":{"shinsal":"공망","location":"day"},"then":"일지 공망은 부부 인연 약. 늦혼·외로움","outcome_tags":["늦혼","외로움","독신"],"score":50},
+    {"id":"R035","category":"신살","name":"공망_재성","if":{"gongmang_on":"재성"},"then":"재성 공망은 돈을 잡아도 새어나감","outcome_tags":["손재","낭비"],"score":40,"warning":true},
+
+    {"id":"R036","category":"용신","name":"용신_화_겨울","if":{"yongsin":"화","season":"겨울"},"then":"한겨울 출생에 화 용신 → 따뜻함이 인생의 핵심","outcome_tags":["따뜻","발산","표현","예술"],"score":80},
+    {"id":"R037","category":"용신","name":"용신_수_여름","if":{"yongsin":"수","season":"여름"},"then":"한여름 출생에 수 용신 → 시원함·지혜","outcome_tags":["지혜","연구","학자","바다"],"score":80},
+    {"id":"R038","category":"용신","name":"용신_운에들어옴","if":{"daewoon_sipsin":"yongsin"},"then":"대운에 용신 들어오면 인생 황금기","outcome_tags":["발복","성공","결혼"],"score":90},
+    {"id":"R039","category":"용신","name":"기신_운에들어옴","if":{"daewoon_sipsin":"gisin"},"then":"대운에 기신 들어오면 시련의 10년","outcome_tags":["고생","질병","손재"],"score":30,"warning":true},
+
+    {"id":"R040","category":"오행","name":"화_결핍","if":{"ohaeng_zero":"화"},"then":"화 결핍 - 표현·열정 부족. 우울 경향","outcome_tags":["내향","우울","과묵"],"score":45,"prescription":"빨강·남쪽·운동·표현"},
+    {"id":"R041","category":"오행","name":"수_결핍","if":{"ohaeng_zero":"수"},"then":"수 결핍 - 지혜·유연성 부족. 고집","outcome_tags":["고집","융통성부족"],"score":50,"prescription":"검정·북쪽·수영·여행"},
+    {"id":"R042","category":"오행","name":"목_결핍","if":{"ohaeng_zero":"목"},"then":"목 결핍 - 성장·인덕 부족. 결단력 약","outcome_tags":["결단력약","인덕부족"],"score":50,"prescription":"녹색·동쪽·식물·아침"},
+    {"id":"R043","category":"오행","name":"금_결핍","if":{"ohaeng_zero":"금"},"then":"금 결핍 - 절제·완결성 부족. 시작은 잘하나 끝맺기 약","outcome_tags":["미완성","결단력약"],"score":50,"prescription":"흰색·서쪽·악기·정리정돈"},
+    {"id":"R044","category":"오행","name":"토_결핍","if":{"ohaeng_zero":"토"},"then":"토 결핍 - 신용·지구력 부족","outcome_tags":["불안정","약속어김"],"score":50,"prescription":"노랑·중앙·도자기·봉사"},
+    {"id":"R045","category":"오행","name":"오행균형","if":{"ohaeng_balanced":true},"then":"오행 균형 사주 - 인생 평이하고 큰 굴곡 없음","outcome_tags":["평이","중용","안정"],"score":70},
+
+    {"id":"R046","category":"형충회합","name":"일지충","if":{"chung":"일지"},"then":"일지충은 부부 변동·이사·이별 신호","outcome_tags":["이혼","별거","이사"],"score":35,"warning":true},
+    {"id":"R047","category":"형충회합","name":"년지충","if":{"chung":"년지"},"then":"년지충은 부모·고향 변동","outcome_tags":["조실부모","고향떠남"],"score":40},
+    {"id":"R048","category":"형충회합","name":"월지충","if":{"chung":"월지"},"then":"월지충은 직업·형제 변동","outcome_tags":["이직","형제갈등"],"score":40},
+    {"id":"R049","category":"형충회합","name":"삼합","if":{"hap":"삼합"},"then":"삼합은 큰 세력 결집. 대인관계·동맹","outcome_tags":["인덕","협력","대성공"],"score":80},
+    {"id":"R050","category":"형충회합","name":"인사신_삼형","if":{"hyung":"인사신"},"then":"인사신 삼형은 송사·관재구설","outcome_tags":["송사","구설","수술"],"score":35,"warning":true},
+
+    {"id":"R051","category":"일주_정밀","name":"갑신_도끼","if":{"day_gapja":"甲申"},"then":"갑신일주는 도끼 위 큰 나무. 기술·외과·기계","outcome_tags":["기술자","외과의","엔지니어"],"score":65},
+    {"id":"R052","category":"일주_정밀","name":"병오_태양정점","if":{"day_gapja":"丙午"},"then":"병오일주는 한낮 태양. 카리스마·열정·인기. 강한 직업","outcome_tags":["연예인","CEO","무관","요식"],"score":80},
+    {"id":"R053","category":"일주_정밀","name":"무자_산수","if":{"day_gapja":"戊子"},"then":"무자일주는 산이 물을 안음. 외향·내공허","outcome_tags":["공직","교육","외교"],"score":70},
+    {"id":"R054","category":"일주_정밀","name":"임자_큰물","if":{"day_gapja":"壬子"},"then":"임자일주는 깊은 강. 총명·도화·인기","outcome_tags":["학자","외교","변호사"],"score":80},
+    {"id":"R055","category":"일주_정밀","name":"신묘_보석꽃","if":{"day_gapja":"辛卯"},"then":"신묘일주는 보석이 꽃 자름. 디자인·예술·평론. 마음 잘 다침","outcome_tags":["디자이너","평론가","세공"],"score":65},
+
+    {"id":"R056","category":"직업매칭","name":"화기강_연예","if":{"ohaeng_strong":"화"},"then":"화 기운 강함 → 연예·방송·요식·발산 직업","outcome_tags":["연예","방송","요식","미용"],"score":75},
+    {"id":"R057","category":"직업매칭","name":"수기강_학자","if":{"ohaeng_strong":"수"},"then":"수 기운 강함 → 학자·연구·외교·해외","outcome_tags":["학자","연구원","외교","무역"],"score":75},
+    {"id":"R058","category":"직업매칭","name":"목기강_교육","if":{"ohaeng_strong":"목"},"then":"목 기운 강함 → 교육·출판·인문·생명","outcome_tags":["교사","출판","인문","의사"],"score":75},
+    {"id":"R059","category":"직업매칭","name":"금기강_무관","if":{"ohaeng_strong":"금"},"then":"금 기운 강함 → 군·경·법조·외과·세공","outcome_tags":["군인","경찰","판사","의사"],"score":75},
+    {"id":"R060","category":"직업매칭","name":"토기강_부동산","if":{"ohaeng_strong":"토"},"then":"토 기운 강함 → 부동산·건설·농업·중개","outcome_tags":["부동산","건설","농업","중개"],"score":75},
+
+    {"id":"R061","category":"결혼시기","name":"여성_관성년","if":{"gender":"F","seun_sipsin":["정관","편관"]},"then":"여성에게 관성 운 들어오면 결혼 시기","outcome_tags":["결혼","남편만남"],"score":80},
+    {"id":"R062","category":"결혼시기","name":"남성_재성년","if":{"gender":"M","seun_sipsin":["정재","편재"]},"then":"남성에게 재성 운 들어오면 결혼 시기","outcome_tags":["결혼","이성만남"],"score":80},
+    {"id":"R063","category":"결혼시기","name":"일지합운","if":{"seun_branch_hap_day":true},"then":"세운 지지가 일지와 합 → 결혼·계약·동거","outcome_tags":["결혼","동거","계약"],"score":85},
+
+    {"id":"R064","category":"건강","name":"화_과다_심장","if":{"ohaeng_excess":"화"},"then":"화 과다는 심장·혈압·눈 약점","outcome_tags":["고혈압","심장병","불면"],"score":50,"warning":true},
+    {"id":"R065","category":"건강","name":"수_과다_신장","if":{"ohaeng_excess":"수"},"then":"수 과다는 신장·생식기 약점","outcome_tags":["신장병","요통"],"score":50,"warning":true},
+    {"id":"R066","category":"건강","name":"목_과다_간","if":{"ohaeng_excess":"목"},"then":"목 과다는 간·근육 약점","outcome_tags":["간염","근육통"],"score":50,"warning":true},
+    {"id":"R067","category":"건강","name":"금_과다_폐","if":{"ohaeng_excess":"금"},"then":"금 과다는 폐·기관지·뼈 약점","outcome_tags":["폐병","천식","골절"],"score":50,"warning":true},
+    {"id":"R068","category":"건강","name":"토_과다_위장","if":{"ohaeng_excess":"토"},"then":"토 과다는 위장·비만·당뇨 약점","outcome_tags":["위장병","비만","당뇨"],"score":50,"warning":true},
+
+    {"id":"R069","category":"재물","name":"식신생재","if":{"sipsin_chain":["식신","재성"]},"then":"식신 → 재성 흐름은 창작·기획으로 큰돈","outcome_tags":["창작부","사업번창"],"score":85},
+    {"id":"R070","category":"재물","name":"재생관","if":{"sipsin_chain":["재성","관성"]},"then":"재 → 관 흐름은 돈으로 명예. 정치·기업","outcome_tags":["정치인","기업가"],"score":85},
+    {"id":"R071","category":"재물","name":"관인상생","if":{"sipsin_chain":["관성","인성"]},"then":"관 → 인 흐름은 명예·학문·후원","outcome_tags":["고위공직","교수","명문가"],"score":85},
+
+    {"id":"R072","category":"성격","name":"비겁다_고집","if":{"sipsin_count":{"비견겁재":">=3"}},"then":"비겁 많으면 자기주장 강함. 동업 어려움","outcome_tags":["독립","고집","동업불가"],"score":55},
+    {"id":"R073","category":"성격","name":"식상다_표현","if":{"sipsin_count":{"식신상관":">=3"}},"then":"식상 많으면 표현·창의·반항","outcome_tags":["예술","비판적","자유"],"score":70},
+    {"id":"R074","category":"성격","name":"재성다_사업","if":{"sipsin_count":{"정재편재":">=3"}},"then":"재성 많으면 사업가형. 신왕해야 감당","outcome_tags":["사업","유동","역마"],"score":65},
+    {"id":"R075","category":"성격","name":"관성다_체계","if":{"sipsin_count":{"정관편관":">=3"}},"then":"관성 많으면 체계·압박. 명예 추구","outcome_tags":["공직","경쟁","스트레스"],"score":65},
+    {"id":"R076","category":"성격","name":"인성다_학자","if":{"sipsin_count":{"정인편인":">=3"}},"then":"인성 많으면 학자·생각형. 실행력 약","outcome_tags":["학자","우유부단","의존"],"score":60},
+
+    {"id":"R077","category":"자녀","name":"식상_여자","if":{"gender":"F","sipsin_has":["식신","상관"]},"then":"여성에게 식상은 자식. 식신 있으면 자녀복","outcome_tags":["자녀복"],"score":75},
+    {"id":"R078","category":"자녀","name":"관성_남자","if":{"gender":"M","sipsin_has":["정관","편관"]},"then":"남성에게 관성은 자식. 정관 있으면 효성","outcome_tags":["자녀효성"],"score":75},
+
+    {"id":"R079","category":"배우자","name":"정재_남자","if":{"gender":"M","sipsin_has":"정재","strength":"중화이상"},"then":"남성에게 정재 = 정처. 안정된 부인","outcome_tags":["좋은배우자"],"score":80},
+    {"id":"R080","category":"배우자","name":"정관_여자","if":{"gender":"F","sipsin_has":"정관","strength":"중화이상"},"then":"여성에게 정관 = 남편. 좋은 남편","outcome_tags":["좋은배우자"],"score":80},
+
+    {"id":"R081","category":"대운전환","name":"대운_충","if":{"daewoon_chung_with_year":true},"then":"대운이 사주 충 → 큰 격동의 10년","outcome_tags":["격동","변동","위기"],"score":40,"warning":true},
+    {"id":"R082","category":"대운전환","name":"대운_합","if":{"daewoon_hap_with_year":true},"then":"대운이 사주와 합 → 결합·새 시작","outcome_tags":["결혼","협력","새시작"],"score":80},
+
+    {"id":"R083","category":"부모","name":"년주_인성","if":{"sipsin_at":{"year":"정인"}},"then":"년주 정인은 부모 인덕 두텁고 학자 가문","outcome_tags":["학자가문","부모인덕"],"score":80},
+    {"id":"R084","category":"부모","name":"년주_편관","if":{"sipsin_at":{"year":"편관"}},"then":"년주 편관은 엄격한 부모·시련의 어린시절","outcome_tags":["엄격부모","시련"],"score":50},
+
+    {"id":"R085","category":"학업","name":"인성_정관","if":{"sipsin_has":["정인","정관"]},"then":"인성 + 정관 = 명문대·고시·학자형","outcome_tags":["명문대","고시","교수"],"score":85},
+
+    {"id":"R086","category":"전문가","name":"편인_상관","if":{"sipsin_has":["편인","상관"]},"then":"편인 + 상관 = 천재형 비주류. 역술·예술·기술","outcome_tags":["역술","예술가","엔지니어"],"score":80},
+
+    {"id":"R087","category":"리더","name":"양인_괴강","if":{"shinsal":["양인살","괴강살"]},"then":"양인 + 괴강 = 두령. 군·경·정치·CEO","outcome_tags":["장군","CEO","정치인"],"score":85},
+
+    {"id":"R088","category":"예술","name":"화개_상관","if":{"shinsal":"화개살","sipsin_has":"상관"},"then":"화개 + 상관 = 예술가·연예인의 정통","outcome_tags":["예술가","연예인","작가"],"score":85},
+
+    {"id":"R089","category":"무직위험","name":"식상_없음","if":{"sipsin_count":{"식신상관":0}},"then":"식상 없으면 표현·자기실현 어려움","outcome_tags":["과묵","무기력","우울"],"score":45,"warning":true},
+
+    {"id":"R090","category":"이혼위험","name":"부부궁_충","if":{"chung":"일지","gender":"F","sipsin_has":"편관"},"then":"여성 일지충 + 편관 = 부부 갈등·이혼","outcome_tags":["이혼","별거"],"score":35,"warning":true},
+
+    {"id":"R091","category":"해외","name":"역마_재성","if":{"shinsal":"역마살","sipsin_has":["정재","편재"]},"then":"역마 + 재성 = 해외무역·외국 인연","outcome_tags":["무역","해외","글로벌"],"score":80},
+
+    {"id":"R092","category":"종교","name":"화개_편인","if":{"shinsal":"화개살","sipsin_has":"편인"},"then":"화개 + 편인 = 종교·역술·정신문화 길","outcome_tags":["종교인","역술가","수도"],"score":80},
+
+    {"id":"R093","category":"음양","name":"음간_섬세","if":{"day_yinyang":"음"},"then":"음간 일주는 섬세·내면·인내","outcome_tags":["섬세","예술","내향"],"score":70},
+    {"id":"R094","category":"음양","name":"양간_활동","if":{"day_yinyang":"양"},"then":"양간 일주는 활동·외향·추진","outcome_tags":["외향","리더","활동"],"score":70},
+
+    {"id":"R095","category":"시기","name":"30대_재성운","if":{"age_range":[30,39],"daewoon_sipsin":["정재","편재"]},"then":"30대 재성 대운 = 인생 첫 큰 부의 시기","outcome_tags":["부","결혼","독립"],"score":85},
+
+    {"id":"R096","category":"시기","name":"40대_관성운","if":{"age_range":[40,49],"daewoon_sipsin":["정관","편관"]},"then":"40대 관성 대운 = 명예·승진·정점","outcome_tags":["승진","명예","CEO"],"score":85},
+
+    {"id":"R097","category":"위기","name":"중년_백호","if":{"age_range":[40,55],"shinsal":"백호살"},"then":"중년 백호 활성 - 큰 사고·수술 주의","outcome_tags":["사고","수술","입원"],"score":35,"warning":true},
+
+    {"id":"R098","category":"노년","name":"노년_식상","if":{"age_range":[60,99],"daewoon_sipsin":["식신","상관"]},"then":"노년 식상 운 = 베푸는 노후·자녀와 화목","outcome_tags":["여유","베풂","자녀효도"],"score":75},
+
+    {"id":"R099","category":"메타","name":"용신_운_3중복","if":{"daewoon_sipsin":"yongsin","seun_sipsin":"yongsin","wol_sipsin":"yongsin"},"then":"대운+세운+월운 3중 용신 - 일생 단 몇 번의 절호기","outcome_tags":["천재일우","결혼","사업성공"],"score":95},
+
+    {"id":"R100","category":"메타","name":"기신_운_3중복","if":{"daewoon_sipsin":"gisin","seun_sipsin":"gisin","wol_sipsin":"gisin"},"then":"3중 기신 - 일생 가장 위험한 시기","outcome_tags":["대형사고","파산","질병"],"score":15,"warning":true,"critical":true}
+  ]
+}
