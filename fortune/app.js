@@ -7,6 +7,7 @@ import { analyzeGunghap } from "./core/gunghap.js";
 import { calculateTojeong, lookupTojeong } from "./core/tojeong.js";
 import { analyzeShinsal, checkSamjae, mudangSummary, dangsa } from "./core/mudang.js";
 import { sajuToMBTI, bayesianFortune, extractSajuSignals, biorhythm, lifePathNumber, comprehensiveScore } from "./core/science.js";
+import { sajuToBig5, birthSeasonEffect, forerIndex, calculateZodiac, crossCompare, SCIENCE_CITATIONS } from "./core/statistical_science.js";
 
 // === 데이터 로드 ===
 let DATA = {};
@@ -535,8 +536,19 @@ window.calcScience = function() {
       const bayes = bayesianFortune(signals);
       const total = comprehensiveScore(saju, bio, lp, bayes);
 
-      wrap.innerHTML = renderScience(saju, mbti, bio, lp, bayes, total);
+      // === 통계과학 결합 (v2.1) ===
+      const big5 = sajuToBig5(saju);
+      const season = birthSeasonEffect(year, month, day, big5);
+      const zodiac = calculateZodiac(year, month, day);
+      const cross = crossCompare(saju, zodiac);
+      // 사주 해석 텍스트로 Forer 지수 측정 (인터프리트 결과 활용)
+      const sajuInterp = interpretSaju(saju);
+      const forer = forerIndex(sajuInterp.summary);
+
+      wrap.innerHTML = renderScience(saju, mbti, bio, lp, bayes, total) +
+        renderStatistical(big5, season, zodiac, cross, forer);
       drawBioChart(bio);
+      drawBig5Radar(big5);
     } catch (e) {
       wrap.innerHTML = `<div class="section"><div class="result-text danger">${e.message}</div></div>`;
       console.error(e);
@@ -639,6 +651,187 @@ function renderScience(saju, mbti, bio, lp, bayes, total) {
       <div class="result-text">${lp.meaning}</div>
     </div>
   `;
+}
+
+// ========== 통계과학 (Big5/계절/Forer/별자리) 렌더링 ==========
+function renderStatistical(big5, season, zodiac, cross, forer) {
+  const big5Bars = ["O","C","E","A","N"].map(k => {
+    const name = {O:"개방성",C:"성실성",E:"외향성",A:"친화성",N:"신경증"}[k];
+    const v = big5.scores[k];
+    const adj = season.big5_adjusted[k];
+    const color = k === "N" ? "#ff7043" : ["#22c55e","#3b82f6","#d4af37","#a78bfa","#ec4899"][["O","C","E","A","N"].indexOf(k)];
+    return `
+      <div style="margin:8px 0">
+        <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:3px">
+          <span><b>${k}</b> ${name}</span>
+          <span style="color:${color};font-weight:700">${v}${adj !== v ? ` → <span style="color:var(--gold2)">${adj}</span>` : ''}</span>
+        </div>
+        <div style="height:8px;background:var(--card2);border-radius:4px;overflow:hidden;position:relative">
+          <div style="width:${v}%;height:100%;background:${color};opacity:0.5"></div>
+          ${adj !== v ? `<div style="position:absolute;left:0;top:0;width:${adj}%;height:100%;background:${color};opacity:0.9"></div>` : ''}
+        </div>
+      </div>
+    `;
+  }).join("");
+
+  const diseaseHtml = Object.entries(season.diseases).map(([k, v]) => {
+    const pct = ((v - 1) * 100).toFixed(0);
+    const color = v > 1.05 ? "#ff5252" : v < 0.95 ? "#00e676" : "#8a7fa3";
+    const sign = v >= 1 ? "+" : "";
+    return `<div style="display:flex;justify-content:space-between;padding:4px 0;font-size:12px"><span>${k}</span><span style="color:${color};font-weight:600">${sign}${pct}%</span></div>`;
+  }).join("");
+
+  const forerColor = forer.score >= 70 ? "#ff5252" : forer.score >= 50 ? "#ffd740" : forer.score >= 30 ? "#76ff03" : "#00e676";
+
+  return `
+    <div class="section" style="border-color:var(--accent);background:rgba(212,175,55,.03)">
+      <div class="section-title">🧪 학술 검증 결합 (v2.1)</div>
+      <div style="font-size:11px;color:var(--dim)">아래 4가지는 학술적으로 검증된 통계·심리 지표와 사주를 교차한 결과입니다.</div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">📐 Big5 OCEAN 성격 5요인</div>
+      <div style="font-size:11px;color:var(--dim);margin-bottom:8px">
+        Costa &amp; McCrae NEO-PI-R (1990s~) 인지심리학 표준. 옅은 막대 = 사주만, 짙은 막대 = 출생계절 보정.
+      </div>
+      ${big5Bars}
+      <canvas id="big5-radar" style="width:100%;height:200px;margin-top:10px"></canvas>
+      <div style="font-size:12px;margin-top:8px;color:var(--text)">▣ 프로필: <b>${big5.profile}</b></div>
+      <div style="font-size:12px;margin-top:4px">${big5.interpretation}</div>
+      <div style="font-size:10px;color:var(--dim);margin-top:6px;font-style:italic">출처: ${big5.source}</div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">🌸 출생계절 효과 (Birth Season Effect)</div>
+      <div style="text-align:center;font-size:18px;font-weight:700;color:var(--gold2);margin:8px 0">${season.label}</div>
+      <div class="result-text" style="font-size:12px">▣ 생리적: ${season.physiological}
+
+▣ 인지적: ${season.cognitive}
+
+▣ 정서적: ${season.mental}</div>
+      <div style="margin-top:10px;font-size:11px;color:var(--dim)">상대 발병률 (1.00 = 평균):</div>
+      <div style="background:var(--card2);padding:8px;border-radius:6px;margin-top:4px">${diseaseHtml}</div>
+      <div style="font-size:10px;color:var(--dim);margin-top:8px;font-style:italic">⚠ 효과 크기 작음 (0.05~0.15 SD). 개인차가 훨씬 큼. ${season.citation}</div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">🔭 Forer/Barnum 자체검증</div>
+      <div style="text-align:center;margin:6px 0">
+        <div style="font-size:36px;font-weight:800;color:${forerColor}">${forer.score}/100</div>
+        <div style="font-size:13px;color:var(--gold2);font-weight:600">${forer.level}</div>
+      </div>
+      <div style="font-size:12px;margin-top:8px;color:var(--text)">${forer.interpretation}</div>
+      <div style="font-size:11px;color:var(--dim);margin-top:8px">
+        분석된 문장: 일반어 ${forer.counts.general}개 / 사주 전문어 ${forer.counts.specific}개 / 양면표현 ${forer.counts.hedge}개
+      </div>
+      <div style="font-size:10px;color:var(--dim);margin-top:6px;font-style:italic">출처: ${forer.citation}</div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">⭐ 황도12궁 (서양 별자리) - 천문 정밀계산</div>
+      <div style="text-align:center;margin:8px 0">
+        <div style="font-size:32px">${["♈","♉","♊","♋","♌","♍","♎","♏","♐","♑","♒","♓"][ZODIAC_LOOKUP.indexOf(zodiac.name)]}</div>
+        <div style="font-size:18px;font-weight:700;color:var(--gold2)">${zodiac.name} (${zodiac.en})</div>
+        <div style="font-size:12px;color:var(--dim)">${zodiac.han} · ${zodiac.dates}</div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:10px;font-size:12px">
+        <div style="background:var(--card2);padding:8px;border-radius:6px"><div style="color:var(--dim);font-size:10px">원소</div><div>${zodiac.element}</div></div>
+        <div style="background:var(--card2);padding:8px;border-radius:6px"><div style="color:var(--dim);font-size:10px">지배성</div><div>${zodiac.ruler}</div></div>
+        <div style="background:var(--card2);padding:8px;border-radius:6px"><div style="color:var(--dim);font-size:10px">태양 황경</div><div class="mono">${zodiac.solarLongitude}°</div></div>
+        <div style="background:var(--card2);padding:8px;border-radius:6px"><div style="color:var(--dim);font-size:10px">별자리 내</div><div class="mono">${zodiac.degreeInSign}°</div></div>
+      </div>
+      <div style="font-size:12px;margin-top:10px">▣ 특성: ${zodiac.traits}</div>
+      <div style="margin-top:12px;padding:10px;background:var(--card2);border-radius:8px;border-left:3px solid var(--gold)">
+        <div style="font-size:11px;color:var(--gold2);font-weight:600;margin-bottom:4px">🔀 사주↔별자리 교차검증</div>
+        <div style="font-size:12px">${cross.match}</div>
+      </div>
+      <div style="font-size:10px;color:var(--dim);margin-top:6px;font-style:italic">계산: Meeus VSOP87 (Astronomical Algorithms)</div>
+    </div>
+  `;
+}
+
+const ZODIAC_LOOKUP = ["양자리","황소자리","쌍둥이자리","게자리","사자자리","처녀자리","천칭자리","전갈자리","사수자리","염소자리","물병자리","물고기자리"];
+
+function drawBig5Radar(big5) {
+  const c = document.getElementById("big5-radar");
+  if (!c) return;
+  const dpr = window.devicePixelRatio || 1;
+  const W = c.parentElement.clientWidth - 32;
+  const H = 200;
+  c.width = W * dpr; c.height = H * dpr;
+  c.style.width = W + "px"; c.style.height = H + "px";
+  const ctx = c.getContext("2d");
+  ctx.scale(dpr, dpr);
+  ctx.clearRect(0, 0, W, H);
+
+  const cx = W / 2, cy = H / 2;
+  const R = Math.min(W, H) / 2 - 20;
+  const axes = ["O","C","E","A","N"];
+  const labels = ["O\n개방","C\n성실","E\n외향","A\n친화","N\n신경"];
+
+  // 그리드
+  ctx.strokeStyle = "#2a2240";
+  ctx.lineWidth = 1;
+  for (let r = 0.2; r <= 1.0; r += 0.2) {
+    ctx.beginPath();
+    for (let i = 0; i <= 5; i++) {
+      const a = i * (2 * Math.PI / 5) - Math.PI / 2;
+      const x = cx + Math.cos(a) * R * r;
+      const y = cy + Math.sin(a) * R * r;
+      if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+    }
+    ctx.stroke();
+  }
+
+  // 축
+  for (let i = 0; i < 5; i++) {
+    const a = i * (2 * Math.PI / 5) - Math.PI / 2;
+    ctx.beginPath();
+    ctx.moveTo(cx, cy);
+    ctx.lineTo(cx + Math.cos(a) * R, cy + Math.sin(a) * R);
+    ctx.strokeStyle = "#2a2240"; ctx.stroke();
+  }
+
+  // 값
+  ctx.beginPath();
+  axes.forEach((k, i) => {
+    const a = i * (2 * Math.PI / 5) - Math.PI / 2;
+    const v = big5.scores[k] / 100;
+    const x = cx + Math.cos(a) * R * v;
+    const y = cy + Math.sin(a) * R * v;
+    if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+  });
+  ctx.closePath();
+  ctx.fillStyle = "rgba(212,175,55,.2)";
+  ctx.fill();
+  ctx.strokeStyle = "#d4af37";
+  ctx.lineWidth = 2;
+  ctx.stroke();
+
+  // 점
+  axes.forEach((k, i) => {
+    const a = i * (2 * Math.PI / 5) - Math.PI / 2;
+    const v = big5.scores[k] / 100;
+    const x = cx + Math.cos(a) * R * v;
+    const y = cy + Math.sin(a) * R * v;
+    ctx.beginPath();
+    ctx.arc(x, y, 3, 0, Math.PI * 2);
+    ctx.fillStyle = "#d4af37"; ctx.fill();
+  });
+
+  // 라벨
+  ctx.font = "11px sans-serif";
+  ctx.fillStyle = "#ece6f5";
+  ctx.textAlign = "center";
+  ctx.textBaseline = "middle";
+  labels.forEach((label, i) => {
+    const a = i * (2 * Math.PI / 5) - Math.PI / 2;
+    const x = cx + Math.cos(a) * (R + 15);
+    const y = cy + Math.sin(a) * (R + 15);
+    label.split("\n").forEach((line, j) => {
+      ctx.fillText(line, x, y + (j - 0.5) * 12);
+    });
+  });
 }
 
 function drawBioChart(bio) {
