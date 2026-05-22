@@ -10,3 +10,6 @@ bot/__pycache__/
 *.env
 node_modules/
 .env
+
+# Claude Code session logs (kept local)
+.claude/logs/
