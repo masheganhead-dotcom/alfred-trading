@@ -49,6 +49,34 @@ Same playbook as Bassik AI but at the audio (not MIDI) level.
 *plumbing around AI workflows* — getting AI-generated audio into a Live
 session — is not.
 
+### Adjacent: session-housekeeping devices
+
+A second cluster that emerged from the same surveys is **session
+hygiene** — devices that clean up Live sets by removing muted clips,
+empty tracks, inactive plugins, etc. References used while building
+the Alfred Session Cleaner device:
+
+- [Liveset Cleaner — Live Workflow Tools](https://liveworkflowtools.gumroad.com/l/livesetcleaner) ($14) — the most polished commercial entry; empty tracks, muted clips, inactive devices, unused sends.
+- [Delete All Disabled Clips — ElisabethHomeland](https://www.elisabethhomeland.com/products/delete-all-disabled-clips-by-elisabethhomeland-maxforlive-device-for-ableton-live) — free, Arrangement / Session / Both scope.
+- [Delete Muted Clips — Dennis DeSantis](https://maxforlive.com/library/device/8364/delete-muted-clips) — Ableton's own designer; free, both views.
+
+The Alfred Session Cleaner differs in three ways: (1) a **SCAN → CLEAN
+two-step workflow** so destructive ops can be previewed, (2) per-category
+toggles for *which* kinds of things to remove, (3) an explicit
+"never delete groups" invariant.
+
+### Adjacent: floating-window mixer concepts
+
+A long-running M4L request is a Logic / Cubase-style **always-visible
+mixer window**. Existing reference:
+
+- [synnack — Float Mixer](https://synnack.com/blog/post/128/new-max-for-live-device-float-mixer) — proves the `[thispatcher] window flags float` technique works in M4L on macOS and Windows.
+- [Cycling '74 forum — Floating window discussion](https://cycling74.com/forums/floating-window-2/replies/1) — the canonical thread on `topmost`/`floating` flag behaviour and its OS-specific quirks.
+
+The Alfred Float Mixer reuses that floating-window technique and adds
+the **plugin-slot row** Logic users specifically expect; the
+implementation plan is in `devices/float-mixer/PLAN.md`.
+
 ## 2. Community-favourite free utilities
 
 These keep showing up on every "best free M4L" list (Production Music

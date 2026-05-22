@@ -1,9 +1,9 @@
 # Alfred M4L Suite — Utilities for the AI-era Producer
 
-A trio of Max for Live utility devices designed around modern producer
-workflows (Suno, ChatGPT-music, browser radio, CPU-heavy projects). Built
-on the back of a survey of popular and innovative M4L releases from
-2025–2026.
+Five Max for Live utility devices designed around modern producer
+workflows (Suno, ChatGPT-music, browser radio, CPU-heavy projects,
+mixing in a Logic / Cubase style window). Built on the back of a
+survey of popular and innovative M4L releases from 2025–2026.
 
 ## Devices
 
@@ -12,9 +12,16 @@ on the back of a survey of popular and innovative M4L releases from
 | **System Audio Capture** | Audio Effect | One-click record of any system audio (Suno, YouTube, browser radio) into a fresh audio track, with auto-routing for BlackHole / Loopback. |
 | **Smart Group Resample** | Audio Effect | Bounce a group (or selection) into a single resampled audio clip, freeing up CPU when LiveAPI's `freeze`/`flatten` is unavailable. |
 | **Suno Bridge** | Audio Effect | Paste a Suno (or any direct CDN) URL → device downloads the audio → drops it onto a fresh track at the play-head. |
+| **Session Cleaner** | Audio Effect | Scan + clean a Live set: empty tracks, muted clips, inactive devices, empty returns. SCAN previews, CLEAN commits; Cmd-Z undoes. |
+| **Float Mixer** | Audio Effect | Floating mixer window (Logic / Cubase style) with vol/pan/mute/solo/arm/sends per non-group track. |
 
-All three devices share the same UI vocabulary and a small helper module
-(`lib/alfred-liveapi.js`) so they feel like one suite.
+All five devices share the same UI vocabulary and a small helper
+module (`devices/_lib/alfred-liveapi.js`) so they feel like one suite.
+
+Float Mixer is the largest of the bunch and has a dedicated
+`devices/float-mixer/PLAN.md` describing the staged build-out toward
+a full Logic-Pro-style mixer (insert plugin slots, sends, routing,
+meters).
 
 ## Files in this folder
 
@@ -28,7 +35,9 @@ m4l/
 └── devices/
     ├── system-audio-capture/
     ├── smart-group-resample/
-    └── suno-bridge/
+    ├── suno-bridge/
+    ├── session-cleaner/
+    └── float-mixer/
 ```
 
 ## Quick start
