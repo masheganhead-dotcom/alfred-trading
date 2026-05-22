@@ -10,3 +10,8 @@ bot/__pycache__/
 *.env
 node_modules/
 .env
+
+# Max for Live build artefacts (built locally in Max, not source-controlled).
+m4l/**/*.amxd
+m4l/**/.DS_Store
+m4l/**/maxsnapshot*.maxsnap
