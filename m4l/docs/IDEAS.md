@@ -397,3 +397,186 @@ EDM producers, vocal-led genres).
 - [Audeobox — How to Freeze and Flatten Tracks in Ableton Live (2026)](https://www.audeobox.com/learn/ableton/how-to-freeze-and-flatten-tracks/)
 - [RouteNote — How to chop samples manually in Ableton](https://routenote.com/blog/how-to-chop-samples-in-ableton/)
 - [Production Music Live — Humanizing MIDI Drums](https://www.productionmusiclive.com/blogs/news/humanizing-midi-drums)
+
+---
+
+# Round 3 — Gen-Z / viral / fun devices
+
+A pivot away from pure workflow utility toward what actually *spreads*
+in 2025. Driven by surveys of MDD Snake's popularity, Spawner's
+viral ideation moment, the TikTok/Reels music-producer aesthetic,
+and 2025's experimental wave (Spectral Wobbler, Grain Scanner,
+PitchLoop89, Bokoodo, Schrödinger-equation device, ChatDSP).
+
+**The 2025 viral M4L pattern is clear:**
+1. **Gamification** — MDD Snake is one of the most-downloaded
+   devices ever, *because* it's a game. Pong/Tetris/Snake interfaces
+   for MIDI generation are catnip for short-form video.
+2. **Chaos / randomness** — Spawner, ChatDSP, parameter
+   randomisers. "I don't know what'll happen and that's the point."
+3. **Visual reactivity** — T3X2R, V-Module, RokVid. The audience
+   sees the sound move.
+4. **Vocal mangling** — Hyperpop/PluggnB/phonk aesthetics keep
+   creating new viral moments (autotune-speed-0, chipmunk formant,
+   pitched chops).
+5. **One-tap aesthetics** — "Beat Bingo" / "Vibe Roulette" /
+   "make it phonk" buttons. Press = result. No menu diving.
+
+## Round-3 shortlist — the fun ones
+
+| # | Device | Vibe | Why it'd spread |
+| --- | --- | --- | --- |
+| 23 | **🎮 Pong / Snake Beats** | game-as-sequencer | MDD Snake proved this works. Pong, Tetris, Snake, Pac-Man — each is one device, each makes its own loop type. Inherently screen-recordable. |
+| 24 | **🎲 Vibe Roulette** | one-button chaos | Spawner on steroids: random device + random preset + 5-note MIDI pattern + colour, all at once. Tap until you like one. |
+| 25 | **📱 ReelMaker** | 9:16 export | The device renders a 15/30-sec loop + a beat-synced vertical visualizer. One file → upload. Closes the "I make beats but my IG looks dead" gap. |
+| 26 | **🎤 Hyperpop Vocal Stack** | one-tap genre | One button on a vocal track = autotune speed 0 + formant +6 + saturation + slap delay + chorus. Toggle between *Hyperpop / PluggnB / Phonk / Drill* presets. |
+| 27 | **🥁 Beat Bingo** | gamified drum prog | Empty 16-step drum card. Each cell you fill suggests samples for neighbours, like an adjacency rule. Fill all → save as preset. |
+| 28 | **💥 Drop Trigger** | EDM essential | Drop a "DROP" locator. Device auto-builds the 1-2 bars before: filter sweep + snare roll + riser + reverse cymbal. Style picker (House / Future Bass / DnB / Phonk). |
+| 29 | **🤖 ChatVibe** | text-to-session | Type "phonk like 90s Memphis" → device sets BPM, drops a drum rack with matching kit, sets a starter chord progression, applies tape saturation on master. Hooks into a free LLM. |
+| 30 | **🌈 Mood Lights** | streamer-bait | Output OSC / DMX / Hue/LIFX commands matching the track's energy. Streamer setup, instant aesthetic. |
+
+## Details — top 5 picks
+
+### 23. 🎮 Pong / Snake Beats
+
+**The vibe.** Make a MIDI sequence by *playing a game*. Snake eats
+the next note → it gets added to the pattern. Pong bounces between
+pitch lanes → each hit triggers that pitch. Tetris stacks define
+chord voicings.
+
+**Why it'll spread.** MDD SnAkE is regularly cited as one of the
+**most-downloaded M4L devices of all time**. Game interfaces are
+inherently TikTok-friendly — the screen recording is the marketing.
+This pack ships *three* variants (Snake / Pong / Tetris) so each
+one has its own micro-community.
+
+**Build feasibility.** ⭐⭐⭐⭐ — game logic in JS, MIDI emission
+via standard `outlet`, full Max canvas for UI. ~10 hours per game.
+
+### 24. 🎲 Vibe Roulette
+
+**The vibe.** Spawner's offspring. One BIG button:
+- pick a random stock device, insert it
+- pick a random preset inside that device
+- generate a 5-note MIDI pattern in a fresh clip
+- assign a random colour
+
+Don't like it? Hit again. The catchphrase writes itself.
+
+**Why it'll spread.** Spawner went viral with just step 1 of that
+list. Doing all four steps in one tap is the *next-level meme of
+the original meme*.
+
+**Build feasibility.** ⭐⭐⭐⭐⭐ — uses only LiveAPI primitives we've
+already touched (device insertion, MIDI write, colour, name). ~6
+hours.
+
+### 25. 📱 ReelMaker
+
+**The vibe.** You finished a beat. Now you need a 30-second
+vertical video for IG/TikTok. Currently you screen-record Ableton,
+open a video editor, add a visualizer, export. **20 minutes minimum.**
+
+This device:
+- Pick a 30-sec range in the arrangement (or a session scene loop).
+- Render audio + a beat-synced 9:16 visualizer (waveform / spectrum
+  / bouncing-cube / liquid blob — 4 styles).
+- Save as `mp4` to your Music folder, named `track_YYYYMMDD.mp4`.
+
+**Why it'll spread.** Every producer needs this. Nothing equivalent
+exists *inside* Ableton — BeatVids and Seedance 2.0 are external
+services. Doing it native = obvious win.
+
+**Build feasibility.** ⭐⭐⭐ — the audio render piece reuses Smart
+Group Resample logic. The video part needs Max's `jit.world` /
+`jit.gl` (which Max for Live supports). Trickier but doable.
+~14 hours.
+
+### 26. 🎤 Hyperpop Vocal Stack
+
+**The vibe.** Drop on a vocal track. One button toggle through
+*Hyperpop / PluggnB / Phonk / Drill / Drain* presets. Each preset
+spawns the right cascade of native Live devices:
+- **Hyperpop**: Pitch +1 octave, Auto Filter, Auto Pan, Reverb,
+  Glue Compressor, with Auto Pitch correction speed = 0 ms
+- **PluggnB**: Auto Pitch speed 0 + Formant +3 + slap delay + reverb
+- **Phonk**: Tape saturation + bitcrush + chorus + cassette EQ
+- **Drill**: Slight distortion + delayed pitch detune + filter
+- **Drain**: Heavy reverb + low-pass + chorus
+
+**Why it'll spread.** Hyperpop/PluggnB tutorials have millions of
+views. The setup is mechanical, repetitive, and gatekept by
+"knowing the chain." One-tap democratisation = viral.
+
+**Build feasibility.** ⭐⭐⭐⭐ — inserts native Live devices in
+specific orders with preset values. ~5 hours.
+
+### 28. 💥 Drop Trigger
+
+**The vibe.** EDM/house/DnB producers manually build "the moment
+before the drop" every single time: white-noise riser + snare roll
++ reverse cymbal + filter sweep on the bus. 30+ clicks. Every track.
+
+This device:
+- Place a `DROP` locator anywhere in the arrangement.
+- Hit **PREP**.
+- Device inserts the 4 build-up elements on a new bus, automated
+  precisely to land on the locator beat.
+- Style picker: *House / Future Bass / DnB / Phonk*.
+- "Generate variation" reshuffles the timing for a fresh feel each
+  drop.
+
+**Why it'll spread.** Pure pain killer. EDM-leaning producers will
+swear by it after one use.
+
+**Build feasibility.** ⭐⭐⭐⭐ — track creation, device insertion,
+automation writes via LiveAPI. ~8 hours.
+
+## Round-3 bench
+
+| # | Device | One-liner |
+| --- | --- | --- |
+| 31 | **🌀 Sample Flip Engine** | Drop a sample → device spits out 8 variations (chop / pitch / reverse / time-stretch). Sample-flip culture in one click. |
+| 32 | **🃏 Chord Tarot** | Pick 3 "cards" (mood / energy / movement) → device deals you a chord progression matching the spread. Generative + ritual. |
+| 33 | **📻 Lo-fi Tape Mode** | Whole-set toggle: applies tape saturation, slight wow/flutter, pitch drift, vinyl crackle on master. Lo-fi vibe in a tap. |
+| 34 | **🎙️ Voice Memo Importer** | Watches a folder (iCloud / Dropbox). New voice memo dropped → device imports, auto-slices on silences, places clips on a new track. Solves the "I hummed something on the bus" workflow. |
+| 35 | **🦠 Glitch Cascade** | Selects last 1-2 bars of a section → applies a randomised stack of Beat Repeat / Pitch / Reverse / Distortion → result is the fill. |
+| 36 | **🌡️ Energy Map** | Reads RMS across the arrangement → draws a "song energy" line. Spot weak sections at a glance. Mixing tool with a viral-friendly visual. |
+
+## Why these would land where the workflow utilities might not
+
+The Round-1 / Round-2 devices solve real pain but they're *quiet
+wins* — producers use them, no-one screenshots them. The Round-3
+devices have:
+
+- **A screenshot moment** (game UI, visualizer, before/after).
+- **A "wait, what?" reaction** in the first 5 seconds of seeing it.
+- **No prerequisites** — no need to understand sidechain or
+  sample chopping; you just press the thing.
+- **Clip-friendliness** — the device output *is* content for a Reel
+  / TikTok.
+
+That doesn't mean ship only Round-3; it means **mix in at least one
+Round-3 device** with the utility ones to give the suite social-media
+gravity.
+
+## Additional sources (Round 3)
+
+- [Maxime Dangles — MDD SnAkE](http://maxforlive.com/library/device/4771/mdd-snake)
+- [Maxime Dangles — Snake MIDI Generator](https://maxforlive.com/library/device/10422/mdd-snake-midi-generator)
+- [Maxime Dangles — Unlikely Connections (Ableton interview)](https://www.ableton.com/en/blog/maxime-dangles-unlikely-connections/)
+- [MusicRadar — Spawner: a free M4L device for writer's block](https://www.musicradar.com/music-tech/stuck-for-ideas-in-ableton-live-this-free-max-for-live-device-could-snap-you-out-of-writers-block)
+- [The Producer School — Spawner write-up](https://theproducerschool.com/blogs/music-production/beat-creative-block-free-max-for-live-spawner-in-ableton-live)
+- [Transition Studio — 10 game-changing M4L devices](https://www.transition.studio/blog/Ten-game-changing-max-for-live-devices-every-ableton-producer-needs)
+- [Glitch Magic — Unique M4L Devices](https://glitchmagic.com/blogs/news/unique-max-for-live-devices)
+- [Bedroom Producers Blog — Spectral Wobbler](https://bedroomproducersblog.com/2025/08/07/dystopian-waves-spectral-wobbler/)
+- [WeRaveYou — Schrödinger Equation M4L device](https://weraveyou.com/2025/09/new-max-for-live-device-brings-the-schrodinger-equation-into-your-daw/)
+- [Gearnews — Dillon Bastan ChatDSP](https://www.gearnews.com/dillon-bastan-chatdsp-tech/)
+- [Native Instruments Blog — Hyperpop production 101](https://blog.native-instruments.com/hyperpop/)
+- [Cedar Sound — Hyperpop vocals that cut through the mix](https://www.cedarsoundstudios.com/blogs/news/how-to-make-hyperpop-vocals-that-cut-through-the-mix)
+- [T3X2R — Visual M4L devices](https://www.t3x2r.com/)
+- [Ableton — V-Module visual devices](https://www.ableton.com/en/blog/v-module-visual-devices-max-live/)
+- [Ableton — RokVid pack](https://www.ableton.com/en/packs/rokvid/)
+- [BeatVids — Vertical visualizer for music](https://www.beatvids.com/)
+- [Sonic Bloom — Chord Generator M4L MIDI effect](https://sonicbloom.net/max-for-live-midi-effect-chord-generator/)
+- [Dennis DeSantis — free M4L devices](https://dennisdesantis.com/max-for-live-devices)
