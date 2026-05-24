@@ -1,0 +1,120 @@
+<jittershader name="alfred-audio-blob">
+	<description>Alfred Shader preset: Audio Blob. Single organic blob deformed by FFT bands; surface texture roughens with treble.</description>
+
+	<param name="uTime"      type="float" default="0.0" />
+	<param name="uPeak"      type="float" default="0.0" />
+	<param name="uRMS"       type="float" default="0.0" />
+	<param name="uBass"      type="float" default="0.0" />
+	<param name="uMid"       type="float" default="0.0" />
+	<param name="uTreble"    type="float" default="0.0" />
+	<param name="uCentroid"  type="float" default="0.5" />
+	<param name="uOnset"     type="float" default="0.0" />
+	<param name="uIntensity" type="float" default="1.0" />
+	<param name="uColor"     type="float" default="0.5" />
+	<param name="uReaction"  type="float" default="1.0" />
+	<param name="modelViewProjectionMatrix" type="mat4" state="MODELVIEW_PROJECTION_MATRIX" />
+	<param name="textureMatrix0" type="mat4" state="TEXTURE0_MATRIX" />
+	<param name="position" type="vec3" state="POSITION" />
+	<param name="texcoord" type="vec2" state="TEXCOORD" />
+
+	<language name="glsl" version="1.5">
+
+		<bind param="uTime"      program="fp" />
+		<bind param="uPeak"      program="fp" />
+		<bind param="uRMS"       program="fp" />
+		<bind param="uBass"      program="fp" />
+		<bind param="uMid"       program="fp" />
+		<bind param="uTreble"    program="fp" />
+		<bind param="uCentroid"  program="fp" />
+		<bind param="uOnset"     program="fp" />
+		<bind param="uIntensity" program="fp" />
+		<bind param="uColor"     program="fp" />
+		<bind param="uReaction"  program="fp" />
+		<bind param="modelViewProjectionMatrix" program="vp" />
+		<bind param="textureMatrix0" program="vp" />
+		<bind param="position" program="vp" />
+		<bind param="texcoord" program="vp" />
+
+		<program name="vp" type="vertex">
+		<![CDATA[
+			#version 330 core
+			in vec3 position;
+			in vec2 texcoord;
+			out jit_PerVertex { vec2 texcoord; } jit_out;
+			uniform mat4 modelViewProjectionMatrix;
+			uniform mat4 textureMatrix0;
+			void main() {
+				gl_Position = modelViewProjectionMatrix * vec4(position, 1.0);
+				jit_out.texcoord = vec2(textureMatrix0 * vec4(texcoord, 0.0, 1.0));
+			}
+		]]>
+		</program>
+
+		<program name="fp" type="fragment">
+		<![CDATA[
+			#version 330 core
+			in jit_PerVertex { vec2 texcoord; } jit_in;
+			out vec4 outColor;
+
+			uniform float uTime, uPeak, uRMS, uBass, uMid, uTreble;
+			uniform float uCentroid, uOnset, uIntensity, uColor, uReaction;
+
+			// 2D hash + value noise — small and cheap
+			float hash(vec2 p) {
+				return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453);
+			}
+			float vnoise(vec2 p) {
+				vec2 i = floor(p), f = fract(p);
+				float a = hash(i);
+				float b = hash(i + vec2(1.0, 0.0));
+				float c = hash(i + vec2(0.0, 1.0));
+				float d = hash(i + vec2(1.0, 1.0));
+				vec2 u = f * f * (3.0 - 2.0 * f);
+				return mix(a, b, u.x) + (c - a) * u.y * (1.0 - u.x) + (d - b) * u.x * u.y;
+			}
+
+			void main() {
+				vec2 uv = jit_in.texcoord * 2.0 - 1.0;
+				uv.x *= 1.7778;
+
+				float t = uTime * 0.4;
+
+				// Blob radius pulses with bass
+				float radius = 0.35 + uBass * 0.4 * uReaction;
+				vec2 center = vec2(0.0);
+
+				// Angle around the blob → modulate boundary with FFT bands (mid/treble)
+				float ang = atan(uv.y, uv.x);
+				float deform =
+					  uMid    * 0.10 * sin(ang * 3.0 + t * 1.3)
+					+ uTreble * 0.07 * sin(ang * 7.0 - t * 2.1)
+					+ uPeak   * 0.05 * sin(ang * 11.0 + t * 3.0);
+				float r = radius + deform * uReaction;
+
+				float d = length(uv - center) - r;
+
+				// Soft surface noise driven by treble
+				vec2 surf = uv * (3.0 + uTreble * 4.0);
+				float n = vnoise(surf + vec2(t * 0.5, 0.0));
+				float noise = (n - 0.5) * uTreble * 0.6 * uReaction;
+
+				float core   = smoothstep(0.02, -0.02, d + noise * 0.03);
+				float halo   = smoothstep(0.15, 0.0, d) * (0.4 + uRMS * 0.6);
+				float corona = smoothstep(0.35, 0.0, d) * 0.2 * (1.0 + uOnset * 4.0);
+
+				// Color: centroid-driven hue with user offset
+				float hue = uCentroid + uColor;
+				vec3 c1 = 0.5 + 0.5 * cos(6.28318 * (vec3(0.0, 0.33, 0.67) + hue));
+				vec3 c2 = 0.5 + 0.5 * cos(6.28318 * (vec3(0.5, 0.0, 0.25) + hue + 0.5));
+
+				vec3 col = mix(c1 * 0.2, c2, core);
+				col += halo  * c1;
+				col += corona * c2 * 0.5;
+
+				col *= uIntensity;
+				outColor = vec4(col, 1.0);
+			}
+		]]>
+		</program>
+	</language>
+</jittershader>

@@ -1,9 +1,10 @@
 # Alfred M4L Suite — Utilities for the AI-era Producer
 
-Five Max for Live utility devices designed around modern producer
-workflows (Suno, ChatGPT-music, browser radio, CPU-heavy projects,
-mixing in a Logic / Cubase style window). Built on the back of a
-survey of popular and innovative M4L releases from 2025–2026.
+Six Max for Live devices designed around modern producer workflows
+(Suno, ChatGPT-music, browser radio, CPU-heavy projects, mixing in
+a Logic / Cubase style window, and audio-reactive art visuals).
+Built on the back of a survey of popular and innovative M4L releases
+from 2025–2026.
 
 ## Devices
 
@@ -14,6 +15,7 @@ survey of popular and innovative M4L releases from 2025–2026.
 | **Suno Bridge** | Audio Effect | Paste a Suno (or any direct CDN) URL → device downloads the audio → drops it onto a fresh track at the play-head. |
 | **Session Cleaner** | Audio Effect | Scan + clean a Live set: empty tracks, muted clips, inactive devices, empty returns. SCAN previews, CLEAN commits; Cmd-Z undoes. |
 | **Float Mixer** | Audio Effect | Floating mixer window (Logic / Cubase style) with vol/pan/mute/solo/arm/sends per non-group track. |
+| **Alfred Shader** | Audio Effect | Floating audio-reactive visualizer in Max's Jitter engine. Phase A presets: Liquid Chrome (iridescent metaballs), Audio Blob (FFT-deformed blob), VHS Glitch (RGB split + scan lines). Curated 12-preset catalog drawn from Shadertoy classics, Refik Anadol, TouchDesigner viral effects (see `devices/alfred-shader/PLAN.md`). |
 
 All five devices share the same UI vocabulary and a small helper
 module (`devices/_lib/alfred-liveapi.js`) so they feel like one suite.
@@ -37,7 +39,8 @@ m4l/
     ├── smart-group-resample/
     ├── suno-bridge/
     ├── session-cleaner/
-    └── float-mixer/
+    ├── float-mixer/
+    └── alfred-shader/
 ```
 
 ## Quick start

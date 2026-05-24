@@ -1,0 +1,114 @@
+<jittershader name="alfred-liquid-chrome">
+	<description>Alfred Shader preset: Liquid Chrome. Iridescent metallic blob driven by metaballs in a 2D distance field; rim light + chroma shift respond to audio.</description>
+
+	<param name="uTime"      type="float" default="0.0" />
+	<param name="uPeak"      type="float" default="0.0" />
+	<param name="uRMS"       type="float" default="0.0" />
+	<param name="uBass"      type="float" default="0.0" />
+	<param name="uMid"       type="float" default="0.0" />
+	<param name="uTreble"    type="float" default="0.0" />
+	<param name="uCentroid"  type="float" default="0.5" />
+	<param name="uOnset"     type="float" default="0.0" />
+	<param name="uIntensity" type="float" default="1.0" />
+	<param name="uColor"     type="float" default="0.5" />
+	<param name="uReaction"  type="float" default="1.0" />
+	<param name="modelViewProjectionMatrix" type="mat4" state="MODELVIEW_PROJECTION_MATRIX" />
+	<param name="textureMatrix0" type="mat4" state="TEXTURE0_MATRIX" />
+	<param name="position" type="vec3" state="POSITION" />
+	<param name="texcoord" type="vec2" state="TEXCOORD" />
+
+	<language name="glsl" version="1.5">
+
+		<bind param="uTime"      program="fp" />
+		<bind param="uPeak"      program="fp" />
+		<bind param="uRMS"       program="fp" />
+		<bind param="uBass"      program="fp" />
+		<bind param="uMid"       program="fp" />
+		<bind param="uTreble"    program="fp" />
+		<bind param="uCentroid"  program="fp" />
+		<bind param="uOnset"     program="fp" />
+		<bind param="uIntensity" program="fp" />
+		<bind param="uColor"     program="fp" />
+		<bind param="uReaction"  program="fp" />
+		<bind param="modelViewProjectionMatrix" program="vp" />
+		<bind param="textureMatrix0" program="vp" />
+		<bind param="position" program="vp" />
+		<bind param="texcoord" program="vp" />
+
+		<program name="vp" type="vertex">
+		<![CDATA[
+			#version 330 core
+			in vec3 position;
+			in vec2 texcoord;
+			out jit_PerVertex { vec2 texcoord; } jit_out;
+			uniform mat4 modelViewProjectionMatrix;
+			uniform mat4 textureMatrix0;
+			void main() {
+				gl_Position = modelViewProjectionMatrix * vec4(position, 1.0);
+				jit_out.texcoord = vec2(textureMatrix0 * vec4(texcoord, 0.0, 1.0));
+			}
+		]]>
+		</program>
+
+		<program name="fp" type="fragment">
+		<![CDATA[
+			#version 330 core
+			in jit_PerVertex { vec2 texcoord; } jit_in;
+			out vec4 outColor;
+
+			uniform float uTime, uPeak, uRMS, uBass, uMid, uTreble;
+			uniform float uCentroid, uOnset, uIntensity, uColor, uReaction;
+
+			float ball(vec2 uv, vec2 c, float r) {
+				return r / length(uv - c);
+			}
+
+			vec3 iridescent(float t, float bias) {
+				// Cosine palette (Inigo Quilez technique)
+				vec3 a = vec3(0.5, 0.5, 0.5);
+				vec3 b = vec3(0.5, 0.5, 0.5);
+				vec3 c = vec3(1.0, 1.0, 1.0);
+				vec3 d = vec3(0.00, 0.33, 0.67) + bias;
+				return a + b * cos(6.28318 * (c * t + d));
+			}
+
+			void main() {
+				vec2 uv = jit_in.texcoord * 2.0 - 1.0;
+				uv.x *= 1.7778; // approx 16:9 aspect
+
+				float t = uTime * 0.3;
+				float boost = 1.0 + uBass * 1.5 * uReaction;
+
+				// Three orbiting metaballs whose radii pulse with the audio.
+				vec2 p1 = 0.55 * vec2(cos(t * 1.1), sin(t * 1.3));
+				vec2 p2 = 0.50 * vec2(cos(t * 0.7 + 2.1), sin(t * 0.9 + 2.1));
+				vec2 p3 = 0.60 * vec2(cos(t * 1.5 + 4.2), sin(t * 1.1 + 4.2));
+
+				float r1 = 0.18 * boost + uOnset * 0.08;
+				float r2 = 0.15 * boost;
+				float r3 = 0.20 * boost;
+
+				float field = ball(uv, p1, r1) + ball(uv, p2, r2) + ball(uv, p3, r3);
+
+				// Threshold and rim
+				float surface = smoothstep(1.0, 1.8, field);
+				float rim     = smoothstep(0.9, 1.05, field) - smoothstep(1.05, 1.4, field);
+
+				// Iridescence drives base color, audio brightness modulates the palette bias
+				float hue = uCentroid + uColor + 0.15 * sin(uv.x * 3.0 + t * 2.0);
+				vec3 base = iridescent(hue, uTreble * 0.5);
+				vec3 highlight = iridescent(hue + 0.5, 1.2);
+
+				vec3 col = mix(vec3(0.02, 0.02, 0.03), base, surface);
+				col += rim * highlight * (1.5 + uPeak * 3.0 * uReaction);
+
+				// Subtle global glow with RMS
+				col += uRMS * 0.1 * iridescent(hue + 0.3, 0.0);
+
+				col *= uIntensity;
+				outColor = vec4(col, 1.0);
+			}
+		]]>
+		</program>
+	</language>
+</jittershader>

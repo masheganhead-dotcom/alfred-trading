@@ -1,0 +1,134 @@
+<jittershader name="alfred-vhs-glitch">
+	<description>Alfred Shader preset: VHS Glitch. RGB split + scan lines + block corruption + tracking noise; transient triggers a glitch burst.</description>
+
+	<param name="uTime"      type="float" default="0.0" />
+	<param name="uPeak"      type="float" default="0.0" />
+	<param name="uRMS"       type="float" default="0.0" />
+	<param name="uBass"      type="float" default="0.0" />
+	<param name="uMid"       type="float" default="0.0" />
+	<param name="uTreble"    type="float" default="0.0" />
+	<param name="uCentroid"  type="float" default="0.5" />
+	<param name="uOnset"     type="float" default="0.0" />
+	<param name="uIntensity" type="float" default="1.0" />
+	<param name="uColor"     type="float" default="0.5" />
+	<param name="uReaction"  type="float" default="1.0" />
+	<param name="modelViewProjectionMatrix" type="mat4" state="MODELVIEW_PROJECTION_MATRIX" />
+	<param name="textureMatrix0" type="mat4" state="TEXTURE0_MATRIX" />
+	<param name="position" type="vec3" state="POSITION" />
+	<param name="texcoord" type="vec2" state="TEXCOORD" />
+
+	<language name="glsl" version="1.5">
+
+		<bind param="uTime"      program="fp" />
+		<bind param="uPeak"      program="fp" />
+		<bind param="uRMS"       program="fp" />
+		<bind param="uBass"      program="fp" />
+		<bind param="uMid"       program="fp" />
+		<bind param="uTreble"    program="fp" />
+		<bind param="uCentroid"  program="fp" />
+		<bind param="uOnset"     program="fp" />
+		<bind param="uIntensity" program="fp" />
+		<bind param="uColor"     program="fp" />
+		<bind param="uReaction"  program="fp" />
+		<bind param="modelViewProjectionMatrix" program="vp" />
+		<bind param="textureMatrix0" program="vp" />
+		<bind param="position" program="vp" />
+		<bind param="texcoord" program="vp" />
+
+		<program name="vp" type="vertex">
+		<![CDATA[
+			#version 330 core
+			in vec3 position;
+			in vec2 texcoord;
+			out jit_PerVertex { vec2 texcoord; } jit_out;
+			uniform mat4 modelViewProjectionMatrix;
+			uniform mat4 textureMatrix0;
+			void main() {
+				gl_Position = modelViewProjectionMatrix * vec4(position, 1.0);
+				jit_out.texcoord = vec2(textureMatrix0 * vec4(texcoord, 0.0, 1.0));
+			}
+		]]>
+		</program>
+
+		<program name="fp" type="fragment">
+		<![CDATA[
+			#version 330 core
+			in jit_PerVertex { vec2 texcoord; } jit_in;
+			out vec4 outColor;
+
+			uniform float uTime, uPeak, uRMS, uBass, uMid, uTreble;
+			uniform float uCentroid, uOnset, uIntensity, uColor, uReaction;
+
+			float hash(vec2 p) {
+				return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453);
+			}
+
+			// Procedural "source" image — slow drifting vertical bars + a pulsing sun shape,
+			// so the glitch effects have something interesting to corrupt.
+			vec3 source(vec2 uv) {
+				float t = uTime * 0.2;
+				vec3 bg = mix(
+					vec3(0.95, 0.3, 0.55),
+					vec3(0.25, 0.1, 0.55),
+					uv.y + 0.2 * sin(t)
+				);
+				// Sun disc
+				float d = length(uv - vec2(0.0, 0.1));
+				float sun = smoothstep(0.32, 0.30, d);
+				bg = mix(bg, vec3(1.0, 0.9, 0.4), sun);
+				// Horizontal bars
+				float bars = step(0.4, fract(uv.y * 12.0 + t * 0.3));
+				bg = mix(bg, bg * 0.85, bars * 0.4);
+				return bg;
+			}
+
+			void main() {
+				vec2 uv = jit_in.texcoord * 2.0 - 1.0;
+				uv.x *= 1.7778;
+
+				float burst = uOnset * uReaction;
+				float jitter = (hash(vec2(floor(uTime * 30.0), 1.0)) - 0.5);
+
+				// Block corruption: chop UV into blocks, randomly shift some on transient bursts
+				vec2 blockUV = uv;
+				float blockSize = 0.04 + uBass * 0.1;
+				vec2 b = floor(uv / blockSize);
+				float corruptProb = burst * 0.6;
+				if (hash(b + floor(uTime * 8.0)) < corruptProb) {
+					blockUV.x += (hash(b + 12.0) - 0.5) * 0.3;
+				}
+
+				// Per-line jitter (uPeak)
+				blockUV.x += jitter * uPeak * 0.05 * uReaction;
+
+				// RGB split — separation grows with onset bursts and uMid
+				float split = 0.005 + burst * 0.04 + uMid * 0.015;
+				vec3 col;
+				col.r = source(blockUV + vec2( split,  0.0)).r;
+				col.g = source(blockUV                  ).g;
+				col.b = source(blockUV + vec2(-split,  0.0)).b;
+
+				// Scan lines (always present, harden with peak)
+				float scan = 0.5 + 0.5 * sin(blockUV.y * 600.0);
+				col *= mix(1.0, scan, 0.25 + uPeak * 0.4);
+
+				// Static / VHS noise grain (treble drives density)
+				float grain = hash(blockUV * 200.0 + uTime * 60.0);
+				col += (grain - 0.5) * (0.08 + uTreble * 0.25);
+
+				// Tracking band: occasional bright horizontal stripe
+				float track = step(0.995, fract(uTime * 0.7));
+				float bandY = fract(uTime * 1.3);
+				col += track * smoothstep(0.02, 0.0, abs(jit_in.texcoord.y - bandY)) * 0.4;
+
+				// User color shifts the global tint
+				vec3 tint = mix(vec3(1.0, 0.85, 1.1), vec3(0.85, 1.1, 0.95), uColor);
+				col *= tint;
+
+				col *= uIntensity;
+				outColor = vec4(clamp(col, 0.0, 1.5), 1.0);
+			}
+		]]>
+		</program>
+	</language>
+</jittershader>
