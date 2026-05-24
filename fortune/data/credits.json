@@ -1,0 +1,53 @@
+{
+  "title": "오라클 - 사주·역술·신점 통합 시스템",
+  "version": "1.0.0",
+  "license": "MIT",
+  "credits": [
+    {
+      "category": "사주/만세력 알고리즘",
+      "sources": [
+        {"name": "urstory/manseryeok-js", "url": "https://github.com/urstory/manseryeok-js", "license": "MIT", "contribution": "진태양시 보정 + 절기 기반 월주 산출 알고리즘"},
+        {"name": "yhj1024/manseryeok", "url": "https://github.com/yhj1024/manseryeok", "license": "MIT", "contribution": "한국형 60갑자 만세력 컨셉"},
+        {"name": "tommitoan/bazica", "url": "https://github.com/tommitoan/bazica", "license": "MIT", "contribution": "1900-2100 일주 인덱스 검증"},
+        {"name": "alvamind/bazi-calculator", "url": "https://github.com/alvamind/bazi-calculator-by-alvamind", "license": "MIT", "contribution": "Bazi 호환성 분석"},
+        {"name": "cantian-ai/bazi-mcp", "url": "https://github.com/cantian-ai/bazi-mcp", "license": "MIT", "contribution": "출력 스키마 (십신·길흉신·대운·형충회합)"},
+        {"name": "hjsh200219/fortuneteller", "url": "https://github.com/hjsh200219/fortuneteller", "license": "MIT", "contribution": "사주 MCP 서버 컨셉"}
+      ]
+    },
+    {
+      "category": "음양력 변환",
+      "sources": [
+        {"name": "usingsky/korean_lunar_calendar_js", "url": "https://github.com/usingsky/korean_lunar_calendar_js", "license": "MIT", "contribution": "KASI 표준 음양력 변환"},
+        {"name": "usingsky/korean_lunar_calendar_py", "url": "https://github.com/usingsky/korean_lunar_calendar_py", "license": "MIT", "contribution": "Python 음력 변환"},
+        {"name": "OOPS-ORG-PHP/KASI-Lunar", "url": "https://github.com/OOPS-ORG-PHP/KASI-Lunar", "license": "GPL", "contribution": "KASI 데이터 원본 참조"}
+      ]
+    },
+    {
+      "category": "천문 계산",
+      "sources": [
+        {"name": "Jean Meeus, Astronomical Algorithms 2nd ed.", "type": "book", "contribution": "태양 황경·율리우스일·24절기 계산 (Ch.25, Ch.27)"},
+        {"name": "janrg/MeeusSunMoon", "url": "https://github.com/janrg/MeeusSunMoon", "license": "MIT", "contribution": "JS 구현 참고"}
+      ]
+    },
+    {
+      "category": "주역(I-Ching)",
+      "sources": [
+        {"name": "Brianfit/I-Ching", "url": "https://github.com/Brianfit/I-Ching", "license": "MIT", "contribution": "Yarrow stalk 시초점 알고리즘"},
+        {"name": "King Wen sequence", "type": "tradition", "contribution": "64괘 표준 순서"}
+      ]
+    },
+    {
+      "category": "타로",
+      "sources": [
+        {"name": "Rider-Waite-Smith Tarot (1909)", "author": "Pamela Colman Smith / A.E.Waite", "license": "Public Domain", "contribution": "78장 카드 + 정/역 해석 전통"}
+      ]
+    },
+    {
+      "category": "토정비결",
+      "sources": [
+        {"name": "토정 이지함 (土亭 李之菡, 1517-1578)", "type": "tradition", "contribution": "144괘 운세 산출 방법"}
+      ]
+    }
+  ],
+  "disclaimer": "운명은 참고일 뿐, 결정은 본인의 몫입니다. 본 시스템은 학술·교육·문화체험 목적으로 제공되며, 의료·법률·재정 결정의 근거로 사용하지 마세요."
+}

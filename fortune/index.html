@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no,viewport-fit=cover">
+<title>오라클 - 사주·신점·타로</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#0a0710;--card:#15101e;--card2:#1f1830;
+  --gold:#d4af37;--gold2:#f4d769;--red:#ff5252;--green:#00e676;
+  --text:#ece6f5;--dim:#8a7fa3;--border:#2a2240;--accent:#d4af37;
+  --water:#3b82f6;--fire:#ef4444;--earth:#eab308;--metal:#e5e7eb;--wood:#22c55e;
+}
+body{font-family:-apple-system,BlinkMacSystemFont,'Noto Sans KR','SF Pro Display',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;-webkit-tap-highlight-color:transparent;padding-bottom:env(safe-area-inset-bottom);background-image:radial-gradient(at 20% 0%,rgba(212,175,55,.08) 0%,transparent 50%),radial-gradient(at 80% 100%,rgba(139,92,246,.08) 0%,transparent 50%)}
+.mono{font-family:'SF Mono',Menlo,monospace}
+.han{font-family:'Noto Serif KR',serif;font-weight:600}
+
+/* Header */
+.hdr{display:flex;align-items:center;justify-content:space-between;padding:14px 16px;position:sticky;top:0;background:rgba(10,7,16,.92);backdrop-filter:blur(12px);z-index:100;border-bottom:1px solid var(--border)}
+.hdr-left{display:flex;align-items:center;gap:8px}
+.hdr-logo{font-size:22px}
+.hdr-title{font-size:17px;font-weight:700;letter-spacing:-.3px;background:linear-gradient(90deg,var(--gold),var(--gold2));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.hdr-sub{font-size:11px;color:var(--dim);margin-left:4px}
+
+.container{max-width:480px;margin:0 auto;padding:12px}
+
+/* Tabs */
+.tabbar{display:grid;grid-template-columns:repeat(5,1fr);gap:4px;background:var(--card);padding:6px;border-radius:14px;border:1px solid var(--border);margin-bottom:14px}
+.tabbtn{padding:10px 4px;background:none;border:none;color:var(--dim);font-size:11px;font-weight:600;border-radius:9px;cursor:pointer;transition:all .15s}
+.tabbtn.active{background:linear-gradient(135deg,var(--gold),#b8941f);color:#000;box-shadow:0 2px 8px rgba(212,175,55,.3)}
+
+/* Section */
+.section{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:16px;margin-bottom:12px}
+.section-title{font-size:14px;font-weight:700;margin-bottom:12px;display:flex;align-items:center;gap:6px;color:var(--gold2)}
+
+/* Form */
+.field{margin-bottom:12px}
+.field label{display:block;font-size:12px;color:var(--dim);margin-bottom:4px;font-weight:500}
+.field input,.field select{width:100%;background:var(--card2);border:1px solid var(--border);color:var(--text);padding:11px 12px;border-radius:9px;font-size:14px;font-family:inherit}
+.field input:focus,.field select:focus{outline:none;border-color:var(--gold)}
+.field-row{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.field-row3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
+
+button.primary{width:100%;background:linear-gradient(135deg,var(--gold),#b8941f);color:#000;border:none;padding:14px;border-radius:10px;font-weight:700;font-size:14px;cursor:pointer;letter-spacing:.5px}
+button.primary:active{transform:scale(.98)}
+button.ghost{background:var(--card2);color:var(--text);border:1px solid var(--border);padding:10px;border-radius:9px;font-size:13px;cursor:pointer;font-weight:500}
+
+/* Saju Pillars */
+.pillars{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:14px}
+.pillar{background:var(--card2);border:1px solid var(--border);border-radius:10px;padding:10px 6px;text-align:center}
+.pillar-lab{font-size:10px;color:var(--dim);margin-bottom:4px}
+.pillar-stem,.pillar-branch{font-size:24px;font-weight:700;line-height:1.1;font-family:'Noto Serif KR',serif}
+.pillar-stem.mok,.pillar-branch.mok{color:var(--wood)}
+.pillar-stem.hwa,.pillar-branch.hwa{color:var(--fire)}
+.pillar-stem.to,.pillar-branch.to{color:var(--earth)}
+.pillar-stem.geum,.pillar-branch.geum{color:var(--metal)}
+.pillar-stem.su,.pillar-branch.su{color:var(--water)}
+.pillar-sub{font-size:10px;color:var(--dim);margin-top:6px}
+.pillar.day{border-color:var(--gold);box-shadow:0 0 0 1px var(--gold) inset}
+
+/* Ohaeng bars */
+.ohaeng-bars{display:flex;gap:6px;margin-top:10px}
+.oh-bar{flex:1;text-align:center}
+.oh-name{font-size:11px;margin-bottom:4px;color:var(--dim)}
+.oh-cnt{font-size:18px;font-weight:700}
+.oh-fill{height:36px;border-radius:6px;display:flex;align-items:flex-end;justify-content:center;color:#fff;font-size:11px;font-weight:700;padding-bottom:4px}
+
+/* Hexagram display */
+.hexagram-row{display:flex;align-items:center;gap:16px;justify-content:center;margin:18px 0}
+.hexagram-figure{display:flex;flex-direction:column;gap:4px;align-items:center}
+.hex-line{width:80px;height:8px;background:var(--text);border-radius:1px;position:relative}
+.hex-line.broken{background:none;border-top:8px solid var(--text);width:80px;border-left:34px solid transparent;border-right:34px solid transparent;height:0;display:block}
+.hex-line.broken-old{background:none;display:flex;justify-content:space-between;height:8px}
+.hex-line.broken-old::before,.hex-line.broken-old::after{content:'';background:var(--text);height:8px;width:34px;border-radius:1px}
+.hex-line.solid-old{background:var(--text);position:relative}
+.hex-line.solid-old::after{content:'○';position:absolute;right:-12px;top:-7px;color:var(--gold);font-size:14px;font-weight:bold}
+.hex-line.moving{box-shadow:0 0 8px var(--gold)}
+.hex-symbol{font-size:64px;line-height:1;font-family:serif;color:var(--gold)}
+.hex-info{text-align:center;margin-top:10px}
+.hex-name{font-size:22px;font-weight:700;font-family:'Noto Serif KR',serif;color:var(--gold2);margin-bottom:4px}
+.hex-num{font-size:11px;color:var(--dim);margin-bottom:8px}
+.hex-mean{font-size:14px;color:var(--text);margin-bottom:6px}
+.hex-judgment{font-size:13px;color:var(--dim);font-style:italic;margin-bottom:6px}
+.hex-fortune{display:inline-block;padding:3px 10px;border-radius:12px;font-size:12px;font-weight:600;background:rgba(212,175,55,.15);color:var(--gold2);border:1px solid var(--gold)}
+
+/* Tarot cards */
+.tarot-grid{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin:12px 0}
+.tarot-card{background:linear-gradient(135deg,#1a1428,#2a1f3d);border:1px solid var(--gold);border-radius:10px;padding:12px;width:120px;text-align:center;position:relative;box-shadow:0 4px 12px rgba(0,0,0,.4)}
+.tarot-card.reversed{transform:rotate(180deg)}
+.tarot-card.reversed > *{transform:rotate(180deg);display:block}
+.tarot-pos{font-size:10px;color:var(--gold2);margin-bottom:4px;font-weight:600}
+.tarot-name{font-size:13px;font-weight:700;margin-bottom:2px}
+.tarot-kor{font-size:11px;color:var(--dim);margin-bottom:6px}
+.tarot-text{font-size:11px;line-height:1.4}
+.tarot-orient{display:inline-block;font-size:9px;padding:1px 6px;border-radius:6px;margin-top:6px;background:rgba(212,175,55,.2);color:var(--gold2)}
+
+/* Result text */
+.result-text{font-size:13px;line-height:1.7;color:var(--text);white-space:pre-wrap;background:var(--card2);padding:14px;border-radius:10px;border-left:3px solid var(--gold)}
+.danger{color:var(--red)}
+.lucky{color:var(--green)}
+
+/* Daewoon table */
+.daewoon-table{width:100%;font-size:12px;margin-top:8px}
+.daewoon-table td{padding:6px 4px;border-bottom:1px solid var(--border);text-align:center}
+.daewoon-table th{padding:6px 4px;color:var(--dim);font-weight:600;font-size:11px;border-bottom:1px solid var(--border)}
+.daewoon-current{background:rgba(212,175,55,.1);color:var(--gold2);font-weight:700}
+
+/* Relations badges */
+.badges{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+.badge{font-size:11px;padding:3px 8px;border-radius:6px;font-weight:600}
+.badge-chung{background:rgba(255,82,82,.15);color:var(--red)}
+.badge-hap{background:rgba(0,230,118,.15);color:var(--green)}
+.badge-samhap{background:rgba(212,175,55,.15);color:var(--gold2)}
+
+/* Footer */
+.footer{text-align:center;padding:20px;font-size:10px;color:var(--dim);opacity:.6;line-height:1.5}
+
+.hidden{display:none!important}
+.loading{text-align:center;padding:30px;color:var(--dim);font-size:13px}
+.spinner{display:inline-block;width:20px;height:20px;border:2px solid var(--border);border-top-color:var(--gold);border-radius:50%;animation:spin 1s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* Compatibility */
+.compat-score{font-size:48px;font-weight:800;text-align:center;margin:10px 0;background:linear-gradient(90deg,var(--gold),var(--gold2));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.compat-grade{text-align:center;font-size:16px;font-weight:700;margin-bottom:8px}
+
+</style>
+</head>
+<body>
+
+<div class="hdr">
+  <div class="hdr-left">
+    <span class="hdr-logo">🔮</span>
+    <span class="hdr-title">오라클</span>
+    <span class="hdr-sub">사주·신점·타로</span>
+  </div>
+  <div class="hdr-right">
+    <button class="ghost" onclick="document.body.scrollTo({top:0,behavior:'smooth'})">↑</button>
+  </div>
+</div>
+
+<div class="container">
+  <div class="tabbar" style="grid-template-columns:repeat(4,1fr)">
+    <button class="tabbtn active" data-tab="saju" onclick="setTab(this)">사주</button>
+    <button class="tabbtn" data-tab="mudang" onclick="setTab(this)">무당점</button>
+    <button class="tabbtn" data-tab="iching" onclick="setTab(this)">주역</button>
+    <button class="tabbtn" data-tab="tarot" onclick="setTab(this)">타로</button>
+  </div>
+  <div class="tabbar" style="grid-template-columns:repeat(4,1fr);margin-top:-6px">
+    <button class="tabbtn" data-tab="gunghap" onclick="setTab(this)">궁합</button>
+    <button class="tabbtn" data-tab="tojeong" onclick="setTab(this)">토정</button>
+    <button class="tabbtn" data-tab="samjae" onclick="setTab(this)">삼재</button>
+    <button class="tabbtn" data-tab="science" onclick="setTab(this)">과학</button>
+  </div>
+
+  <!-- ============== 사주 ============== -->
+  <div class="tab-content" id="tab-saju">
+    <div class="section">
+      <div class="section-title">📜 사주팔자 입력</div>
+      <div class="field-row">
+        <div class="field"><label>연도(양력)</label><input type="number" id="s-year" value="1990" min="1900" max="2100"></div>
+        <div class="field"><label>월</label><input type="number" id="s-month" value="5" min="1" max="12"></div>
+      </div>
+      <div class="field-row">
+        <div class="field"><label>일</label><input type="number" id="s-day" value="15" min="1" max="31"></div>
+        <div class="field"><label>시</label><input type="number" id="s-hour" value="12" min="0" max="23"></div>
+      </div>
+      <div class="field-row">
+        <div class="field"><label>분</label><input type="number" id="s-min" value="0" min="0" max="59"></div>
+        <div class="field"><label>성별</label><select id="s-gender"><option value="M">남</option><option value="F">여</option></select></div>
+      </div>
+      <div class="field-row">
+        <div class="field"><label>출생지 경도 (서울 127)</label><input type="number" id="s-lng" value="127" step="0.5" min="124" max="132"></div>
+        <div class="field"><label>진태양시 보정</label><select id="s-tst"><option value="true">사용</option><option value="false">미사용</option></select></div>
+      </div>
+      <button class="primary" onclick="calcSaju()">사주 산출하기</button>
+    </div>
+    <div id="saju-result"></div>
+  </div>
+
+  <!-- ============== 주역 ============== -->
+  <div class="tab-content hidden" id="tab-iching">
+    <div class="section">
+      <div class="section-title">☯ 주역 신점 - 질문을 마음에 새기고</div>
+      <div class="field"><label>점을 칠 질문 (마음속으로 명확히)</label><input type="text" id="ic-q" placeholder="예: 이번 사업이 잘 될까요?"></div>
+      <div class="field-row">
+        <button class="ghost" onclick="castIching('coin')">🪙 동전점 (간편)</button>
+        <button class="ghost" onclick="castIching('yarrow')">🎋 시초점 (정식)</button>
+      </div>
+    </div>
+    <div id="iching-result"></div>
+  </div>
+
+  <!-- ============== 타로 ============== -->
+  <div class="tab-content hidden" id="tab-tarot">
+    <div class="section">
+      <div class="section-title">🎴 타로 카드 (Rider-Waite-Smith)</div>
+      <div class="field"><label>질문 (마음속으로)</label><input type="text" id="t-q" placeholder="예: 새 직장에서의 미래"></div>
+      <div class="field">
+        <label>스프레드 선택</label>
+        <select id="t-spread">
+          <option value="one">한 장 - 오늘의 메시지</option>
+          <option value="three" selected>3장 - 과거·현재·미래</option>
+          <option value="situation">3장 - 상황·행동·결과</option>
+          <option value="love">5장 - 연애 스프레드</option>
+          <option value="celtic">10장 - 켈틱 크로스</option>
+        </select>
+      </div>
+      <button class="primary" onclick="drawTarot()">🌟 카드 뽑기</button>
+    </div>
+    <div id="tarot-result"></div>
+  </div>
+
+  <!-- ============== 궁합 ============== -->
+  <div class="tab-content hidden" id="tab-gunghap">
+    <div class="section">
+      <div class="section-title">💞 사주 궁합</div>
+      <div style="color:var(--dim);font-size:12px;margin-bottom:10px">두 사람의 양력 생년월일시를 입력</div>
+      <div style="font-weight:600;font-size:13px;margin-bottom:8px;color:var(--gold2)">A의 사주</div>
+      <div class="field-row3">
+        <div class="field"><label>연도</label><input type="number" id="ga-y" value="1990"></div>
+        <div class="field"><label>월</label><input type="number" id="ga-m" value="3"></div>
+        <div class="field"><label>일</label><input type="number" id="ga-d" value="20"></div>
+      </div>
+      <div class="field-row">
+        <div class="field"><label>시</label><input type="number" id="ga-h" value="10"></div>
+        <div class="field"><label>성별</label><select id="ga-g"><option value="M">남</option><option value="F">여</option></select></div>
+      </div>
+      <div style="font-weight:600;font-size:13px;margin:14px 0 8px;color:var(--gold2)">B의 사주</div>
+      <div class="field-row3">
+        <div class="field"><label>연도</label><input type="number" id="gb-y" value="1992"></div>
+        <div class="field"><label>월</label><input type="number" id="gb-m" value="7"></div>
+        <div class="field"><label>일</label><input type="number" id="gb-d" value="11"></div>
+      </div>
+      <div class="field-row">
+        <div class="field"><label>시</label><input type="number" id="gb-h" value="14"></div>
+        <div class="field"><label>성별</label><select id="gb-g"><option value="M">남</option><option value="F" selected>여</option></select></div>
+      </div>
+      <button class="primary" onclick="calcGunghap()">💑 궁합 보기</button>
+    </div>
+    <div id="gunghap-result"></div>
+  </div>
+
+  <!-- ============== 토정비결 ============== -->
+  <div class="tab-content hidden" id="tab-tojeong">
+    <div class="section">
+      <div class="section-title">📿 토정비결 - 올해의 운세</div>
+      <div style="color:var(--dim);font-size:12px;margin-bottom:10px">음력 생년월일과 만 나이 입력 (양력만 안다면 대략 음력으로 변환된 값으로)</div>
+      <div class="field-row3">
+        <div class="field"><label>음력년</label><input type="number" id="tj-y" value="1990"></div>
+        <div class="field"><label>음력월</label><input type="number" id="tj-m" value="3" min="1" max="12"></div>
+        <div class="field"><label>음력일</label><input type="number" id="tj-d" value="15" min="1" max="30"></div>
+      </div>
+      <div class="field-row">
+        <div class="field"><label>만 나이</label><input type="number" id="tj-age" value="35"></div>
+        <div class="field"><label>윤달 여부</label><select id="tj-leap"><option value="false">평달</option><option value="true">윤달</option></select></div>
+      </div>
+      <button class="primary" onclick="calcTojeong()">📜 토정비결 보기</button>
+    </div>
+    <div id="tojeong-result"></div>
+  </div>
+
+  <!-- ============== 무당점 (한국식 종합 해석) ============== -->
+  <div class="tab-content hidden" id="tab-mudang">
+    <div class="section">
+      <div class="section-title">🪔 무당점 - 한국식 종합 운세</div>
+      <div style="color:var(--dim);font-size:12px;margin-bottom:10px">사주 탭에서 산출 후 여기로 와서 신살·일주·당사주·삼재·납음을 한 번에 본다</div>
+      <div class="field-row">
+        <div class="field"><label>연도</label><input type="number" id="m-year" value="1990"></div>
+        <div class="field"><label>월</label><input type="number" id="m-month" value="5"></div>
+      </div>
+      <div class="field-row">
+        <div class="field"><label>일</label><input type="number" id="m-day" value="15"></div>
+        <div class="field"><label>시</label><input type="number" id="m-hour" value="12"></div>
+      </div>
+      <div class="field-row">
+        <div class="field"><label>성별</label><select id="m-gender"><option value="M">남</option><option value="F">여</option></select></div>
+        <div class="field"><label>경도</label><input type="number" id="m-lng" value="127" step="0.5"></div>
+      </div>
+      <button class="primary" onclick="castMudang()">🪔 무당점 받기</button>
+    </div>
+    <div id="mudang-result"></div>
+  </div>
+
+  <!-- ============== 삼재 체크 ============== -->
+  <div class="tab-content hidden" id="tab-samjae">
+    <div class="section">
+      <div class="section-title">⚠ 삼재 체크 + 액땜 처방</div>
+      <div style="color:var(--dim);font-size:12px;margin-bottom:10px">띠를 선택하면 현재·향후 5년의 삼재 여부를 본다</div>
+      <div class="field"><label>띠 선택</label>
+        <select id="sj-animal">
+          <option value="0">쥐(子)</option><option value="1">소(丑)</option>
+          <option value="2">호랑이(寅)</option><option value="3">토끼(卯)</option>
+          <option value="4">용(辰)</option><option value="5">뱀(巳)</option>
+          <option value="6">말(午)</option><option value="7">양(未)</option>
+          <option value="8">원숭이(申)</option><option value="9">닭(酉)</option>
+          <option value="10">개(戌)</option><option value="11">돼지(亥)</option>
+        </select>
+      </div>
+      <button class="primary" onclick="checkSamjaeFn()">⚠ 삼재 보기</button>
+    </div>
+    <div id="samjae-result"></div>
+  </div>
+
+  <!-- ============== 과학 결합 ============== -->
+  <div class="tab-content hidden" id="tab-science">
+    <div class="section">
+      <div class="section-title">🔬 과학적 결합 분석</div>
+      <div style="color:var(--dim);font-size:12px;margin-bottom:10px">사주 ⊕ MBTI 매핑 ⊕ 바이오리듬 ⊕ 수비학 ⊕ 베이지안 확률</div>
+      <div class="field-row">
+        <div class="field"><label>연도</label><input type="number" id="sc-year" value="1990"></div>
+        <div class="field"><label>월</label><input type="number" id="sc-month" value="5"></div>
+      </div>
+      <div class="field-row">
+        <div class="field"><label>일</label><input type="number" id="sc-day" value="15"></div>
+        <div class="field"><label>시</label><input type="number" id="sc-hour" value="12"></div>
+      </div>
+      <div class="field-row">
+        <div class="field"><label>성별</label><select id="sc-gender"><option value="M">남</option><option value="F">여</option></select></div>
+        <div class="field"><label>분석 기준일</label><input type="date" id="sc-target"></div>
+      </div>
+      <button class="primary" onclick="calcScience()">🔬 과학 분석</button>
+    </div>
+    <div id="science-result"></div>
+  </div>
+
+  <div class="footer">
+    오라클 v2.0 · 사주·무당점·주역·타로·궁합·토정·삼재·과학결합<br>
+    오픈소스 기반: manseryeok-js · bazi-mcp · korean_lunar_calendar · Brianfit/I-Ching<br>
+    천문 계산: Jean Meeus Astronomical Algorithms<br>
+    ⚠ 운명은 참고일 뿐, 결정은 본인의 몫
+  </div>
+</div>
+
+<script type="module" src="./app.js"></script>
+</body>
+</html>

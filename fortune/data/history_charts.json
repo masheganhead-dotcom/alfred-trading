@@ -1,0 +1,58 @@
+{
+  "_meta": {
+    "title": "역사적 인물·국가·시대 사주 데이터베이스",
+    "note": "양력 환산된 출생일/건국일. 시(時)는 공식 기록에 있는 경우에만 포함. 음력→양력은 KASI 기준.",
+    "disclaimer": "역사적 인물의 사주 해석은 결과론적 매칭이며 예측력이 아닌 패턴 분석 용도"
+  },
+  "korean_figures": [
+    {"id":"sejong","name":"세종대왕","name_han":"世宗大王","year":1397,"month":5,"day":15,"hour":null,"note":"음력 1397-04-10 → 양력 환산. 한글 창제. 조선 4대 왕"},
+    {"id":"yi_sunshin","name":"이순신","name_han":"李舜臣","year":1545,"month":4,"day":28,"hour":null,"note":"음력 1545-03-08 → 양력. 임진왜란 영웅"},
+    {"id":"yi_seonggye","name":"이성계","name_han":"李成桂","year":1335,"month":10,"day":27,"hour":null,"note":"조선 건국 태조"},
+    {"id":"jeongjo","name":"정조","name_han":"正祖","year":1752,"month":10,"day":28,"hour":null,"note":"조선 22대 왕. 개혁군주"},
+    {"id":"daewongun","name":"흥선대원군","name_han":"興宣大院君","year":1820,"month":12,"day":21,"hour":null,"note":"고종 친아버지"},
+    {"id":"kim_gu","name":"김구","name_han":"金九","year":1876,"month":8,"day":29,"hour":null,"note":"임시정부 주석"},
+    {"id":"ahn_junggeun","name":"안중근","name_han":"安重根","year":1879,"month":9,"day":2,"hour":null,"note":"독립운동가"},
+    {"id":"park_chunghee","name":"박정희","name_han":"朴正熙","year":1917,"month":11,"day":14,"hour":null,"note":"5·6공 대통령"},
+    {"id":"kim_daejung","name":"김대중","name_han":"金大中","year":1924,"month":1,"day":6,"hour":null,"note":"15대 대통령"},
+    {"id":"yi_byeongchul","name":"이병철","name_han":"李秉喆","year":1910,"month":2,"day":12,"hour":null,"note":"삼성 창업자"},
+    {"id":"jeong_juyoung","name":"정주영","name_han":"鄭周永","year":1915,"month":11,"day":25,"hour":null,"note":"현대 창업자"}
+  ],
+  "global_figures": [
+    {"id":"einstein","name":"아인슈타인","name_han":"Albert Einstein","year":1879,"month":3,"day":14,"hour":11,"note":"상대성이론"},
+    {"id":"jobs","name":"스티브 잡스","name_han":"Steve Jobs","year":1955,"month":2,"day":24,"hour":null,"note":"애플 창업자"},
+    {"id":"musk","name":"일론 머스크","name_han":"Elon Musk","year":1971,"month":6,"day":28,"hour":7,"minute":30,"note":"테슬라·스페이스X"},
+    {"id":"buffet","name":"워런 버핏","name_han":"Warren Buffett","year":1930,"month":8,"day":30,"hour":null,"note":"투자가"},
+    {"id":"napoleon","name":"나폴레옹","name_han":"Napoléon Bonaparte","year":1769,"month":8,"day":15,"hour":null,"note":"프랑스 황제"},
+    {"id":"mao","name":"마오쩌둥","name_han":"毛泽东","year":1893,"month":12,"day":26,"hour":null,"note":"중국 건국자"}
+  ],
+  "nations": [
+    {"id":"rok_founding","name":"대한민국 건국","year":1948,"month":8,"day":15,"hour":11,"minute":0,"note":"정부 수립 선포 (정오)"},
+    {"id":"rok_constitution","name":"제헌헌법 공포","year":1948,"month":7,"day":17,"hour":null,"note":"한국 헌법 공포일"},
+    {"id":"provisional_gov","name":"대한민국 임시정부","year":1919,"month":4,"day":11,"hour":null,"note":"임시정부 수립"},
+    {"id":"daehan_empire","name":"대한제국","year":1897,"month":10,"day":12,"hour":null,"note":"고종 황제 즉위"},
+    {"id":"joseon","name":"조선 건국","year":1392,"month":8,"day":5,"hour":null,"note":"이성계 즉위"},
+    {"id":"usa","name":"미국 독립","year":1776,"month":7,"day":4,"hour":null,"note":"독립선언"},
+    {"id":"prc","name":"중화인민공화국","year":1949,"month":10,"day":1,"hour":15,"minute":0,"note":"건국 선포"},
+    {"id":"japan_meiji","name":"메이지유신","year":1868,"month":10,"day":23,"hour":null,"note":"메이지 시대 시작"},
+    {"id":"french_rev","name":"프랑스 혁명","year":1789,"month":7,"day":14,"hour":null,"note":"바스티유 함락"}
+  ],
+  "korean_eras": [
+    {"start":1392,"end":1910,"name":"조선왕조","note":"500년 왕조"},
+    {"start":1910,"end":1945,"name":"일제강점기","note":"36년 식민지배"},
+    {"start":1945,"end":1948,"name":"미군정·해방기","note":"건국 전환기"},
+    {"start":1948,"end":1960,"name":"이승만 시대","note":"건국·전쟁·재건"},
+    {"start":1961,"end":1979,"name":"박정희 시대","note":"산업화·근대화"},
+    {"start":1980,"end":1987,"name":"전두환 시대","note":"군부 통치 후반"},
+    {"start":1988,"end":1997,"name":"민주화·올림픽 시대","note":"성장·아시아통화위기"},
+    {"start":1998,"end":2007,"name":"DJ·노무현 정부","note":"민주화 정착·IMF 회복·한류 시작"},
+    {"start":2008,"end":2016,"name":"이명박·박근혜","note":"세계금융위기·박근혜 탄핵"},
+    {"start":2017,"end":2022,"name":"문재인 시대","note":"코로나 펜데믹"},
+    {"start":2022,"end":2027,"name":"윤석열·전환기","note":"AI·지정학·이재명 시대 진입"}
+  ],
+  "global_events_by_60yr_cycle": [
+    {"year":1846,"gapja":"丙午","event":"미국-멕시코 전쟁·산업혁명 가속"},
+    {"year":1906,"gapja":"丙午","event":"을사조약 직후·러일전쟁 종전 이듬해"},
+    {"year":1966,"gapja":"丙午","event":"한국 경제개발 2차 5개년계획·문화대혁명·베트남전 격화"},
+    {"year":2026,"gapja":"丙午","event":"AI 대중화 본격기·미중 전환·생성형AI 자동화 정점"}
+  ]
+}
