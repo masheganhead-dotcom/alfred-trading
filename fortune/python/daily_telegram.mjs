@@ -2,16 +2,20 @@
 // 매일 텔레그램 발송 - GitHub Actions에서 실행
 // 환경변수: TELEGRAM_BOT_TOKEN, TELEGRAM_CHAT_ID
 
+import { readFileSync } from "node:fs";
+import { fileURLToPath } from "node:url";
+import { dirname, join } from "node:path";
+
 import { calculateSaju } from "../core/saju.js";
 import { generateDailyStory } from "../core/daily_story.js";
 import { sendTelegram } from "../core/telegram_send.js";
 
-// === 사용자 사주 설정 ===
-const USER = {
-  name: "성훈",
-  birth: { year: 1998, month: 11, day: 7, hour: 7, minute: 35, gender: "M", longitude: 127.0 },
-};
+const __dirname = dirname(fileURLToPath(import.meta.url));
+const userContext = JSON.parse(
+  readFileSync(join(__dirname, "../data/user_context.json"), "utf8")
+);
 
+const USER = userContext.user;
 const mySaju = calculateSaju(USER.birth);
 const today = new Date();
 
@@ -20,11 +24,22 @@ const kstOffset = 9 * 60;
 const localOffset = today.getTimezoneOffset();
 const kstDate = new Date(today.getTime() + (kstOffset + localOffset) * 60 * 1000);
 
-const story = generateDailyStory({ mySaju, date: kstDate, userName: USER.name });
+const story = generateDailyStory({
+  mySaju,
+  date: kstDate,
+  userName: USER.name,
+  userContext
+});
 
 console.log("─".repeat(60));
 console.log(story);
 console.log("─".repeat(60));
+console.log(`[len] ${story.length} chars`);
+
+if (process.argv.includes("--dry-run")) {
+  console.log("✋ Dry run — 텔레그램 미발송");
+  process.exit(0);
+}
 
 const result = await sendTelegram(story);
 if (result.ok) {

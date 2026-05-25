@@ -1,0 +1,110 @@
+{
+  "_meta": {
+    "title": "성훈 개인 컨텍스트 — 일일 운세 메시지 생성용",
+    "updated": "2026-05-24",
+    "note": "5인 그룹·관계·HER·코인·용신 등 매일 운세 메시지에 자동 반영. 사주 정보는 HANDOFF.md 기반."
+  },
+  "user": {
+    "name": "성훈",
+    "birth": { "year": 1998, "month": 11, "day": 7, "hour": 7, "minute": 35, "gender": "M", "longitude": 127.0 },
+    "ilju": "甲申",
+    "ilju_kor": "갑신",
+    "day_stem": "甲",
+    "day_branch": "申",
+    "yongsin": { "ohaeng": "화", "easy": "불 (빨강·남쪽·해)", "meaning": "사주에 火가 0개라 부족 → 채우면 운 풀림" },
+    "kisin": { "ohaeng": "금", "easy": "쇠 (흰색·서쪽·금속)", "meaning": "이미 충분 → 더 들이면 부담" },
+    "mbti_hint": "ESTP (편재·편관 활동력)",
+    "big5": { "O": 53, "C": 50, "E": 73, "A": 25, "N": 65 },
+    "shinsal_owned": ["백호살", "백호살", "역마살", "화개살", "괴강살"],
+    "personal_state": {
+      "season": "20대 답답함 시기 (~29세). 30세부터 황금기 시작",
+      "relationship": "헤어진 직후 (2026-05-17, 임성민 2주)",
+      "health": "기능코성형 회복 → 프로필 촬영 준비",
+      "stress": "코인 -40% / 저작권 / 불면증"
+    }
+  },
+  "five_people": [
+    {
+      "name": "DAWN (이던)",
+      "alias": "김효종",
+      "role": "메인 듀오 후보 — 5인 중 시너지 1위 ⭐",
+      "ilju": "甲申",
+      "day_stem": "甲",
+      "day_branch": "申",
+      "synergy_score": 76,
+      "synergy_grade": "A",
+      "synergy_note": "본인과 완전히 같은 일주(甲申). 비견 = 동등 동료. 화 보완 완벽.",
+      "current_offer": "팀하자/계약하자 제안 → 본인 검토 중. 결정 D-DAY 2026-05-29",
+      "today_default_tone": "🟢 오늘 만나거나 톡하면 일 풀려. 가장 가까운 사람."
+    },
+    {
+      "name": "김건희 형",
+      "alias": "음악 동료·멘토",
+      "role": "AI 데스크 로봇 1.5억 계획 동업자 (현재 사실상 본인 단독)",
+      "ilju": "辛卯",
+      "day_stem": "辛",
+      "day_branch": "卯",
+      "synergy_score": 55,
+      "synergy_grade": "C",
+      "synergy_note": "정관(형)-정재(나) 정통 멘토-실무. 단 귀문관·원진살로 신경 예민.",
+      "today_default_tone": "🟡 조언 구하기 좋음. 다만 말 길어지면 피곤해짐."
+    },
+    {
+      "name": "JUNNY",
+      "alias": "김형준, 캐나다 밴쿠버 출생",
+      "role": "정신적 가이드 / 멘탈 코치 / HER feat 확정",
+      "ilju": "己亥",
+      "day_stem": "己",
+      "day_branch": "亥",
+      "synergy_score": 59,
+      "synergy_grade": "C",
+      "synergy_note": "정재-정관 정신 멘토. 子午충 영향 있음.",
+      "today_default_tone": "🔵 깊은 얘기 좋음. 가벼운 잡담은 안 어울림."
+    },
+    {
+      "name": "Andnew (정창윤)",
+      "alias": "룸메 · 살폿스튜디오 사업가 (이전 아티스트명 Andnew)",
+      "role": "도전·자극 동료 + 한 집 살이",
+      "ilju": "庚辰",
+      "day_stem": "庚",
+      "day_branch": "辰",
+      "synergy_score": 65,
+      "synergy_grade": "B",
+      "synergy_note": "편관-편재. 본인을 압박·자극해서 한계 깨주는 동료.",
+      "today_default_tone": "🟡 같이 작업하면 자극. 저녁 같이 먹기 좋음."
+    }
+  ],
+  "key_dates": [
+    { "date": "2026-05-29", "label": "인생급 길일 (己巳일·76점)", "why": "일간합(甲己) + 정재 들어옴 → 재물·계약·만남 최고. DAWN 결정 D-DAY.", "weight": 10 },
+    { "date": "2026-07-18", "label": "HER 싱글 발매 (feat. JUNNY)", "why": "데뷔 싱글. Alt-R&B 다크. 길이 3:00~3:30. 후속은 9월 싱글 2.", "weight": 10 },
+    { "date": "2026-07-28", "label": "76점 길일", "why": "HER 발매 직후 흐름 좋음. 프로모·미팅 OK.", "weight": 7 },
+    { "date": "2026-09-26", "label": "76점 길일", "why": "9월 두 번째 싱글 발매 타이밍.", "weight": 6 },
+    { "date": "2026-11-25", "label": "76점 길일", "why": "11월 별생각(h3hyeon) 작업 마무리 타이밍.", "weight": 5 }
+  ],
+  "avoid_dates": [
+    { "date": "2026-06-19", "reason": "庚寅일 — 일주충(寅申충) 발동" },
+    { "date": "2026-06-24", "reason": "乙未일 — 백호살 폭발" },
+    { "date": "2026-08-18", "reason": "庚寅일 — 일주충" },
+    { "date": "2026-08-23", "reason": "乙未일 — 백호살" },
+    { "date": "2026-10-17", "reason": "庚寅일 — 일주충" },
+    { "date": "2026-10-22", "reason": "乙未일 — 백호살" },
+    { "date": "2026-12-16", "reason": "庚寅일 — 일주충" },
+    { "date": "2026-12-21", "reason": "乙未일 — 백호살" }
+  ],
+  "investment_guide": {
+    "status": "코인 -40% (5/24 기준)",
+    "BTC": { "grade": "C", "score": 65, "note": "비견 경쟁. 큰 베팅 X." },
+    "ETH": { "grade": "B", "score": 70, "note": "상대가 본인을 도움. ETH 비중 확대." },
+    "guidance": "2027까지 큰 베팅 X, 분할 매수. 2028~ 본격 시작 (대운 시작).",
+    "avoid": ["레버리지·선물", "단타·스캘핑", "한 종목 몰빵", "금속·금융주 (기신=금)"]
+  },
+  "her_release": {
+    "date": "2026-07-18",
+    "single": "HER",
+    "features": ["JUNNY (확정)", "Joyce Wrice (컨택 중)"],
+    "genre": "Alt-R&B 다크",
+    "duration": "3:00~3:30",
+    "promo_strategy": "릴스 30초 × 5개 (풀MV 없음)",
+    "next_release": "2026-09 두 번째 싱글 (2달 간격 시리즈화)"
+  }
+}
