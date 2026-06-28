@@ -15,11 +15,16 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: 'fortune/package-lock.json'
+
+      - name: Install fortune deps (luxon, zod)
+        working-directory: fortune
+        run: npm ci
 
       - name: Send daily fortune to Telegram
         env:
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
-        run: |
-          cd fortune
-          node python/daily_telegram.mjs
+        working-directory: fortune
+        run: node python/daily_telegram.mjs
