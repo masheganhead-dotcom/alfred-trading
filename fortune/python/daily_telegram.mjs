@@ -5,36 +5,33 @@
 import { readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
+import { DateTime } from "luxon";
+import { z } from "zod";
 
 import { calculateSaju } from "../core/saju.js";
 import { generateDailyStory } from "../core/daily_story.js";
 import { sendTelegram } from "../core/telegram_send.js";
+import { UserContextSchema } from "../core/user_context_schema.js";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
-const userContext = JSON.parse(
+const rawContext = JSON.parse(
   readFileSync(join(__dirname, "../data/user_context.json"), "utf8")
 );
+
+// === zod 스키마 검증 (잘못된 데이터 즉시 발견) ===
+const userContext = UserContextSchema.parse(rawContext);
 
 const USER = userContext.user;
 const mySaju = calculateSaju(USER.birth);
 
-// === KST 정확 계산 (환경 독립) ===
-// 이전 버그: (kstOffset + localOffset) 환경별 결과 달라짐 (KST 환경에서 0이 됨 → 메시지 -9h)
-// 수정: Intl.DateTimeFormat으로 timezone 직접 지정 → 환경 무관 항상 정확한 KST
-const now = new Date();
-const kstParts = new Intl.DateTimeFormat('en-CA', {
-  timeZone: 'Asia/Seoul',
-  year: 'numeric', month: '2-digit', day: '2-digit',
-  hour: '2-digit', minute: '2-digit', second: '2-digit',
-  hour12: false
-}).formatToParts(now).reduce((acc, p) => { acc[p.type] = p.value; return acc; }, {});
-// KST 시각을 ISO처럼 조립
-const kstDateStr = `${kstParts.year}-${kstParts.month}-${kstParts.day}T${kstParts.hour}:${kstParts.minute}:${kstParts.second}+09:00`;
-const kstDate = new Date(kstDateStr);
+// === KST 정확 계산 (luxon — 환경 무관) ===
+// 2026-06-02 사고 후 박힘: (kstOffset + localOffset) 패턴 절대 금지
+const kstNow = DateTime.now().setZone("Asia/Seoul");
+const kstDate = kstNow.toJSDate();  // generateDailyStory에 넘기는 표준 Date
 
-// 디버그 출력 (잘못 표시되면 즉시 발견)
-console.error(`[debug] UTC: ${now.toISOString()}`);
-console.error(`[debug] KST: ${kstDate.toISOString()} (표시용 ${kstParts.year}-${kstParts.month}-${kstParts.day} ${kstParts.hour}:${kstParts.minute} KST, 요일=${"일월화수목금토"[kstDate.getDay()]})`);
+// 디버그 출력 — 잘못 표시되면 즉시 발견
+console.error(`[debug] UTC: ${DateTime.utc().toISO()}`);
+console.error(`[debug] KST: ${kstNow.toFormat("yyyy-MM-dd HH:mm:ss EEEE")} (zone: ${kstNow.zoneName})`);
 
 const story = generateDailyStory({
   mySaju,

@@ -1,0 +1,19 @@
+{
+  "name": "fortune",
+  "version": "0.2.0",
+  "description": "성훈 사주·역술·일일 운세 시스템",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "preview": "node python/daily_telegram.mjs --dry-run",
+    "send": "node python/daily_telegram.mjs",
+    "validate": "node tests/validate_user_context.mjs"
+  },
+  "dependencies": {
+    "luxon": "^3.5.0",
+    "zod": "^3.23.8"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}
