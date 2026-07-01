@@ -9,6 +9,8 @@ on:
 jobs:
   send-fortune:
     runs-on: ubuntu-latest
+    env:
+      TZ: 'Asia/Seoul'  # 프로세스 전체 KST로 강제. new Date().getMonth() 등 전부 KST 로컬.
     steps:
       - uses: actions/checkout@v4
 

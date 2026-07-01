@@ -2,11 +2,13 @@
 // 매일 텔레그램 발송 - GitHub Actions에서 실행
 // 환경변수: TELEGRAM_BOT_TOKEN, TELEGRAM_CHAT_ID
 
+// ⚠ 최상단 — 다른 import 전에 TZ 강제 (모듈 로드 시점에 반영되도록)
+process.env.TZ = "Asia/Seoul";
+
 import { readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
 import { DateTime } from "luxon";
-import { z } from "zod";
 
 import { calculateSaju } from "../core/saju.js";
 import { generateDailyStory } from "../core/daily_story.js";
@@ -17,21 +19,27 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 const rawContext = JSON.parse(
   readFileSync(join(__dirname, "../data/user_context.json"), "utf8")
 );
-
-// === zod 스키마 검증 (잘못된 데이터 즉시 발견) ===
 const userContext = UserContextSchema.parse(rawContext);
 
 const USER = userContext.user;
 const mySaju = calculateSaju(USER.birth);
 
-// === KST 정확 계산 (luxon — 환경 무관) ===
-// 2026-06-02 사고 후 박힘: (kstOffset + localOffset) 패턴 절대 금지
-const kstNow = DateTime.now().setZone("Asia/Seoul");
-const kstDate = kstNow.toJSDate();  // generateDailyStory에 넘기는 표준 Date
+// TZ=Asia/Seoul 강제되었으므로 new Date()가 KST 로컬로 작동.
+// date.getFullYear()/getMonth()/getDate()/getDay() 전부 KST 기준.
+const kstDate = new Date();
 
-// 디버그 출력 — 잘못 표시되면 즉시 발견
-console.error(`[debug] UTC: ${DateTime.utc().toISO()}`);
-console.error(`[debug] KST: ${kstNow.toFormat("yyyy-MM-dd HH:mm:ss EEEE")} (zone: ${kstNow.zoneName})`);
+// === 3중 검증 (환경별 시간대 어긋남 즉시 발견) ===
+const luxonKst = DateTime.now().setZone("Asia/Seoul");
+const localYmd = `${kstDate.getFullYear()}-${String(kstDate.getMonth()+1).padStart(2,"0")}-${String(kstDate.getDate()).padStart(2,"0")}`;
+const luxonYmd = luxonKst.toFormat("yyyy-MM-dd");
+console.error(`[debug] UTC (raw): ${new Date().toISOString()}`);
+console.error(`[debug] KST (luxon 권위): ${luxonKst.toFormat("yyyy-MM-dd HH:mm:ss EEEE")}`);
+console.error(`[debug] KST (new Date()+TZ): ${localYmd} ${String(kstDate.getHours()).padStart(2,"0")}:${String(kstDate.getMinutes()).padStart(2,"0")} ${"일월화수목금토"[kstDate.getDay()]}요일`);
+console.error(`[debug] TZ env: ${process.env.TZ || "(unset)"}`);
+if (localYmd !== luxonYmd) {
+  console.error(`❌ 시간대 불일치! new Date()=${localYmd}, luxon=${luxonYmd}. TZ 환경변수 미적용 상태에서 실행됨.`);
+  process.exit(2);
+}
 
 const story = generateDailyStory({
   mySaju,
